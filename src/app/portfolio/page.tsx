@@ -8,7 +8,7 @@ import GoldDivider from "@/components/ui/GoldDivider";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { dealerships } from "@/lib/dealerships";
+import { dealerships, type Dealership } from "@/lib/dealerships";
 
 export default function PortfolioPage() {
   const { ref, isInView } = useScrollAnimation();
@@ -118,6 +118,11 @@ export default function PortfolioPage() {
                             </span>
                           ))}
                         </div>
+                        {d.disclaimer && (
+                          <p className="text-white/50 text-xs italic mt-3">
+                            {d.disclaimer}
+                          </p>
+                        )}
                       </div>
 
                       {/* Arrow */}

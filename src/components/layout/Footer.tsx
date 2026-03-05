@@ -32,8 +32,8 @@ export default function Footer() {
           <div>
             <Link href="/" className="flex items-center mb-6">
               <Image
-                src="/assets/Prime-Logo.png"
-                alt="Prime Dealer Fund"
+                src="https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Prime-Logo.png"
+                alt="Prime Dealer Equity Fund"
                 width={140}
                 height={56}
                 className="h-12 w-auto"
@@ -70,14 +70,15 @@ export default function Footer() {
 
         <div className="space-y-4">
           <p className="text-[#6b7280] text-xs leading-relaxed">
-            <strong className="text-[#9ca3af]">Important Disclaimer:</strong> This
-            website is for informational purposes only and does not constitute an
-            offer to sell or a solicitation of an offer to buy any securities.
-            Securities offerings are made only through official offering documents
-            provided to qualified investors. Past performance is not indicative of
-            future results. All investments involve risk, including the potential
-            loss of principal. Prime Dealer Fund investments are illiquid and
-            suitable only for accredited investors who can bear the risk of loss.
+            <strong className="text-[#9ca3af]">Important Disclaimer:</strong> The
+            information provided in this Investment Summary does not constitute or
+            form a part of any offer to sell or issue, or the solicitation of any
+            offer to purchase, subscribe for, or otherwise acquire, any securities
+            in the U.S. or in any jurisdiction in which such an offer or
+            solicitation would be unlawful. The General Partner (GP) is the
+            investment advisor to the private equity special purpose vehicle (SPV)
+            that operates under an exemption from registration in the State of
+            Indiana, where its principal office is located.
           </p>
           <p className="text-[#6b7280] text-xs leading-relaxed">
             Securities offered through applicable exemptions under Regulation D of
@@ -86,7 +87,7 @@ export default function Footer() {
           </p>
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
             <p className="text-[#4b5563] text-xs">
-              &copy; {new Date().getFullYear()} Prime Dealer Fund. All rights
+              &copy; {new Date().getFullYear()} Prime Dealer Equity Fund. All rights
               reserved.
             </p>
             <p className="text-[#4b5563] text-xs">

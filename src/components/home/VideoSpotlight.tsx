@@ -27,7 +27,7 @@ export default function VideoSpotlight() {
         >
           <iframe
             src="https://www.youtube.com/embed/VX4L9ydnVDA?si=xoj0LomFD-qK74Pz"
-            title="Prime Dealer Fund"
+            title="Prime Dealer Equity Fund"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen

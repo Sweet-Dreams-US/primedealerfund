@@ -19,12 +19,12 @@ const steps = [
   {
     number: "03",
     title: "Invest",
-    description: "Choose your allocation and complete subscription documents. Minimum investment starts at $250K.",
+    description: "Choose your allocation and complete subscription documents. Minimum investment starts at $100K.",
   },
   {
     number: "04",
     title: "Returns",
-    description: "Receive quarterly distributions from dealership operations. Transparent reporting on every metric.",
+    description: "Receive annual distributions from dealership operations. Transparent reporting on every metric.",
   },
   {
     number: "05",

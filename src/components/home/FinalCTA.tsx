@@ -40,7 +40,7 @@ export default function FinalCTA() {
           className="text-lg text-[#9ca3af] max-w-2xl mx-auto mb-10 leading-relaxed"
         >
           Schedule a private consultation with our team to learn how Prime Dealer
-          Fund can fit into your portfolio. Minimum investment: $250,000.
+          Equity Fund can fit into your portfolio. Minimum investment: $100,000.
         </motion.p>
 
         <motion.div

@@ -7,6 +7,23 @@ import GoldDivider from "@/components/ui/GoldDivider";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
+const primeDealerPodcast = [
+  {
+    title: "Episode 1: The Prime Dealer Fund Thesis",
+    tag: "Episode 1",
+    description:
+      "Kyle Coleman introduces the fund, the automotive retail opportunity, and why franchise dealerships are the most overlooked asset class in private equity.",
+    embedId: "gdaCqwucYys",
+  },
+  {
+    title: "Episode 2: Inside the Acquisition Playbook",
+    tag: "Episode 2",
+    description:
+      "A deep dive into how Coleman Automotive evaluates, acquires, and transforms underperforming dealerships into top-performing assets.",
+    embedId: "9y6EHjpb4Fg",
+  },
+];
+
 const podcasts = [
   {
     title: "Podcast Episode 1",
@@ -279,18 +296,71 @@ export default function MediaPage() {
         </div>
       </section>
 
-      {/* Podcasts */}
+      {/* Prime Dealer Podcast */}
       <section className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-10">
             <span className="text-gold-400 font-mono text-xs tracking-[0.15em] uppercase">
-              Podcasts
+              Prime Dealer Podcast
             </span>
             <h3 className="font-display text-3xl md:text-4xl font-bold text-cream-50 mt-2 mb-2">
-              Listen In
+              Our <span className="text-gold-gradient">Podcast</span>
             </h3>
             <p className="text-navy-400 max-w-xl">
-              Conversations on the automotive industry, dealership investing, and fund strategy.
+              Straight from the operators. Kyle Coleman and the team break down
+              dealership acquisitions, fund strategy, and what it really takes
+              to build an automotive portfolio.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {primeDealerPodcast.map((ep) => (
+              <div
+                key={ep.embedId}
+                className="rounded-2xl overflow-hidden bg-navy-900/30 border border-navy-800/30"
+              >
+                <div className="relative w-full aspect-video">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${ep.embedId}?rel=0`}
+                    title={ep.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                    className="absolute inset-0 w-full h-full"
+                  />
+                </div>
+                <div className="p-4">
+                  <span className="text-gold-400 font-mono text-[10px] tracking-widest uppercase">
+                    {ep.tag}
+                  </span>
+                  <h4 className="font-display text-sm font-semibold text-cream-50 mt-1">
+                    {ep.title}
+                  </h4>
+                  {ep.description && (
+                    <p className="text-navy-400 text-xs mt-1 leading-relaxed">
+                      {ep.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Appearances */}
+      <section className="py-16 md:py-24 bg-navy-900/20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-10">
+            <span className="text-gold-400 font-mono text-xs tracking-[0.15em] uppercase">
+              Featured Appearances
+            </span>
+            <h3 className="font-display text-3xl md:text-4xl font-bold text-cream-50 mt-2 mb-2">
+              As Seen On
+            </h3>
+            <p className="text-navy-400 max-w-xl">
+              Kyle Coleman and the team featured on industry-leading podcasts
+              and shows.
             </p>
           </div>
 

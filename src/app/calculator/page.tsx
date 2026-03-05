@@ -102,7 +102,7 @@ export default function CalculatorPage() {
                 </div>
                 <input
                   type="range"
-                  min={250000}
+                  min={100000}
                   max={10000000}
                   step={50000}
                   value={investment}
@@ -110,7 +110,7 @@ export default function CalculatorPage() {
                   className="w-full h-2 bg-navy-800 rounded-lg appearance-none cursor-pointer accent-gold-400"
                 />
                 <div className="flex justify-between mt-1 text-xs text-navy-600">
-                  <span>$250K</span>
+                  <span>$100K</span>
                   <span>$10M</span>
                 </div>
               </div>
@@ -241,7 +241,7 @@ export default function CalculatorPage() {
                 </h3>
                 <div className="space-y-3">
                   {[
-                    { label: "Prime Dealer Fund", rate: annualReturn, color: "from-gold-600 to-gold-400" },
+                    { label: "Prime Dealer Equity Fund", rate: annualReturn, color: "from-gold-600 to-gold-400" },
                     { label: "S&P 500 (Avg)", rate: 10, color: "from-navy-600 to-navy-500" },
                     { label: "Real Estate", rate: 8, color: "from-navy-600 to-navy-500" },
                     { label: "Bonds", rate: 4.5, color: "from-navy-600 to-navy-500" },

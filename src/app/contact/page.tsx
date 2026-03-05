@@ -28,7 +28,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 const contactInfo = [
   {
     label: "Email",
-    value: "ralph@primedealerfund.com",
+    value: "ralph@PrimeDealerFund.com",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -329,6 +329,7 @@ export default function ContactPage() {
                     </label>
                     <select {...register("investmentRange")} className={inputStyles}>
                       <option value="">Select a range</option>
+                      <option value="100k-249k">$100,000 - $249,999</option>
                       <option value="250k-500k">$250,000 - $500,000</option>
                       <option value="500k-1m">$500,000 - $1,000,000</option>
                       <option value="1m-5m">$1,000,000 - $5,000,000</option>

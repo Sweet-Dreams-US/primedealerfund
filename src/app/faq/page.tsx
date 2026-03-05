@@ -18,22 +18,22 @@ const faqs: FAQ[] = [
   {
     category: "Investment",
     question: "What is the minimum investment?",
-    answer: "The minimum investment in Prime Dealer Fund is $250,000. This threshold ensures our investor base consists of qualified, accredited investors who understand alternative investments.",
+    answer: "The minimum investment in Prime Dealer Equity Fund is $100,000. This threshold ensures our investor base consists of qualified, accredited investors who understand alternative investments.",
   },
   {
     category: "Investment",
     question: "What are the target returns?",
-    answer: "We target a net IRR of 18-25% with an 8% preferred return to investors. Returns are generated through operational cash flow (quarterly distributions), equity appreciation, and exit multiple expansion. Past performance is not indicative of future results.",
+    answer: "We target a net IRR of 21-31%, targeting an 8% annual distribution to investors. Returns are generated through operational improvements, equity appreciation, and strategic exits. Past performance is not indicative of future results.",
   },
   {
     category: "Investment",
     question: "How long is the investment term?",
-    answer: "The fund has a 7-year term with the option for two 1-year extensions. This timeline allows us to acquire, optimize, and exit dealerships at optimal valuations.",
+    answer: "The fund has a 10-year term with the option for two 1-year extensions. This timeline allows us to acquire, optimize, and exit dealerships at optimal valuations.",
   },
   {
     category: "Investment",
     question: "What is the fund structure?",
-    answer: "Prime Dealer Fund is structured as a Delaware limited partnership. The General Partner manages all fund operations, acquisitions, and dealership management. Limited Partners are passive investors who receive quarterly distributions and annual reporting.",
+    answer: "Prime Dealer Equity Fund is structured as a Delaware limited partnership. The General Partner manages all fund operations, acquisitions, and dealership management. Limited Partners are passive investors who receive annual distributions and annual reporting.",
   },
   {
     category: "Eligibility",
@@ -53,7 +53,7 @@ const faqs: FAQ[] = [
   {
     category: "Operations",
     question: "What is the 90-Day Turnaround?",
-    answer: "Our proprietary methodology for transforming underperforming dealerships. In the first 90 days post-acquisition, we implement operational improvements across all seven profit centers: new vehicle sales, used vehicle sales, F&I, service, parts, body shop, and fleet.",
+    answer: "Our proprietary methodology for transforming underperforming dealerships. In the first 90 days post-acquisition, we implement operational improvements across all seven profit centers: new vehicle sales, used vehicle sales, F&I, service, parts, body shop (some locations), and fleet.",
   },
   {
     category: "Operations",
@@ -68,7 +68,7 @@ const faqs: FAQ[] = [
   {
     category: "Reporting",
     question: "When are distributions paid?",
-    answer: "Distributions are paid quarterly, subject to available cash flow and GP discretion. The 8% preferred return accrues from the date of capital contribution.",
+    answer: "Distributions are paid annually, subject to available cash flow and GP discretion, targeting an 8% annual distribution.",
   },
   {
     category: "Legal",
@@ -157,7 +157,7 @@ export default function FAQPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-lg text-navy-300 max-w-2xl mx-auto leading-relaxed"
           >
-            Everything you need to know about investing with Prime Dealer Fund.
+            Everything you need to know about investing with Prime Dealer Equity Fund.
           </motion.p>
         </div>
       </section>

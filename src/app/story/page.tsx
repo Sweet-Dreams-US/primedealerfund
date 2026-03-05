@@ -5,6 +5,7 @@ import PageLayout from "@/components/layout/PageLayout";
 import SectionHeader from "@/components/ui/SectionHeader";
 import GoldDivider from "@/components/ui/GoldDivider";
 import MagneticButton from "@/components/ui/MagneticButton";
+import Image from "next/image";
 import { fadeInUp, staggerContainer, staggerItem, slideInLeft, slideInRight } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
@@ -12,32 +13,42 @@ const timeline = [
   {
     year: "2018",
     title: "The Beginning",
-    description: "Kyle Coleman identifies an opportunity in the fragmented automotive dealership market. Begins acquiring underperforming franchise dealerships in Georgia.",
+    description:
+      "Kyle Coleman identifies a massive opportunity in the fragmented automotive dealership market. With 20+ years of automotive retail and B2B scaling experience, he begins building the operational playbook that will define Coleman Automotive Group.",
   },
   {
-    year: "2019",
-    title: "First Turnaround",
-    description: "Coleman Chrysler Dodge Jeep Ram in Macon, GA is acquired and transformed. Revenue doubles within 18 months through operational excellence.",
-  },
-  {
-    year: "2021",
-    title: "The Playbook",
-    description: "The 90-Day Turnaround methodology is formalized. Repeatable process for transforming underperforming dealerships into top-performers.",
+    year: "2022",
+    title: "Spirit Lake Ford CDJR",
+    description:
+      "Coleman Automotive acquires Spirit Lake Ford CDJR in northwest Iowa\u2019s lake country. A multi-brand powerhouse carrying Ford, Chrysler, Dodge, Jeep, and Ram \u2014 the first store to prove the turnaround methodology at scale.",
+    image: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/dronespiritlakestorefront.png",
   },
   {
     year: "2023",
-    title: "Portfolio Growth",
-    description: "Multi-dealership operations established. Strategic partnerships with major OEMs solidified. Ralph Marcuccilli joins as strategic advisor.",
+    title: "Estherville Chevy GMC",
+    description:
+      "Estherville Chevy GMC is acquired, expanding Coleman\u2019s Iowa footprint. A Chevrolet and GMC franchise serving northwest Iowa with sales, service, and parts. Ralph Marcuccilli joins as strategic advisor.",
+    image: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/frontofstore.webp",
   },
   {
     year: "2024",
-    title: "Fund Formation",
-    description: "Prime Dealer Fund is established to bring institutional capital to automotive retail. Target: $50M initial fund to acquire 8-12 dealerships.",
+    title: "Fund Formation & Rapid Expansion",
+    description:
+      "Prime Dealer Equity Fund is established to bring institutional capital to automotive retail. Three dealerships acquired in rapid succession: Nissan Warsaw (IN), Mt. Pleasant Chevy GMC CDJR (IA), and Le Mars Chevy GMC CDJR (IA).",
+    image: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/FrontofStoreNissanWarsaw.webp",
   },
   {
     year: "2025",
-    title: "Scaling Nationally",
-    description: "Active capital deployment across southeastern U.S. markets. Pipeline of qualified acquisition targets in strategic territories.",
+    title: "Nissan Streetsboro & National Scale",
+    description:
+      "Coleman Automotive expands into Ohio with the acquisition of Nissan Streetsboro, serving the greater Akron-Cleveland metro. The Road to 40 rooftops accelerates with a pipeline of qualified acquisition targets across multiple states.",
+    image: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Streetsboro/streetsborofrontofstore.webp",
+  },
+  {
+    year: "2026",
+    title: "The Road to 40",
+    description:
+      "Active capital deployment across Iowa, Indiana, and Ohio. The retained earnings flywheel is turning \u2014 profitable stores funding the next acquisitions. Six dealerships operating, with the next phase of growth underway.",
   },
 ];
 
@@ -102,6 +113,17 @@ function TimelineSection() {
                   <p className="text-navy-400 text-sm leading-relaxed">
                     {item.description}
                   </p>
+                  {item.image && (
+                    <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden mt-4">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 400px"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-navy-950 border-2 border-gold-400 z-10 mt-1" />
                 <div className="flex-1 hidden md:block" />
@@ -183,7 +205,7 @@ export default function StoryPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-lg text-navy-300 max-w-2xl mx-auto leading-relaxed"
           >
-            Prime Dealer Fund was born from hands-on dealership operations — not a
+            Prime Dealer Equity Fund was born from hands-on dealership operations — not a
             spreadsheet. Our team has bought, fixed, and scaled dealerships from the
             ground up, developing a repeatable playbook that drives consistent returns.
           </motion.p>
@@ -200,7 +222,7 @@ export default function StoryPage() {
             Meet the Team Behind the Fund
           </h2>
           <p className="text-navy-300 mb-8">
-            Learn about the operators and advisors driving Prime Dealer Fund.
+            Learn about the operators and advisors driving Prime Dealer Equity Fund.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <MagneticButton href="/team" variant="primary">

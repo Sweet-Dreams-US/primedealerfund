@@ -128,6 +128,11 @@ export default function DealershipPage() {
               <p className="text-navy-300 leading-relaxed">
                 {dealership.description}
               </p>
+              {dealership.disclaimer && (
+                <p className="text-navy-500 text-sm italic mt-4 border-t border-navy-800/30 pt-4">
+                  {dealership.disclaimer}
+                </p>
+              )}
             </div>
             <div>
               <h3 className="font-display text-lg font-semibold text-cream-50 mb-3">
@@ -354,7 +359,7 @@ export default function DealershipPage() {
             Invest in the Portfolio
           </h2>
           <p className="text-navy-300 mb-8">
-            {dealership.name} is one of six dealerships in the Prime Dealer Fund.
+            {dealership.name} is one of six dealerships in the Prime Dealer Equity Fund.
             Request detailed fund performance data and portfolio metrics.
           </p>
           <MagneticButton href="/contact" variant="primary" size="lg">

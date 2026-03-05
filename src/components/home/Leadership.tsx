@@ -11,7 +11,7 @@ const leaders = [
   {
     name: "Kyle Coleman",
     title: "CEO",
-    photo: "/assets/colemanpic1.jpg",
+    photo: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/colemanpic1.jpg",
     summary:
       "Over 20 years in retail automotive and finance. Proven track record acquiring, turning around, and scaling franchise dealerships above industry benchmarks.",
     expertise: ["Dealership Operations", "M&A Strategy"],
@@ -19,7 +19,7 @@ const leaders = [
   {
     name: "Ralph Marcuccilli",
     title: "Manager",
-    photo: "/assets/ralphmarcuccilli1.jpg",
+    photo: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/ralphmarcuccilli1.jpg",
     summary:
       "Three decades of leadership in banking, fintech, and investing. Expert in leveraging technology and automation to transform business operations and drive growth.",
     expertise: ["Financial Technology", "Capital Markets"],

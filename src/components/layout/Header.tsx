@@ -57,8 +57,8 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link href="/" className="flex items-center group">
             <Image
-              src="/assets/Prime-Logo.png"
-              alt="Prime Dealer Fund"
+              src="https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Prime-Logo.png"
+              alt="Prime Dealer Equity Fund"
               width={120}
               height={48}
               className="h-10 w-auto"

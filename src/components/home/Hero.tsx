@@ -10,7 +10,7 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#1a1a2e]">
       {/* Background photo — more visible */}
       <Image
-        src="/assets/MtPleasent/ChargerOutFront.webp"
+        src="https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/ChargerOutFront.webp"
         alt=""
         fill
         className="object-cover opacity-40"
@@ -51,7 +51,7 @@ export default function Hero() {
               PRIME
             </motion.span>
 
-            {/* DEALER FUND — gold with shimmer */}
+            {/* DEALER EQUITY FUND — gold with shimmer */}
             <motion.span
               initial={{ y: 120, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -63,6 +63,7 @@ export default function Hero() {
               className="hero-gold-wrap cursor-default"
             >
               <span>DEALER</span>
+              <span>EQUITY</span>
               <span>FUND</span>
             </motion.span>
           </div>

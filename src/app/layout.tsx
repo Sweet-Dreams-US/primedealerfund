@@ -30,11 +30,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Prime Dealer Fund | Automotive Dealership Investment",
-    template: "%s | Prime Dealer Fund",
+    default: "Prime Dealer Equity Fund | Automotive Dealership Investment",
+    template: "%s | Prime Dealer Equity Fund",
   },
   description:
-    "Invest in the $1.2 trillion automotive retail industry. Prime Dealer Fund acquires, optimizes, and scales franchise dealerships across America.",
+    "Invest in the $1.2 trillion automotive retail industry. Prime Dealer Equity Fund acquires, optimizes, and scales franchise dealerships across America.",
   keywords: [
     "automotive investment",
     "dealership fund",
@@ -44,16 +44,16 @@ export const metadata: Metadata = {
     "Coleman Prime",
   ],
   openGraph: {
-    title: "Prime Dealer Fund",
+    title: "Prime Dealer Equity Fund",
     description:
       "Institutional-quality automotive dealership investment. Recession-resistant. Asset-backed. Revenue-proven.",
     type: "website",
     locale: "en_US",
-    siteName: "Prime Dealer Fund",
+    siteName: "Prime Dealer Equity Fund",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Prime Dealer Fund",
+    title: "Prime Dealer Equity Fund",
     description:
       "Institutional-quality automotive dealership investment. Recession-resistant. Asset-backed. Revenue-proven.",
   },

@@ -10,16 +10,15 @@ import { fadeInUp, staggerContainer, staggerItem } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const fundTerms = [
-  { label: "Target Fund Size", value: "$50M" },
-  { label: "Minimum Investment", value: "$250,000" },
-  { label: "Target IRR", value: "18-25%" },
-  { label: "Preferred Return", value: "8%" },
-  { label: "Fund Term", value: "7 Years" },
-  { label: "Distribution", value: "Quarterly" },
+  { label: "Target Fund Size", value: "$20M" },
+  { label: "Minimum Investment", value: "$100,000" },
+  { label: "Target IRR", value: "21-31%" },
+  { label: "Fund Term", value: "10 Years" },
+  { label: "Distribution", value: "Annual" },
 ];
 
 const comparisonData = [
-  { asset: "Auto Dealerships", yield: "18-25%", risk: "Medium", liquidity: "Low", correlation: "Low" },
+  { asset: "Auto Dealerships", yield: "21-31%", risk: "Medium", liquidity: "Low", correlation: "Low" },
   { asset: "S&P 500", yield: "8-10%", risk: "High", liquidity: "High", correlation: "High" },
   { asset: "Real Estate (REIT)", yield: "6-10%", risk: "Medium", liquidity: "Medium", correlation: "Medium" },
   { asset: "Private Equity", yield: "15-20%", risk: "High", liquidity: "Very Low", correlation: "Medium" },
@@ -63,68 +62,6 @@ function FundStructure() {
               </p>
               <p className="text-navy-400 text-sm font-mono tracking-wider uppercase">
                 {term.label}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function ReturnProfile() {
-  const { ref, isInView } = useScrollAnimation();
-  return (
-    <section className="py-24 md:py-32 bg-navy-900/30">
-      <div className="max-w-7xl mx-auto px-6">
-        <SectionHeader
-          label="Returns"
-          title="Return Profile"
-          subtitle="Multiple layers of return generation from dealership operations."
-        />
-        <motion.div
-          ref={ref}
-          variants={staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-        >
-          {[
-            {
-              title: "Operational Cash Flow",
-              description: "Quarterly distributions from dealership net income, service revenue, and F&I products.",
-              metric: "8-12%",
-              metricLabel: "Annual Cash Yield",
-            },
-            {
-              title: "Value Creation",
-              description: "Operational improvements, brand optimization, and revenue growth drive equity appreciation.",
-              metric: "10-15%",
-              metricLabel: "Annual Appreciation",
-            },
-            {
-              title: "Exit Multiple Expansion",
-              description: "Portfolio aggregation commands higher exit multiples than individual dealership sales.",
-              metric: "2-3x",
-              metricLabel: "Target Multiple",
-            },
-          ].map((item) => (
-            <motion.div
-              key={item.title}
-              variants={staggerItem}
-              className="p-8 rounded-2xl bg-navy-950/50 border border-navy-800/30"
-            >
-              <p className="text-gold-400 font-display text-3xl font-bold mb-1">
-                {item.metric}
-              </p>
-              <p className="text-navy-500 text-xs font-mono tracking-wider uppercase mb-4">
-                {item.metricLabel}
-              </p>
-              <h3 className="font-display text-lg font-semibold text-cream-50 mb-2">
-                {item.title}
-              </h3>
-              <p className="text-navy-400 text-sm leading-relaxed">
-                {item.description}
               </p>
             </motion.div>
           ))}
@@ -263,15 +200,14 @@ export default function OpportunityPage() {
             className="text-lg text-navy-300 max-w-2xl mx-auto leading-relaxed"
           >
             The U.S. automotive retail market is highly fragmented — the top 10 dealer groups
-            control less than 10% of the market. Prime Dealer Fund is positioned to capitalize
-            on this once-in-a-generation consolidation opportunity.
+            control less than 10% of the market. Prime Dealer Equity Fund is positioned to capitalize
+            on this once-in-a-generation consolidation opportunity, targeting an 8% annual distribution.
           </motion.p>
         </div>
       </section>
 
       <GoldDivider />
       <FundStructure />
-      <ReturnProfile />
       <ComparisonTable />
       <RiskFactors />
 

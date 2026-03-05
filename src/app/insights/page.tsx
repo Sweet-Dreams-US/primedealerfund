@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import PageLayout from "@/components/layout/PageLayout";
 import GoldDivider from "@/components/ui/GoldDivider";
 import { staggerContainer, staggerItem } from "@/lib/animations";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { blogPosts } from "@/lib/blog-data";
 
 interface Article {
   slug: string;
@@ -15,69 +16,62 @@ interface Article {
   category: string;
   date: string;
   readTime: string;
+  heroImage?: string;
+  author?: string;
 }
 
-const articles: Article[] = [
+/* Build the combined article list — rich blog posts first, then legacy */
+const legacyArticles: Article[] = [
   {
     slug: "why-auto-dealerships-are-the-next-frontier",
     title: "Why Auto Dealerships Are the Next Frontier in Private Equity",
-    excerpt: "The automotive retail industry represents a $1.2 trillion opportunity that institutional capital is only beginning to discover. Here's why smart money is moving in.",
+    excerpt:
+      "The automotive retail industry represents a $1.2 trillion opportunity that institutional capital is only beginning to discover. Here\u2019s why smart money is moving in.",
     category: "Market Analysis",
     date: "January 2025",
     readTime: "8 min read",
   },
   {
     slug: "90-day-turnaround-methodology",
-    title: "The 90-Day Turnaround: How We Transform Underperforming Dealerships",
-    excerpt: "Our proprietary methodology for turning bottom-quartile dealerships into top-decile performers. A deep dive into the operational playbook.",
+    title:
+      "The 90-Day Turnaround: How We Transform Underperforming Dealerships",
+    excerpt:
+      "Our proprietary methodology for turning bottom-quartile dealerships into top-decile performers. A deep dive into the operational playbook.",
     category: "Operations",
     date: "December 2024",
     readTime: "12 min read",
   },
-  {
-    slug: "ev-transition-dealership-opportunity",
-    title: "The EV Transition: Threat or Opportunity for Dealership Investors?",
-    excerpt: "Electric vehicles are reshaping automotive retail. We analyze why the transition actually creates more opportunities for well-positioned dealer groups.",
-    category: "Industry Trends",
-    date: "November 2024",
-    readTime: "10 min read",
-  },
-  {
-    slug: "franchise-dealership-economics-explained",
-    title: "Franchise Dealership Economics: Seven Profit Centers Explained",
-    excerpt: "Understanding the multi-layered revenue model that makes franchise dealerships one of the most resilient business models in America.",
-    category: "Education",
-    date: "October 2024",
-    readTime: "7 min read",
-  },
-  {
-    slug: "southeastern-us-dealership-market",
-    title: "Why the Southeastern U.S. Is the Best Market for Dealership Acquisitions",
-    excerpt: "Population growth, favorable regulations, and fragmented competition make the Southeast an ideal hunting ground for dealership acquisitions.",
-    category: "Market Analysis",
-    date: "September 2024",
-    readTime: "6 min read",
-  },
-  {
-    slug: "accredited-investor-guide-alternatives",
-    title: "The Accredited Investor's Guide to Alternative Auto Investments",
-    excerpt: "A comprehensive guide for accredited investors considering automotive retail as part of their alternative investment allocation.",
-    category: "Education",
-    date: "August 2024",
-    readTime: "15 min read",
-  },
 ];
 
-const categories = ["All", ...Array.from(new Set(articles.map((a) => a.category)))];
+const allArticles: Article[] = [
+  ...blogPosts.map((bp) => ({
+    slug: bp.slug,
+    title: bp.title,
+    excerpt: bp.excerpt,
+    category: bp.category,
+    date: bp.date,
+    readTime: bp.readTime,
+    heroImage: bp.heroImage.src,
+    author: bp.author,
+  })),
+  ...legacyArticles,
+];
+
+const categories = [
+  "All",
+  ...Array.from(new Set(allArticles.map((a) => a.category))),
+];
 
 export default function InsightsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
-  const { ref, isInView } = useScrollAnimation();
 
   const filtered =
     activeCategory === "All"
-      ? articles
-      : articles.filter((a) => a.category === activeCategory);
+      ? allArticles
+      : allArticles.filter((a) => a.category === activeCategory);
+
+  const featured = filtered[0];
+  const rest = filtered.slice(1);
 
   return (
     <PageLayout>
@@ -132,16 +126,68 @@ export default function InsightsPage() {
             ))}
           </div>
 
+          {/* Featured article — large card with hero image */}
+          {featured && featured.heroImage && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-12"
+            >
+              <Link
+                href={`/insights/${featured.slug}`}
+                className="group block rounded-2xl overflow-hidden bg-navy-900/50 border border-navy-800/50 hover:border-gold-400/30 transition-all duration-500"
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-2">
+                  <div className="relative h-64 lg:h-auto lg:min-h-[360px]">
+                    <Image
+                      src={featured.heroImage}
+                      alt={featured.title}
+                      fill
+                      className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.03]"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                  </div>
+                  <div className="p-8 md:p-12 flex flex-col justify-center">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="text-gold-400 font-mono text-xs tracking-wider uppercase">
+                        {featured.category}
+                      </span>
+                      <span className="text-navy-700">&middot;</span>
+                      <span className="text-navy-500 text-xs">
+                        {featured.readTime}
+                      </span>
+                    </div>
+                    <h2 className="font-display text-2xl md:text-3xl font-bold text-cream-50 mb-4 group-hover:text-gold-400 transition-colors leading-tight">
+                      {featured.title}
+                    </h2>
+                    <p className="text-navy-400 text-sm leading-relaxed mb-4">
+                      {featured.excerpt}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      {featured.author && (
+                        <span className="text-cream-200 text-xs font-medium">
+                          {featured.author}
+                        </span>
+                      )}
+                      <span className="text-navy-600 text-xs">
+                        {featured.date}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          )}
+
           {/* Article Grid */}
           <motion.div
-            ref={ref}
             variants={staggerContainer}
             initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
+            animate="visible"
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             <AnimatePresence mode="popLayout">
-              {filtered.map((article) => (
+              {(featured?.heroImage ? rest : filtered).map((article) => (
                 <motion.div
                   key={article.slug}
                   variants={staggerItem}
@@ -152,22 +198,46 @@ export default function InsightsPage() {
                 >
                   <Link
                     href={`/insights/${article.slug}`}
-                    className="block group p-8 rounded-2xl bg-navy-900/50 border border-navy-800/50 hover:border-gold-400/30 transition-all duration-500 h-full"
+                    className="block group rounded-2xl bg-navy-900/50 border border-navy-800/50 hover:border-gold-400/30 transition-all duration-500 h-full overflow-hidden"
                   >
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-gold-400 font-mono text-xs tracking-wider uppercase">
-                        {article.category}
-                      </span>
-                      <span className="text-navy-700">&middot;</span>
-                      <span className="text-navy-500 text-xs">{article.readTime}</span>
+                    {article.heroImage && (
+                      <div className="relative h-48 overflow-hidden">
+                        <Image
+                          src={article.heroImage}
+                          alt={article.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      </div>
+                    )}
+                    <div className="p-8">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-gold-400 font-mono text-xs tracking-wider uppercase">
+                          {article.category}
+                        </span>
+                        <span className="text-navy-700">&middot;</span>
+                        <span className="text-navy-500 text-xs">
+                          {article.readTime}
+                        </span>
+                      </div>
+                      <h3 className="font-display text-lg font-semibold text-cream-50 mb-3 group-hover:text-gold-400 transition-colors">
+                        {article.title}
+                      </h3>
+                      <p className="text-navy-400 text-sm leading-relaxed mb-4">
+                        {article.excerpt}
+                      </p>
+                      <div className="flex items-center gap-3">
+                        {article.author && (
+                          <span className="text-cream-200 text-xs font-medium">
+                            {article.author}
+                          </span>
+                        )}
+                        <span className="text-navy-500 text-xs">
+                          {article.date}
+                        </span>
+                      </div>
                     </div>
-                    <h3 className="font-display text-lg font-semibold text-cream-50 mb-3 group-hover:text-gold-400 transition-colors">
-                      {article.title}
-                    </h3>
-                    <p className="text-navy-400 text-sm leading-relaxed mb-4">
-                      {article.excerpt}
-                    </p>
-                    <span className="text-navy-500 text-xs">{article.date}</span>
                   </Link>
                 </motion.div>
               ))}
