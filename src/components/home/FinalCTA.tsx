@@ -50,8 +50,8 @@ export default function FinalCTA() {
           <MagneticButton href="/contact" variant="primary" size="lg">
             Request Private Consultation
           </MagneticButton>
-          <MagneticButton href="/calculator" variant="outline" size="lg">
-            Model Your Investment
+          <MagneticButton href="/opportunity" variant="outline" size="lg">
+            View the Opportunity
           </MagneticButton>
         </motion.div>
 

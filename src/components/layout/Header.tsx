@@ -82,14 +82,6 @@ export default function Header() {
 
           <div className="hidden lg:flex items-center gap-4">
             <Link
-              href="/calculator"
-              className={`text-sm hover:text-gold-300 transition-colors duration-300 ${
-                darkNav ? "text-gold-400" : "text-gold-300"
-              }`}
-            >
-              Calculator
-            </Link>
-            <Link
               href="/contact"
               className="px-6 py-2.5 bg-gradient-to-r from-gold-500 to-gold-400 text-[#1a1a2e] font-display font-medium text-sm rounded-lg hover:from-gold-400 hover:to-gold-300 transition-all duration-300 shadow-lg shadow-gold-500/20"
             >

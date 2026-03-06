@@ -7,7 +7,7 @@ import GoldDivider from "@/components/ui/GoldDivider";
 const footerLinks = {
   Investment: [
     { label: "Opportunity", href: "/opportunity" },
-    { label: "Calculator", href: "/calculator" },
+    { label: "Media", href: "/media" },
     { label: "Portfolio", href: "/portfolio" },
     { label: "FAQ", href: "/faq" },
   ],

@@ -57,7 +57,7 @@ export default function ThesisCards() {
         <SectionHeader
           label="Investment Thesis"
           title="Why Automotive Retail"
-          subtitle="A $1.2 trillion industry with structural advantages that institutional capital is only beginning to discover."
+          subtitle="A $1.2 trillion industry with structural advantages that institutional capital is only beginning to discover.*"
         />
 
         <motion.div
@@ -85,6 +85,10 @@ export default function ThesisCards() {
             </motion.div>
           ))}
         </motion.div>
+
+        <p className="text-navy-600 text-xs mt-6 text-center">
+          *Source: NADA Annual Data Report 2024
+        </p>
       </div>
     </section>
   );

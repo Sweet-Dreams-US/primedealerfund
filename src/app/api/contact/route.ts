@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Forward to Google Apps Script
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/sweetdreamsmusic.com/s/AKfycbxeBJ7lABLRHUIZKkHEBcljPSArBOgt9mUM2thHkyaYqHNIGOTqqQInAJfior8C_lxSaw/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/sweetdreams.us/s/AKfycbxeBJ7lABLRHUIZKkHEBcljPSArBOgt9mUM2thHkyaYqHNIGOTqqQInAJfior8C_lxSaw/exec";
     {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",

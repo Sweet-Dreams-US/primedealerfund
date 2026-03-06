@@ -131,6 +131,8 @@ function ComparisonTable() {
         </motion.div>
         <p className="text-navy-500 text-xs mt-4 text-center">
           Returns are targets only, not guaranteed. Past performance does not indicate future results.
+          <br />
+          <span className="text-navy-600">Sources: S&amp;P 500 historical avg (S&amp;P Global); REIT avg (Nareit); PE avg (Cambridge Associates); Treasury yield (U.S. Dept. of Treasury)</span>
         </p>
       </div>
     </section>
@@ -202,6 +204,14 @@ export default function OpportunityPage() {
             The U.S. automotive retail market is highly fragmented — the top 10 dealer groups
             control less than 10% of the market. Prime Dealer Equity Fund is positioned to capitalize
             on this once-in-a-generation consolidation opportunity, targeting an 8% annual distribution.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-navy-600 text-xs mt-4 max-w-xl mx-auto"
+          >
+            Sources: NADA Annual Data Report 2024; Kerrigan Advisors 2024 Blue Sky Report
           </motion.p>
         </div>
       </section>

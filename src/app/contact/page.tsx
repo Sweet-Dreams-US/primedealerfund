@@ -18,6 +18,10 @@ const contactSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zip: z.string().optional(),
   accredited: z.enum(["yes", "no", "unsure"], { message: "Please select one" }),
   investmentRange: z.string().min(1, "Please select an investment range"),
   message: z.string().optional(),
@@ -297,6 +301,42 @@ export default function ContactPage() {
                         type="tel"
                         className={inputStyles}
                         placeholder="(555) 123-4567"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-navy-400 mb-2">Street Address</label>
+                    <input
+                      {...register("address")}
+                      className={inputStyles}
+                      placeholder="123 Main Street"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="col-span-2">
+                      <label className="block text-sm text-navy-400 mb-2">City</label>
+                      <input
+                        {...register("city")}
+                        className={inputStyles}
+                        placeholder="Fort Wayne"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-navy-400 mb-2">State</label>
+                      <input
+                        {...register("state")}
+                        className={inputStyles}
+                        placeholder="IN"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-navy-400 mb-2">ZIP</label>
+                      <input
+                        {...register("zip")}
+                        className={inputStyles}
+                        placeholder="46802"
                       />
                     </div>
                   </div>
