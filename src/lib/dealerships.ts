@@ -96,55 +96,6 @@ export const dealerships: Dealership[] = [
       "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Streetsboro/streetsboroteamphoto.webp",
     ],
   },
-  {
-    name: "Spirit Lake Ford CDJR",
-    slug: "spirit-lake-ford-cdjr",
-    location: "Spirit Lake, IA",
-    state: "IA",
-    brands: ["Ford", "Chrysler", "Dodge", "Jeep", "Ram"],
-    status: "operational",
-    description:
-      "A multi-brand powerhouse in northwest Iowa's lake country, offering Ford and CDJR lineups. Strong community presence with a loyal customer base across the Iowa Great Lakes region.",
-    disclaimer:
-      "This dealership is owned and operated by Coleman Automotive and not owned by Prime Dealer Equity Fund.",
-    website: "https://www.spiritlakefordcdjr.com/",
-    heroImage: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/dronespiritlakestorefront.png",
-    gallery: [
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/dronespiritlakestorefront.png",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakestorefront.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakeamericanflags.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakefulllotview.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakesideview.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/broncospiritlake.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/mustangcolemanspiritlake.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/colemanplatebronco.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/fordsignwateroncars.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/colemancarparts.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakedron1.png",
-    ],
-  },
-  {
-    name: "Estherville Chevy GMC",
-    slug: "estherville-chevy-gmc",
-    location: "Estherville, IA",
-    state: "IA",
-    brands: ["Chevrolet", "GMC"],
-    status: "operational",
-    description:
-      "A Chevrolet and GMC franchise serving the Estherville community and surrounding northwest Iowa market with sales, service, and parts.",
-    disclaimer:
-      "This dealership is owned and operated by Coleman Automotive and not owned by Prime Dealer Equity Fund.",
-    website: "https://www.esthervillechevygmc.com/",
-    heroImage: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/frontofstore.webp",
-    gallery: [
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/frontofstore.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/esthervillesign.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/servicebays.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/serviceoutside.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/carinside.webp",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/carinside2.webp",
-    ],
-  },
 ];
 
 export function getDealershipBySlug(slug: string): Dealership | undefined {
@@ -153,14 +104,14 @@ export function getDealershipBySlug(slug: string): Dealership | undefined {
 
 /** Curated set of best photos across all dealerships for the homepage gallery */
 export const galleryHighlights = [
-  "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/dronespiritlakestorefront.png",
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/mtpleasantdrone.png",
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/FrontofStoreNissanWarsaw.webp",
-  "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakeamericanflags.webp",
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/MtPleasantFront.webp",
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/NissanWarsawMainSignwithTruck.webp",
-  "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/broncospiritlake.webp",
+  "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/ChargerOutFront.webp",
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/MTPleasentVette.webp",
+  "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Streetsboro/streetsborofrontofstore.webp",
+  "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/LEmars/frontofstore.webp",
 ];
 
 export const stateLocations: Record<string, { x: string; y: string }> = {

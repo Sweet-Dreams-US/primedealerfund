@@ -58,10 +58,10 @@ export const blogPosts: BlogPost[] = [
     date: "March 10, 2026",
     readTime: "9 min read",
     heroImage: {
-      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/dronespiritlakestorefront.png",
-      alt: "Drone shot of Spirit Lake Ford dealership at Spirit Lake, Iowa",
+      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/mtpleasantdrone.png",
+      alt: "Aerial view of Mt. Pleasant Chevy GMC CDJR dealership in Iowa",
       caption:
-        "Spirit Lake Ford, Spirit Lake, Iowa. Photo: Sweet Dreams US LLC",
+        "Mt. Pleasant Chevy GMC CDJR, Mt. Pleasant, Iowa. Photo: Sweet Dreams US LLC",
     },
     excerpt:
       "The average franchised dealership sits on land it typically owns outright, operates a parts and service department that generates revenue in any economy, and holds a franchise agreement protected by state law. Right now, thousands are coming to market.",
@@ -113,8 +113,8 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/servicebays.webp",
-        alt: "Service bay at a Coleman Automotive dealership with technician working",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/NissanWarsawCarsinShowroom.webp",
+        alt: "Showroom at Nissan Warsaw, a Coleman Automotive dealership",
         caption:
           "Fixed operations at a Coleman Automotive dealership. The service drive generates revenue regardless of whether a single new car sells that month. Photo: Sweet Dreams US LLC",
       },
@@ -505,7 +505,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The Coleman Automotive Group operates a five-phase turnaround process that begins the day an acquisition closes and concludes with a dealership that runs autonomously, profitably, and on verified data rather than inherited assumptions. This is not a theory. It is the operational playbook that transformed Spirit Lake Ford from 215 vehicles a year under the previous owner to over 750 under Coleman ownership, and it is the same process applied to every subsequent acquisition in the group\u2019s portfolio.",
+        text: "The Coleman Automotive Group operates a five-phase turnaround process that begins the day an acquisition closes and concludes with a dealership that runs autonomously, profitably, and on verified data rather than inherited assumptions. This is not a theory. It is the operational playbook that has transformed underperforming stores from sub-200 units a year to over 750 under Coleman ownership, and it is the same process applied to every subsequent acquisition in the group\u2019s portfolio.",
       },
       {
         type: "paragraph",
@@ -566,8 +566,8 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/carinside.webp",
-        alt: "Back office operations at a Coleman Automotive dealership",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/NissanWarsawSticker.webp",
+        alt: "Detail at a Coleman Automotive dealership",
         caption:
           "Vendor contracts, software subscriptions, and lead sources are audited line by line. What doesn\u2019t prove ROI gets cut. Photo: Sweet Dreams US LLC",
       },
@@ -874,8 +874,8 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakefulllotview.webp",
-        alt: "Full lot view of a Coleman Automotive dealership showing the scale of local operations",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/MtPleasantFront.webp",
+        alt: "Front view of Mt. Pleasant dealership showing the scale of local operations",
         caption:
           "Coleman General Managers operate with full autonomy within a defined framework of core values and minimum performance standards. Photo: Sweet Dreams US LLC",
       },
@@ -966,10 +966,10 @@ export const blogPosts: BlogPost[] = [
     date: "April 7, 2026",
     readTime: "11 min read",
     heroImage: {
-      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/serviceoutside.webp",
-      alt: "The service department at a Coleman Automotive dealership with active bays and technicians",
+      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/GMCTrucksandSign.webp",
+      alt: "GMC trucks at a Coleman Automotive dealership with signage",
       caption:
-        "The service department at a Coleman Automotive dealership. Fixed operations generate nearly half of total dealership gross profit \u2014 on roughly 12% of total revenue. Photo: Sweet Dreams US LLC",
+        "A Coleman Automotive dealership. Fixed operations generate nearly half of total dealership gross profit \u2014 on roughly 12% of total revenue. Photo: Sweet Dreams US LLC",
     },
     excerpt:
       "The showroom is the most visible part of the operation. It is also the most volatile. The department that actually pays for the building is behind the double doors, in the service bays most customers never think about.",
@@ -1050,8 +1050,8 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/colemancarparts.webp",
-        alt: "Parts department at a Coleman Automotive dealership with organized OEM parts inventory",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/MtPleasentGMCSign.webp",
+        alt: "GMC signage at a Coleman Automotive dealership",
         caption:
           "The parts department is the supply chain behind every repair order \u2014 and a high-margin profit center in its own right. Photo: Sweet Dreams US LLC",
       },
@@ -1115,8 +1115,8 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/carinside2.webp",
-        alt: "Customer interaction at the service drive of a Coleman Automotive dealership",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/MtPleasentVetterInterrior.webp",
+        alt: "Vehicle interior at a Coleman Automotive dealership",
         caption:
           "Every vehicle that enters the service drive is a potential trade-in, a future sale, and a retention data point. Photo: Sweet Dreams US LLC",
       },
@@ -1384,8 +1384,8 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakeamericanflags.webp",
-        alt: "Coleman Automotive dealership with American flags, conveying trust and commitment",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/CDJRsign.webp",
+        alt: "CDJR signage at a Coleman Automotive dealership",
         caption:
           "Protecting investor capital is not just a principle \u2014 it is a practice that costs real money and requires real conviction. Photo: Sweet Dreams US LLC",
       },
@@ -1552,8 +1552,8 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakedron1.png",
-        alt: "Aerial drone view of a Coleman Automotive dealership showing the full property footprint",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Streetsboro/streetsborofrontofstore.webp",
+        alt: "Nissan Streetsboro dealership storefront",
         caption:
           "Every fund investment flows into a specific LLC owning the physical dealership and its real estate \u2014 tangible assets with inherent liquidation value. Photo: Sweet Dreams US LLC",
       },
@@ -1692,13 +1692,13 @@ export const blogPosts: BlogPost[] = [
     date: "April 28, 2026",
     readTime: "9 min read",
     heroImage: {
-      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakesideview.webp",
-      alt: "A Coleman Automotive dealership in rural Iowa with the surrounding small-town landscape visible",
+      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/LEmars/frontofstore.webp",
+      alt: "Le Mars Chevy GMC CDJR dealership in rural Iowa",
       caption:
-        "A Coleman Automotive dealership in rural Iowa. Lower overhead, deeper customer relationships, and geographic insulation from price competition create a margin profile that most metro stores cannot match. Photo: Sweet Dreams US LLC",
+        "Le Mars Chevy GMC CDJR in rural Iowa. Lower overhead, deeper customer relationships, and geographic insulation from price competition create a margin profile that most metro stores cannot match. Photo: Sweet Dreams US LLC",
     },
     excerpt:
-      "The stores in the Coleman Automotive portfolio are not on metro auto rows. They are in Spirit Lake, Iowa. Estherville, Iowa. Warsaw, Indiana. And the economics that make them defensible are structural, not circumstantial.",
+      "The stores in the Coleman Automotive portfolio are not on metro auto rows. They are in Warsaw, Indiana. Mt. Pleasant, Iowa. Le Mars, Iowa. And the economics that make them defensible are structural, not circumstantial.",
     content: [
       {
         type: "paragraph",
@@ -1706,7 +1706,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The stores in the Coleman Automotive portfolio are not located on metro auto rows. They are located in Spirit Lake, Iowa. Estherville, Iowa. Warsaw, Indiana. Towns where the nearest same-brand competitor is fifty to a hundred miles away. Towns where the dealership is a primary employer, a community institution, and the only qualified service provider for an entire region.",
+        text: "The stores in the Coleman Automotive portfolio are not located on metro auto rows. They are located in Warsaw, Indiana. Mt. Pleasant, Iowa. Le Mars, Iowa. Towns where the nearest same-brand competitor is fifty to a hundred miles away. Towns where the dealership is a primary employer, a community institution, and the only qualified service provider for an entire region.",
       },
       {
         type: "paragraph",
@@ -1762,8 +1762,8 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/esthervillesign.webp",
-        alt: "Service signage at a Coleman Automotive dealership in rural Iowa",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/LEmars/teamatlemars.webp",
+        alt: "Team at Le Mars Chevy GMC CDJR dealership in rural Iowa",
         caption:
           "In rural markets, the service department is not just a profit center \u2014 it is often the only option for certified maintenance within the region. That captive demand drives retention rates metro stores cannot touch. Photo: Sweet Dreams US LLC",
       },
@@ -2154,8 +2154,8 @@ export const blogPosts: BlogPost[] = [
     date: "May 12, 2026",
     readTime: "10 min read",
     heroImage: {
-      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/spiritlakestorefront.webp",
-      alt: "Coleman Automotive dealership storefront representing the portfolio generating retained earnings",
+      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/NissanWarsawMainSignwithTruck.webp",
+      alt: "Nissan Warsaw dealership with signage and inventory",
       caption:
         "Each profitable dealership in the Coleman Automotive portfolio generates the retained earnings that fund the next acquisition \u2014 compounding growth without diluting early investors. Photo: Sweet Dreams US LLC",
     },

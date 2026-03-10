@@ -17,24 +17,16 @@ const timeline = [
       "Kyle Coleman identifies a massive opportunity in the fragmented automotive dealership market. With 20+ years of automotive retail and B2B scaling experience, he begins building the operational playbook that will define Coleman Automotive Group.",
   },
   {
-    year: "2022",
-    title: "Spirit Lake Ford CDJR",
+    year: "2022\u20132023",
+    title: "Building the Playbook",
     description:
-      "Coleman Automotive acquires Spirit Lake Ford CDJR in northwest Iowa\u2019s lake country. A multi-brand powerhouse carrying Ford, Chrysler, Dodge, Jeep, and Ram \u2014 the first store to prove the turnaround methodology at scale.",
-    image: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/SpirirtLake/dronespiritlakestorefront.png",
-  },
-  {
-    year: "2023",
-    title: "Estherville Chevy GMC",
-    description:
-      "Estherville Chevy GMC is acquired, expanding Coleman\u2019s Iowa footprint. A Chevrolet and GMC franchise serving northwest Iowa with sales, service, and parts. Ralph Marcuccilli joins as strategic advisor.",
-    image: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Estherville/frontofstore.webp",
+      "Kyle Coleman acquires and turns around multiple franchise dealerships in the Midwest, proving the operational methodology and building the track record that will become the foundation for institutional-scale deployment.",
   },
   {
     year: "2024",
     title: "Fund Formation & Rapid Expansion",
     description:
-      "Prime Dealer Equity Fund is established to bring institutional capital to automotive retail. Three dealerships acquired in rapid succession: Nissan Warsaw (IN), Mt. Pleasant Chevy GMC CDJR (IA), and Le Mars Chevy GMC CDJR (IA).",
+      "Prime Dealer Equity Fund is established to bring institutional capital to automotive retail. Three dealerships acquired in rapid succession: Nissan Warsaw (IN), Mt. Pleasant Chevy GMC CDJR (IA), and Le Mars Chevy GMC CDJR (IA). Ralph Marcuccilli joins as strategic advisor.",
     image: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/FrontofStoreNissanWarsaw.webp",
   },
   {
