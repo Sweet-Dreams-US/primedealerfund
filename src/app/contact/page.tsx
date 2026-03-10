@@ -218,17 +218,20 @@ export default function ContactPage() {
                 </motion.div>
               ))}
 
-              <div className="p-6 rounded-2xl bg-navy-900/50 border border-navy-800/50">
+              <a
+                href="/schedule"
+                className="block p-6 rounded-2xl bg-navy-900/50 border border-navy-800/50 hover:border-gold-400/30 transition-all group"
+              >
                 <h3 className="font-display text-lg font-semibold text-cream-50 mb-2">
                   Schedule a Call
                 </h3>
                 <p className="text-navy-400 text-sm mb-4">
                   Book a 30-minute consultation with our investor relations team.
                 </p>
-                <p className="text-gold-400 text-sm font-mono">
-                  Calendar booking coming soon
-                </p>
-              </div>
+                <span className="text-gold-400 text-sm font-mono group-hover:text-gold-300 transition-colors">
+                  Book Now &rarr;
+                </span>
+              </a>
             </motion.div>
 
             {/* Form */}
