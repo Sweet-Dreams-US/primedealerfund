@@ -70,20 +70,28 @@ export default function Footer() {
 
         <div className="space-y-4">
           <p className="text-[#6b7280] text-xs leading-relaxed">
-            <strong className="text-[#9ca3af]">Important Disclaimer:</strong> The
-            information provided in this Investment Summary does not constitute or
-            form a part of any offer to sell or issue, or the solicitation of any
-            offer to purchase, subscribe for, or otherwise acquire, any securities
-            in the U.S. or in any jurisdiction in which such an offer or
-            solicitation would be unlawful. The General Partner (GP) is the
-            investment advisor to the private equity special purpose vehicle (SPV)
-            that operates under an exemption from registration in the State of
-            Indiana, where its principal office is located.
+            <strong className="text-[#9ca3af]">Important Legal Notice:</strong> This
+            website and all materials herein are for informational purposes only and
+            do not constitute an offer to sell or a solicitation of an offer to
+            purchase any securities. Any offering of interests in Prime Dealer
+            Equity Fund is made only to accredited investors as defined in Rule 501
+            of Regulation D, pursuant to a Private Placement Memorandum (PPM).
           </p>
           <p className="text-[#6b7280] text-xs leading-relaxed">
-            Securities offered through applicable exemptions under Regulation D of
-            the Securities Act of 1933, as amended. Available only to accredited
-            investors as defined in Rule 501 of Regulation D.
+            Investing in private equity involves significant risk, including the
+            potential loss of principal. Past performance is not indicative of
+            future results. Projected returns are targets only and are not
+            guaranteed. Operational results cited on this website reflect the
+            performance of specific Coleman Automotive Group dealerships and are
+            provided as evidence of the operator&apos;s execution capabilities
+            only. These results do not represent past or projected fund returns.
+          </p>
+          <p className="text-[#6b7280] text-xs leading-relaxed">
+            Prospective investors should review the PPM in full and consult with
+            their own legal, tax, and financial advisors before making any
+            investment decision. Securities offered pursuant to Regulation D, Rule
+            506(c) of the Securities Act of 1933, as amended. Available only to
+            accredited investors.
           </p>
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
             <p className="text-[#4b5563] text-xs">

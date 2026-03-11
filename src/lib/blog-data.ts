@@ -663,7 +663,7 @@ export const blogPosts: BlogPost[] = [
         type: "callout-prime",
         lines: [
           "The 90-day turnaround is the mechanism that protects investor capital. Every dollar deployed by Prime Dealer Equity Fund is subjected to this operational process \u2014 verified assets on day one, optimized cost structures by day 45, revenue acceleration by day 75, and autonomous operations by day 90.",
-          "The targeted 8% annual distribution is not a projection built on hope. It is built on execution.",
+          "The targeted 8% annual distribution is grounded in operational discipline and a repeatable turnaround methodology \u2014 though actual results may vary based on dealership performance and market conditions.",
         ],
         link: {
           text: "Learn how the fund structure works",
@@ -1600,7 +1600,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "This is the structural mechanism that transforms the fund from a yield instrument into a long-term wealth creation vehicle. The investor earns their capital back, collects an 8% yield during the recovery phase, and then holds a permanent equity position in a growing enterprise \u2014 all from a single initial allocation.",
+        text: "This is the structural mechanism that transforms the fund from a yield instrument into a long-term wealth creation vehicle. The investor targets full capital recovery, a targeted 8% annual yield during the recovery phase, and then holds a permanent equity position in a growing enterprise \u2014 all from a single initial allocation. Actual returns may vary and are not guaranteed.",
       },
       {
         type: "subheading",
