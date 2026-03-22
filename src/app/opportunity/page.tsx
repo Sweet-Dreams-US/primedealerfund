@@ -203,7 +203,7 @@ export default function OpportunityPage() {
           >
             The U.S. automotive retail market is highly fragmented — the top 10 dealer groups
             control less than 10% of the market. Prime Dealer Equity Fund is positioned to capitalize
-            on this once-in-a-generation investment opportunity, while targeting an 8% annual distribution.
+            on this once-in-a-generation investment opportunity, while targeting a minimum of 8% annual distribution.
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}

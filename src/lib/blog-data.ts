@@ -663,7 +663,7 @@ export const blogPosts: BlogPost[] = [
         type: "callout-prime",
         lines: [
           "The 90-day turnaround is the mechanism that protects investor capital. Every dollar deployed by Prime Dealer Equity Fund is subjected to this operational process \u2014 verified assets on day one, optimized cost structures by day 45, revenue acceleration by day 75, and autonomous operations by day 90.",
-          "The Fund\u2019s targeted 8% annual distribution is grounded in revenue expectations based on operational discipline and a repeatable turnaround methodology \u2014 though actual results may vary based on dealership performance and market conditions.",
+          "The Fund\u2019s targeted minimum of 8% annual distribution is grounded in revenue expectations based on operational discipline and a repeatable turnaround methodology \u2014 though actual results may vary based on dealership performance and market conditions.",
         ],
         link: {
           text: "Learn how the fund structure works",
@@ -712,7 +712,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Prime Dealer Equity Fund targets an 8% annual distribution with priority capital return projected within five years. That timeline only works if the capital deployed into each dealership acquisition begins generating cash flow quickly \u2014 not in a year, not after a prolonged stabilization period, but within the first quarter of dealership control. The 90-day turnaround is what makes that math work. It compresses the time between capital deployment and cash flow generation, which is the single most important variable in the Fund\u2019s investment strategy for returns on investment.",
+        text: "Prime Dealer Equity Fund targets a minimum of 8% annual distribution with priority capital return projected within five years. That timeline only works if the capital deployed into each dealership acquisition begins generating cash flow quickly \u2014 not in a year, not after a prolonged stabilization period, but within the first quarter of dealership control. The 90-day turnaround is what makes that math work. It compresses the time between capital deployment and cash flow generation, which is the single most important variable in the Fund\u2019s investment strategy for returns on investment.",
       },
       {
         type: "paragraph",
@@ -1544,7 +1544,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Tier 2 \u2014 Preferred Return. Alongside the return of capital, the fund targets an 8% annual yield. This functions as the hurdle rate \u2014 the minimum performance threshold that must be cleared before the operator participates in any upside. In institutional private equity, an 8% preferred return is the standard floor that LPs expect before a GP earns carried interest. The Prime Dealer Equity Fund benchmarks against that institutional standard.",
+        text: "Tier 2 \u2014 Preferred Return. Alongside the return of capital, the fund targets a minimum of 8% annual yield. This functions as the hurdle rate \u2014 the minimum performance threshold that must be cleared before the operator participates in any upside. In institutional private equity, an 8% preferred return is the standard floor that LPs expect before a GP earns carried interest. The Prime Dealer Equity Fund benchmarks against that institutional standard.",
       },
       {
         type: "paragraph",
@@ -1566,7 +1566,7 @@ export const blogPosts: BlogPost[] = [
         title: "The Distribution Waterfall",
         lines: [
           "Tier 1: 100% of cash flow \u2192 investors (until full capital return, projected within 5 years)",
-          "Tier 2: 8% annual preferred return (hurdle rate)",
+          "Tier 2: Target minimum of 8% annual preferred return (hurdle rate)",
           "Tier 3: 35% residual equity retained by investors after capital return",
           "The operator does not participate in upside until investor principal is returned.",
         ],
@@ -1600,7 +1600,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "This is the structural mechanism that transforms the fund from a yield instrument into a long-term wealth creation vehicle. The investor targets full capital recovery, a targeted 8% annual yield during the recovery phase, and then holds a permanent equity position in a growing enterprise \u2014 all from a single initial allocation. Actual returns may vary and are not guaranteed.",
+        text: "This is the structural mechanism that transforms the fund from a yield instrument into a long-term wealth creation vehicle. The investor targets full capital recovery, a targeted minimum of 8% annual yield during the recovery phase, and then holds a permanent equity position in a growing enterprise \u2014 all from a single initial allocation. Actual returns may vary and are not guaranteed.",
       },
       {
         type: "subheading",
@@ -2284,7 +2284,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "When an early investor commits capital to Prime Dealer Equity Fund, they receive the 100% priority return of capital, the 8% preferred yield, and the 35% residual equity stake described in the fund waterfall structure. That 35% residual represents their collective ownership interest in the acquiring entity \u2014 the holding company that owns the dealerships.",
+        text: "When an early investor commits capital to Prime Dealer Equity Fund, they are entitled to the 100% priority return of capital, a targeted minimum of 8% preferred yield, and the 35% residual equity stake described in the fund waterfall structure. That 35% residual represents their collective ownership interest in the acquiring entity \u2014 the holding company that owns the dealerships.",
       },
       {
         type: "paragraph",
