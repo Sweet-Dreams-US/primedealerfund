@@ -18,20 +18,20 @@ const fundTerms = [
 ];
 
 const comparisonData = [
-  { asset: "Auto Dealerships", yield: "21-31%", risk: "Medium", liquidity: "Low", correlation: "Low" },
+  { asset: "Private Fund invested in Auto Dealerships", yield: "21-31%", risk: "Medium", liquidity: "Low", correlation: "Low" },
   { asset: "S&P 500", yield: "8-10%", risk: "High", liquidity: "High", correlation: "High" },
   { asset: "Real Estate (REIT)", yield: "6-10%", risk: "Medium", liquidity: "Medium", correlation: "Medium" },
-  { asset: "Private Equity", yield: "15-20%", risk: "High", liquidity: "Very Low", correlation: "Medium" },
+  { asset: "Private Equity (non-auto)", yield: "15-20%", risk: "High", liquidity: "Very Low", correlation: "Medium" },
   { asset: "Bonds (10Y Treasury)", yield: "4-5%", risk: "Low", liquidity: "High", correlation: "Low" },
 ];
 
 const riskFactors = [
-  "Economic downturns may reduce vehicle sales volume",
-  "OEM relationship and franchise agreement risks",
-  "Interest rate changes affecting floor plan costs",
-  "Regulatory changes in automotive retail",
-  "Key person dependency on management team",
-  "Illiquid investment with limited transferability",
+  "Economic downturns may reduce vehicle sales volume at dealerships adversely affecting cash flow to the Fund",
+  "Original equipment manufacturer (OEM) relationship and franchise agreement risks at dealerships adversely affecting cash flow to the Fund",
+  "Interest rate changes affecting floor plan costs at dealerships adversely affecting cash flow to the Fund",
+  "Regulatory changes in automotive retail adversely affecting cash flow to the Fund",
+  "Key person dependency on co-investor's management team adversely affecting cash flow to the Fund",
+  "A Fund interest is an illiquid equity investment with limited transferability",
 ];
 
 function FundStructure() {
@@ -42,7 +42,7 @@ function FundStructure() {
         <SectionHeader
           label="Fund Structure"
           title="Investment Terms"
-          subtitle="Structured to align manager and investor interests with institutional-grade terms."
+          subtitle="Structured to align the interests of Prime Management Partners, LLC (the Fund's Manager), its co-investor and Fund investors' interests while targeting an attractive return."
         />
         <motion.div
           ref={ref}
@@ -79,7 +79,7 @@ function ComparisonTable() {
         <SectionHeader
           label="Comparison"
           title="How We Compare"
-          subtitle="Auto dealership investments offer a compelling risk-return profile versus traditional alternatives."
+          subtitle="The Prime Dealer Equity Fund offers investors a compelling risk-return profile versus traditional investments."
         />
         <motion.div
           ref={ref}
@@ -147,7 +147,7 @@ function RiskFactors() {
         <SectionHeader
           label="Disclosures"
           title="Risk Factors"
-          subtitle="All investments carry risk. We believe in full transparency with our investors."
+          subtitle="All investments carry risk. We commit to transparency with our investors."
         />
         <motion.div
           ref={ref}
@@ -183,7 +183,7 @@ export default function OpportunityPage() {
             transition={{ duration: 0.6 }}
             className="inline-block text-gold-400 font-mono text-sm tracking-[0.2em] uppercase mb-6"
           >
-            The Opportunity
+            The Fund&apos;s Investment Opportunity
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
@@ -203,7 +203,7 @@ export default function OpportunityPage() {
           >
             The U.S. automotive retail market is highly fragmented — the top 10 dealer groups
             control less than 10% of the market. Prime Dealer Equity Fund is positioned to capitalize
-            on this once-in-a-generation consolidation opportunity, targeting an 8% annual distribution.
+            on this once-in-a-generation investment opportunity, while targeting an 8% annual distribution.
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}
@@ -227,7 +227,7 @@ export default function OpportunityPage() {
             Ready to Learn More?
           </h2>
           <p className="text-navy-300 mb-8">
-            Request our full investment memorandum and schedule a consultation with our team.
+            Request our private placement memorandum for our Fund and schedule a consultation with our investor relations team.
           </p>
           <MagneticButton href="/contact" variant="primary" size="lg">
             Request Investment Materials

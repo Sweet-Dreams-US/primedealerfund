@@ -359,7 +359,7 @@ export default function DealershipPage() {
             Invest in the Portfolio
           </h2>
           <p className="text-navy-300 mb-8">
-            {dealership.name} is one of six dealerships in the Prime Dealer Equity Fund.
+            {dealership.name} is one of six dealerships invested in by the Prime Dealer Equity Fund.
             Request detailed fund performance data and portfolio metrics.
           </p>
           <MagneticButton href="/contact" variant="primary" size="lg">
