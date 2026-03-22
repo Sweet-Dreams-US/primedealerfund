@@ -2,15 +2,46 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase";
 import { getInboxMessages } from "@/lib/microsoft-graph";
 
-// POST — Sync recent Outlook emails to communication_log
-// Cross-references email addresses with investor database
-export async function POST() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyMsg = any;
+
+// Helper to fetch multiple pages of emails
+async function fetchAllMessages(folder: string, maxPages: number = 5): Promise<AnyMsg[]> {
+  const allMessages: AnyMsg[] = [];
+  const pageSize = 100; // Max per page for Graph API
+
+  for (let page = 0; page < maxPages; page++) {
+    try {
+      const result = await getInboxMessages({
+        folder,
+        top: pageSize,
+        skip: page * pageSize,
+      });
+      allMessages.push(...result.messages);
+      // Stop if we got fewer than requested (no more pages)
+      if (result.messages.length < pageSize) break;
+    } catch {
+      break;
+    }
+  }
+  return allMessages;
+}
+
+// POST — Deep sync Outlook emails to communication_log
+// Scans sent + inbox, matches to investors, creates logs, updates ball-in-court
+export async function POST(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const deep = searchParams.get("deep") === "true"; // deep=true for full scan
+    const maxPages = deep ? 10 : 3; // 1000 emails deep vs 300 normal
+
     const supabase = createServerClient();
 
-    // Fetch recent sent emails from Ralph's Outlook (last 3 days)
-    const sentResult = await getInboxMessages({ folder: "sentitems", top: 50 });
-    const inboxResult = await getInboxMessages({ folder: "inbox", top: 50 });
+    // Fetch emails from Outlook — sent items and inbox
+    const [sentMessages, inboxMessages] = await Promise.all([
+      fetchAllMessages("sentitems", maxPages),
+      fetchAllMessages("inbox", maxPages),
+    ]);
 
     // Get all investor emails for matching
     const { data: investors } = await supabase
@@ -31,15 +62,15 @@ export async function POST() {
       }
     }
 
-    // Get existing comm log entries to avoid duplicates
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    // Get ALL existing comm log subjects to avoid duplicates (not just 3 days)
     const { data: existingComms } = await supabase
       .from("communication_log")
-      .select("subject")
-      .gte("date", threeDaysAgo.toISOString().split("T")[0]);
+      .select("investor_id, subject, date");
 
-    const existingSubjects = new Set((existingComms || []).map((c) => c.subject));
+    // Build a dedup key: investor_id + subject + date
+    const existingKeys = new Set(
+      (existingComms || []).map((c) => `${c.investor_id}|${c.subject}|${c.date}`)
+    );
 
     const newEntries: {
       investor_id: string;
@@ -48,97 +79,151 @@ export async function POST() {
       subject: string;
       response: string;
       next_step: string;
+      direction: string;
     }[] = [];
 
+    // Track per-investor latest activity for ball-in-court
+    const investorActivity = new Map<string, { lastSent: string | null; lastReceived: string | null }>();
+
     // Process sent emails — match recipients to investors
-    for (const msg of sentResult.messages) {
+    for (const msg of sentMessages) {
       for (const recipient of msg.toRecipients || []) {
         const addr = recipient.emailAddress?.address?.toLowerCase();
         if (!addr) continue;
         const investor = emailToInvestor.get(addr);
         if (!investor) continue;
 
-        const subjectKey = `[Outlook Sent] ${msg.subject}`;
-        if (existingSubjects.has(subjectKey)) continue;
-
-        const date = (msg.sentDateTime || msg.receivedDateTime || "").split("T")[0];
+        const sentDT = msg.sentDateTime || msg.receivedDateTime || "";
+        const date = sentDT.split("T")[0];
         if (!date) continue;
 
+        const subject = msg.subject || "(no subject)";
+        const subjectKey = `[Outlook Sent] ${subject}`;
+        const dedupKey = `${investor.id}|${subjectKey}|${date}`;
+
+        if (!existingKeys.has(dedupKey)) {
+          newEntries.push({
+            investor_id: investor.id,
+            date,
+            type: "Email",
+            subject: subjectKey,
+            response: "Sent",
+            next_step: "Await response",
+            direction: "outbound",
+          });
+          existingKeys.add(dedupKey);
+        }
+
+        // Track latest sent date per investor
+        const activity = investorActivity.get(investor.id) || { lastSent: null, lastReceived: null };
+        if (!activity.lastSent || sentDT > activity.lastSent) activity.lastSent = sentDT;
+        investorActivity.set(investor.id, activity);
+      }
+    }
+
+    // Process inbox emails — match senders to investors
+    for (const msg of inboxMessages) {
+      const senderAddr = (msg.from?.emailAddress?.address || "").toLowerCase();
+      if (!senderAddr) continue;
+      const investor = emailToInvestor.get(senderAddr);
+      if (!investor) continue;
+
+      const receivedDT = msg.receivedDateTime || "";
+      const date = receivedDT.split("T")[0];
+      if (!date) continue;
+
+      const subject = msg.subject || "(no subject)";
+      const subjectKey = `[Outlook Received] ${subject}`;
+      const dedupKey = `${investor.id}|${subjectKey}|${date}`;
+
+      if (!existingKeys.has(dedupKey)) {
         newEntries.push({
           investor_id: investor.id,
           date,
           type: "Email",
           subject: subjectKey,
-          response: "Sent",
-          next_step: "Await response",
+          response: "Received",
+          next_step: "Review and respond",
+          direction: "inbound",
         });
-        existingSubjects.add(subjectKey);
+        existingKeys.add(dedupKey);
       }
+
+      // Track latest received date per investor
+      const activity = investorActivity.get(investor.id) || { lastSent: null, lastReceived: null };
+      if (!activity.lastReceived || receivedDT > activity.lastReceived) activity.lastReceived = receivedDT;
+      investorActivity.set(investor.id, activity);
     }
 
-    // Process inbox emails — match senders to investors
-    for (const msg of inboxResult.messages) {
-      const senderAddr = msg.from?.emailAddress?.address?.toLowerCase();
-      if (!senderAddr) continue;
-      const investor = emailToInvestor.get(senderAddr);
-      if (!investor) continue;
-
-      const subjectKey = `[Outlook Received] ${msg.subject}`;
-      if (existingSubjects.has(subjectKey)) continue;
-
-      const date = (msg.receivedDateTime || "").split("T")[0];
-      if (!date) continue;
-
-      newEntries.push({
-        investor_id: investor.id,
-        date,
-        type: "Email",
-        subject: subjectKey,
-        response: "Received",
-        next_step: "Review and respond",
-      });
-      existingSubjects.add(subjectKey);
-    }
-
-    // Insert new entries
+    // Insert new entries in batches
     let inserted = 0;
     if (newEntries.length > 0) {
-      const { error } = await supabase.from("communication_log").insert(newEntries);
-      if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+      // Insert in chunks of 50 to avoid payload limits
+      for (let i = 0; i < newEntries.length; i += 50) {
+        const chunk = newEntries.slice(i, i + 50);
+        const { error } = await supabase.from("communication_log").insert(chunk);
+        if (error) {
+          console.error("Insert error:", error.message);
+        } else {
+          inserted += chunk.length;
+        }
       }
-      inserted = newEntries.length;
     }
 
-    // Update ball_in_court based on direction of communication
-    const inboundInvestorIds = [...new Set(newEntries.filter((e) => e.response === "Received").map((e) => e.investor_id))];
-    const outboundInvestorIds = [...new Set(newEntries.filter((e) => e.response === "Sent").map((e) => e.investor_id))];
-    const today = new Date().toISOString().split("T")[0];
-    const now = new Date().toISOString();
+    // Update ball_in_court for every investor we found emails for
+    // Logic: whoever sent the MOST RECENT email determines the ball
+    // If Ralph sent last → ball is theirs (waiting on reply)
+    // If investor sent last → ball is ours (we need to respond)
+    let ballUpdated = 0;
+    for (const [investorId, activity] of investorActivity.entries()) {
+      const updates: Record<string, unknown> = {};
 
-    // Received email from investor → ball is in OUR court
-    for (const invId of inboundInvestorIds) {
-      await supabase
-        .from("investors")
-        .update({ last_contact_date: today, ball_in_court: "ours", ball_changed_at: now, last_inbound_at: now })
-        .eq("id", invId);
-    }
+      if (activity.lastSent) {
+        updates.last_outbound_at = activity.lastSent;
+      }
+      if (activity.lastReceived) {
+        updates.last_inbound_at = activity.lastReceived;
+      }
 
-    // Sent email to investor → ball is in THEIR court
-    for (const invId of outboundInvestorIds) {
-      if (!inboundInvestorIds.includes(invId)) {
-        await supabase
-          .from("investors")
-          .update({ last_contact_date: today, ball_in_court: "theirs", ball_changed_at: now, last_outbound_at: now })
-          .eq("id", invId);
+      // Determine ball based on most recent activity
+      if (activity.lastSent && activity.lastReceived) {
+        // Both exist — most recent wins
+        if (activity.lastReceived > activity.lastSent) {
+          // They replied more recently → our turn
+          updates.ball_in_court = "ours";
+          updates.ball_changed_at = activity.lastReceived;
+          updates.last_contact_date = activity.lastReceived.split("T")[0];
+        } else {
+          // We sent more recently → their turn
+          updates.ball_in_court = "theirs";
+          updates.ball_changed_at = activity.lastSent;
+          updates.last_contact_date = activity.lastSent.split("T")[0];
+        }
+      } else if (activity.lastReceived) {
+        // Only received → our turn
+        updates.ball_in_court = "ours";
+        updates.ball_changed_at = activity.lastReceived;
+        updates.last_contact_date = activity.lastReceived.split("T")[0];
+      } else if (activity.lastSent) {
+        // Only sent → their turn
+        updates.ball_in_court = "theirs";
+        updates.ball_changed_at = activity.lastSent;
+        updates.last_contact_date = activity.lastSent.split("T")[0];
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await supabase.from("investors").update(updates).eq("id", investorId);
+        ballUpdated++;
       }
     }
 
     return NextResponse.json({
       synced: inserted,
-      sent: sentResult.messages.length,
-      received: inboxResult.messages.length,
-      matched: [...new Set([...inboundInvestorIds, ...outboundInvestorIds])].length,
+      sent_scanned: sentMessages.length,
+      received_scanned: inboxMessages.length,
+      investors_matched: investorActivity.size,
+      ball_updated: ballUpdated,
+      new_entries: newEntries.length,
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Unknown error";
