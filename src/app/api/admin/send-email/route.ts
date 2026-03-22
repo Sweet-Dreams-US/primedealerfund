@@ -179,9 +179,14 @@ export async function POST(request: Request) {
     await supabase.from("email_recipients").insert(recipientEntries);
   }
 
+  const sent = results.filter((r) => r.status === "sent").length;
+  const failed = results.filter((r) => r.status === "failed").length;
+  const failedErrors = results.filter((r) => r.status === "failed").map((r) => r.error).filter(Boolean);
+
   return NextResponse.json({
-    sent: results.filter((r) => r.status === "sent").length,
-    failed: results.filter((r) => r.status === "failed").length,
+    sent,
+    failed,
     total: results.length,
+    ...(failed > 0 && failedErrors.length > 0 ? { error: failedErrors.join("; ") } : {}),
   });
 }

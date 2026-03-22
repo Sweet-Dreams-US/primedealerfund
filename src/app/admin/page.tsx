@@ -101,7 +101,7 @@ export default function AdminDashboard() {
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
   const [sending, setSending] = useState(false);
-  const [sendResult, setSendResult] = useState<{ sent: number; failed: number } | null>(null);
+  const [sendResult, setSendResult] = useState<{ sent: number; failed: number; error?: string } | null>(null);
   const [recipientSearch, setRecipientSearch] = useState("");
   const [recipientDropdown, setRecipientDropdown] = useState(false);
   const recipientInputRef = useRef<HTMLInputElement>(null);
@@ -253,18 +253,24 @@ export default function AdminDashboard() {
     if (!emailSubject || !emailBody || (selectedIds.size === 0 && adhocEmails.length === 0)) return;
     setSending(true);
     setSendResult(null);
-    const res = await fetch("/api/admin/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ recipientIds: Array.from(selectedIds), adhocEmails, subject: emailSubject, body: emailBody }),
-    });
-    if (res.ok) {
-      const result = await res.json();
-      setSendResult(result);
-      setEmailSubject("");
-      setEmailBody("");
-      setSelectedIds(new Set());
-      setAdhocEmails([]);
+    try {
+      const res = await fetch("/api/admin/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipientIds: Array.from(selectedIds), adhocEmails, subject: emailSubject, body: emailBody }),
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok) {
+        setSendResult(data);
+        setEmailSubject("");
+        setEmailBody("");
+        setSelectedIds(new Set());
+        setAdhocEmails([]);
+      } else {
+        setSendResult({ sent: 0, failed: 0, error: data?.error || `Server error (${res.status})` });
+      }
+    } catch (err) {
+      setSendResult({ sent: 0, failed: 0, error: `Network error: ${err instanceof Error ? err.message : "Could not reach server"}` });
     }
     setSending(false);
   }
@@ -799,8 +805,15 @@ export default function AdminDashboard() {
 
                 <AnimatePresence>
                   {sendResult && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`p-4 rounded-lg border ${sendResult.failed === 0 ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"}`}>
-                      <p className="text-sm font-medium text-slate-900">{sendResult.sent} email{sendResult.sent !== 1 ? "s" : ""} sent successfully{sendResult.failed > 0 && <span className="text-red-600 ml-2">{sendResult.failed} failed</span>}</p>
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`p-4 rounded-lg border ${sendResult.error ? "bg-red-50 border-red-200" : sendResult.failed === 0 ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"}`}>
+                      {sendResult.error && sendResult.sent === 0 ? (
+                        <p className="text-sm font-medium text-red-600">{sendResult.error}</p>
+                      ) : (
+                        <>
+                          <p className="text-sm font-medium text-slate-900">{sendResult.sent} email{sendResult.sent !== 1 ? "s" : ""} sent successfully{sendResult.failed > 0 && <span className="text-red-600 ml-2"> · {sendResult.failed} failed</span>}</p>
+                          {sendResult.error && <p className="text-xs text-red-500 mt-1">{sendResult.error}</p>}
+                        </>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
