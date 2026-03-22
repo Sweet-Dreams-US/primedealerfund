@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@/lib/supabase";
 
 const TURNSTILE_SECRET = "0x4AAAAAACW5I3nMP3JcBGPk99Ew6exxAIg";
 
@@ -39,6 +40,47 @@ export async function POST(req: NextRequest) {
           timestamp: new Date().toISOString(),
         }),
       });
+    }
+
+    // Auto-save to Supabase
+    try {
+      const supabase = createServerClient();
+
+      // Check if investor already exists
+      const { data: existing } = formData.email
+        ? await supabase.from("investors").select("id").eq("email", formData.email).maybeSingle()
+        : { data: null };
+
+      if (!existing && formData.firstName) {
+        const capitalMap: Record<string, number> = {
+          "100k-249k": 175000, "$100k-$249k": 175000,
+          "250k-500k": 375000, "$250k-$500k": 375000,
+          "500k-1m": 750000, "$500k-$1M": 750000,
+          "1m-5m": 3000000, "$1M-$5M": 3000000,
+          "5m+": 5000000, "$5M+": 5000000,
+        };
+
+        await supabase.from("investors").insert({
+          first_name: formData.firstName,
+          last_name: formData.lastName || null,
+          email: formData.email || null,
+          phone: formData.phone || null,
+          category: "New Lead",
+          source: "Website Contact Form",
+          amount_of_interest: capitalMap[formData.investmentRange] || 0,
+          added_date: new Date().toISOString().split("T")[0],
+          notes: formData.message ? `Contact form message: ${formData.message}` : null,
+        });
+      }
+
+      // Save form submission
+      await supabase.from("form_submissions").insert({
+        type: "contact",
+        status: "new",
+        data: formData,
+      });
+    } catch (dbErr) {
+      console.error("Supabase contact save error:", dbErr);
     }
 
     return NextResponse.json({ success: true });

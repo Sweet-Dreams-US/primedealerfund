@@ -150,10 +150,25 @@ export async function POST(request: Request) {
         subject: `[Admin Email] ${subject}`,
         response: r.status === "sent" ? "Pending" : "Failed to send",
         next_step: r.status === "sent" ? "Await response" : "Retry send",
+        direction: "outbound",
       }));
 
       if (commEntries.length > 0) {
         await supabase.from("communication_log").insert(commEntries);
+      }
+
+      // Auto-set ball to "theirs" for sent emails — we're now waiting on them
+      const sentInvestorIds = results.filter((r) => r.investorId && r.status === "sent").map((r) => r.investorId);
+      if (sentInvestorIds.length > 0) {
+        await supabase
+          .from("investors")
+          .update({
+            ball_in_court: "theirs",
+            ball_changed_at: new Date().toISOString(),
+            last_outbound_at: new Date().toISOString(),
+            last_contact_date: new Date().toISOString().split("T")[0],
+          })
+          .in("id", sentInvestorIds);
       }
 
       const recipientEntries = results.map((r) => ({

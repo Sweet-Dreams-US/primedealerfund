@@ -83,6 +83,54 @@ export async function PATCH(request: Request) {
   }
 
   const supabase = createServerClient();
+
+  // Smart category auto-progression
+  // Get current state first
+  const { data: current } = await supabase
+    .from("investors")
+    .select("category, zoom_completed, docs_sent, invested, amount_invested")
+    .eq("id", id)
+    .single();
+
+  if (current) {
+    const merged = { ...current, ...updates };
+
+    // If invested flag just turned on or amount_invested set → "Current Investor"
+    if ((updates.invested === true || (updates.amount_invested && updates.amount_invested > 0)) && current.category !== "Current Investor") {
+      updates.category = "Current Investor";
+    }
+    // If zoom completed and not invested → "Had Zoom - No Commitment"
+    else if (merged.zoom_completed && !merged.invested && current.category === "New Lead") {
+      updates.category = "Had Zoom - No Commitment";
+    }
+
+    // Auto-create follow-up task when zoom is marked complete
+    if (updates.zoom_completed === true && !current.zoom_completed) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      await supabase.from("tasks").insert({
+        investor_id: id,
+        title: "Send fund docs after Zoom meeting",
+        type: "follow_up",
+        due_date: tomorrow.toISOString().split("T")[0],
+        priority: "high",
+      });
+    }
+
+    // Auto-create task when docs are sent
+    if (updates.docs_sent === true && !current.docs_sent) {
+      const followUp = new Date();
+      followUp.setDate(followUp.getDate() + 7);
+      await supabase.from("tasks").insert({
+        investor_id: id,
+        title: "Follow up on fund documentation review",
+        type: "follow_up",
+        due_date: followUp.toISOString().split("T")[0],
+        priority: "normal",
+      });
+    }
+  }
+
   const { data, error } = await supabase
     .from("investors")
     .update(updates)
