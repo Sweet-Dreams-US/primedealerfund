@@ -179,10 +179,10 @@ export default function AdminDashboard() {
     fetchInvestors();
   }
 
-  function handleLogout() {
-    document.cookie = "admin_token=; path=/; max-age=0";
-    document.cookie = "admin_email=; path=/; max-age=0";
+  async function handleLogout() {
+    await fetch("/api/admin/auth/logout", { method: "POST" });
     router.push("/admin/login");
+    router.refresh();
   }
 
   if (loading) {

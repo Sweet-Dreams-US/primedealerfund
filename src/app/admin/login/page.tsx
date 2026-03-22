@@ -41,6 +41,8 @@ function LoginForm() {
     }
   }
 
+  const notAdmin = searchParams.get("error") === "not_admin";
+
   return (
     <div className="min-h-screen bg-[#0f0f1e] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
@@ -55,6 +57,12 @@ function LoginForm() {
           <h1 className="text-2xl font-bold text-white mb-1">Admin Portal</h1>
           <p className="text-[#6b7280] text-sm">Authorized access only</p>
         </div>
+
+        {notAdmin && (
+          <p className="text-red-400 text-sm text-center mb-4">
+            Your account is not authorized for admin access.
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
