@@ -406,8 +406,18 @@ export default function AdminDashboard() {
   const fetchTasks = useCallback(async () => {
     setTasksLoading(true);
     try {
-      const res = await fetch("/api/admin/tasks");
-      if (res.ok) setTasks(await res.json());
+      const res = await fetch("/api/admin/tasks?status=all");
+      if (res.ok) {
+        const data = await res.json();
+        // API returns { overdue, today, upcoming, completed } — flatten to array
+        const all = [
+          ...(data.overdue || []),
+          ...(data.today || []),
+          ...(data.upcoming || []),
+          ...(data.completed || []),
+        ];
+        setTasks(all);
+      }
     } catch { /* ignore */ }
     setTasksLoading(false);
   }, []);

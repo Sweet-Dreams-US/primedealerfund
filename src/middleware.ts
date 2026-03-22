@@ -42,22 +42,25 @@ export async function middleware(request: NextRequest) {
   }
 
   // Verify user is in admin_users table using service role (bypasses RLS)
-  const serviceClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (serviceKey) {
+    const serviceClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      serviceKey
+    );
 
-  const { data: adminUser } = await serviceClient
-    .from("admin_users")
-    .select("id")
-    .eq("email", user.email)
-    .single();
+    const { data: adminUser } = await serviceClient
+      .from("admin_users")
+      .select("id")
+      .eq("email", user.email)
+      .single();
 
-  if (!adminUser) {
-    const loginUrl = new URL("/admin/login", request.url);
-    loginUrl.searchParams.set("from", pathname);
-    loginUrl.searchParams.set("error", "not_admin");
-    return NextResponse.redirect(loginUrl);
+    if (!adminUser) {
+      const loginUrl = new URL("/admin/login", request.url);
+      loginUrl.searchParams.set("from", pathname);
+      loginUrl.searchParams.set("error", "not_admin");
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
   return response;
