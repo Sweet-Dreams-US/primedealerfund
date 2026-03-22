@@ -65,6 +65,7 @@ function buildEmailHtml(body: string, recipientName: string) {
 }
 
 export async function POST(request: Request) {
+  try {
   const { recipientIds, adhocEmails, subject, body } = await request.json();
 
   const hasRecipientIds = recipientIds?.length > 0;
@@ -72,6 +73,10 @@ export async function POST(request: Request) {
 
   if ((!hasRecipientIds && !hasAdhocEmails) || !subject || !body) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  if (!process.env.RESEND_API_KEY) {
+    return NextResponse.json({ error: "Email service not configured: RESEND_API_KEY is missing" }, { status: 500 });
   }
 
   const supabase = createServerClient();
@@ -189,4 +194,7 @@ export async function POST(request: Request) {
     total: results.length,
     ...(failed > 0 && failedErrors.length > 0 ? { error: failedErrors.join("; ") } : {}),
   });
+  } catch (err) {
+    return NextResponse.json({ error: `Email send failed: ${err instanceof Error ? err.message : String(err)}` }, { status: 500 });
+  }
 }
