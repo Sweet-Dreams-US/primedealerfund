@@ -13,47 +13,31 @@ function buildEmailHtml(body: string, recipientName: string) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="margin:0;padding:0;background-color:#f8f9fa;font-family:Georgia,'Times New Roman',serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8f9fa;padding:40px 20px;">
+<body style="margin:0;padding:0;background-color:#ffffff;font-family:Aptos,Calibri,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#ffffff;padding:20px;">
     <tr>
-      <td align="center">
+      <td>
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-          <!-- Header -->
-          <tr>
-            <td style="background-color:#0f0f1e;padding:32px 40px;text-align:center;border-radius:12px 12px 0 0;">
-              <img src="https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Prime-Logo.png" alt="Prime Dealer Equity Fund" width="180" style="height:auto;display:block;margin:0 auto;" />
-            </td>
-          </tr>
-          <!-- Gold accent line -->
-          <tr>
-            <td style="background:linear-gradient(90deg,#d4a853,#b8912a);height:3px;font-size:0;line-height:0;">&nbsp;</td>
-          </tr>
           <!-- Body -->
           <tr>
-            <td style="background-color:#ffffff;padding:40px;border-radius:0 0 12px 12px;">
-              <div style="color:#1a1a2e;font-size:16px;line-height:1.7;">
-                ${body.split("\n").map((line: string) => line.trim() === "" ? "<br>" : `<p style="margin:0 0 16px 0;">${line}</p>`).join("\n")}
+            <td style="padding:0;">
+              <div style="color:#000000;font-size:14px;line-height:1.6;font-family:Aptos,Calibri,'Segoe UI',Helvetica,Arial,sans-serif;">
+                ${body.split("\n").map((line: string) => line.trim() === "" ? "<br>" : `<p style="margin:0 0 12px 0;">${line}</p>`).join("\n")}
               </div>
-              <table role="presentation" width="100%" style="margin-top:32px;border-top:1px solid #e5e7eb;padding-top:24px;">
+              <!-- Signature -->
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:24px;">
                 <tr>
-                  <td style="color:#6b7280;font-size:13px;line-height:1.5;">
-                    <strong style="color:#1a1a2e;">Ralph Marcuccilli</strong><br>
-                    Managing Partner<br>
-                    Prime Dealer Equity Fund<br>
-                    <a href="mailto:ralph@primedealerfund.com" style="color:#d4a853;text-decoration:none;">ralph@primedealerfund.com</a><br>
-                    <a href="https://primedealerfund.com" style="color:#d4a853;text-decoration:none;">primedealerfund.com</a>
+                  <td style="padding-right:16px;vertical-align:top;">
+                    <img src="https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Prime-Logo.png" alt="Prime Dealer Equity Fund" width="100" style="height:auto;display:block;" />
+                  </td>
+                  <td style="vertical-align:top;font-family:Aptos,Calibri,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.5;color:#000000;">
+                    <strong>Ralph E. Marcuccilli</strong>, Manager<br>
+                    Prime Management Partners LLC<br>
+                    P: 260.417.6016<br>
+                    <a href="mailto:Ralph@PrimeDealerFund.com" style="color:#0563C1;text-decoration:underline;">Ralph@PrimeDealerFund.com</a>
                   </td>
                 </tr>
               </table>
-            </td>
-          </tr>
-          <!-- Footer -->
-          <tr>
-            <td style="padding:24px 40px;text-align:center;">
-              <p style="margin:0;color:#9ca3af;font-size:11px;line-height:1.5;">
-                &copy; ${new Date().getFullYear()} Prime Dealer Equity Fund. All rights reserved.<br>
-                This email was sent to ${recipientName}. If you believe this was sent in error, please disregard.
-              </p>
             </td>
           </tr>
         </table>
