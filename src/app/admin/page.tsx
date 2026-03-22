@@ -145,7 +145,7 @@ export default function AdminDashboard() {
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
   const [sending, setSending] = useState(false);
-  const [sendResult, setSendResult] = useState<{ sent: number; failed: number } | null>(null);
+  const [sendResult, setSendResult] = useState<{ sent: number; failed: number; error?: string } | null>(null);
   const [recipientSearch, setRecipientSearch] = useState("");
   const [recipientDropdown, setRecipientDropdown] = useState(false);
   const recipientInputRef = useRef<HTMLInputElement>(null);
@@ -188,6 +188,12 @@ export default function AdminDashboard() {
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [replying, setReplying] = useState(false);
+
+  // ── Helpers ──
+
+  function isValidEmail(email: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
 
   // ── Handlers ──
 
@@ -306,12 +312,15 @@ export default function AdminDashboard() {
     setSelectedIds((prev) => { const n = new Set(prev); ids.forEach((id) => n.add(id)); return n; });
   }
   function addManualRecipient() {
-    const email = manualEmailInput.trim();
-    if (!email || !email.includes("@")) return;
-    if (!manualRecipients.find((r) => r.address === email)) {
+    const email = (recipientSearch.trim() || manualEmailInput.trim());
+    if (!email || !isValidEmail(email)) return;
+    if (!manualRecipients.find((r) => r.address.toLowerCase() === email.toLowerCase())) {
       setManualRecipients((prev) => [...prev, { name: email.split("@")[0], address: email }]);
     }
+    setRecipientSearch("");
     setManualEmailInput("");
+    setRecipientDropdown(false);
+    recipientInputRef.current?.focus();
   }
   function removeManualRecipient(address: string) {
     setManualRecipients((prev) => prev.filter((r) => r.address !== address));
@@ -324,20 +333,28 @@ export default function AdminDashboard() {
     if (!hasInvestorRecipients && !hasManualRecipients) return;
     setSending(true);
     setSendResult(null);
-    const res = await fetch("/api/admin/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        recipientIds: Array.from(selectedIds),
-        manualRecipients,
-        subject: emailSubject,
-        body: emailBody,
-      }),
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch("/api/admin/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipientIds: Array.from(selectedIds),
+          manualRecipients,
+          subject: emailSubject,
+          body: emailBody,
+        }),
+      });
       const result = await res.json();
-      setSendResult(result);
-      setEmailSubject(""); setEmailBody(""); setSelectedIds(new Set()); setManualRecipients([]);
+      if (res.ok) {
+        setSendResult(result);
+        if (result.sent > 0) {
+          setEmailSubject(""); setEmailBody(""); setSelectedIds(new Set()); setManualRecipients([]);
+        }
+      } else {
+        setSendResult({ sent: 0, failed: 0, error: result.error || "Failed to send emails" });
+      }
+    } catch (err) {
+      setSendResult({ sent: 0, failed: 0, error: `Network error: ${err instanceof Error ? err.message : String(err)}` });
     }
     setSending(false);
   }
@@ -912,17 +929,33 @@ export default function AdminDashboard() {
                         <button onClick={() => toggleSelect(i.id)} className="ml-0.5 text-slate-400 hover:text-slate-600">&times;</button>
                       </span>
                     ))}
+                    {manualRecipients.map((r) => (
+                      <span key={r.address} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md border bg-blue-50 text-blue-700 border-blue-200">
+                        {r.address}
+                        <button onClick={() => removeManualRecipient(r.address)} className="ml-0.5 text-blue-400 hover:text-blue-600">&times;</button>
+                      </span>
+                    ))}
+                    {selectedIds.size === 0 && manualRecipients.length === 0 && <span className="text-xs text-slate-400 py-0.5">Search below to add recipients, or type an email address</span>}
                   </div>
                   <div className="relative">
-                    <input ref={recipientInputRef} type="text" value={recipientSearch} onChange={(e) => { setRecipientSearch(e.target.value); setRecipientDropdown(true); }} onFocus={() => setRecipientDropdown(true)} placeholder="Search contacts to add..." className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-b-lg text-sm text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                    <input ref={recipientInputRef} type="text" value={recipientSearch} onChange={(e) => { setRecipientSearch(e.target.value); setRecipientDropdown(true); }} onFocus={() => setRecipientDropdown(true)} onKeyDown={(e) => { if (e.key === "Enter" && recipientSearch.trim() && isValidEmail(recipientSearch.trim())) { e.preventDefault(); addManualRecipient(); } }} placeholder="Type a name or email to add..." className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-b-lg text-sm text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
                     {recipientDropdown && recipientSearch.trim() && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
-                        {recipientResults.length === 0 ? <div className="px-3 py-4 text-sm text-slate-400 text-center">No matches found</div> : recipientResults.map((inv) => (
+                        {recipientResults.length === 0 && !isValidEmail(recipientSearch.trim()) && (
+                          <div className="px-3 py-4 text-sm text-slate-400 text-center">No matches found — type a full email to add an external recipient</div>
+                        )}
+                        {recipientResults.map((inv) => (
                           <button key={inv.id} onClick={() => addRecipient(inv.id)} className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 transition-colors text-left">
                             <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600 shrink-0">{inv.first_name[0]}{(inv.last_name || "")[0] || ""}</div>
                             <div className="flex-1 min-w-0"><p className="text-sm font-medium text-slate-900">{inv.first_name} {inv.last_name || ""}</p><p className="text-xs text-slate-400 truncate">{inv.email || "No email"} · {inv.category}</p></div>
                           </button>
                         ))}
+                        {isValidEmail(recipientSearch.trim()) && !manualRecipients.some((r) => r.address.toLowerCase() === recipientSearch.trim().toLowerCase()) && !allInvestors.some((i) => i.email?.toLowerCase() === recipientSearch.trim().toLowerCase()) && (
+                          <button onClick={() => addManualRecipient()} className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 transition-colors text-left border-t border-slate-100">
+                            <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-600 shrink-0">+</div>
+                            <div className="flex-1 min-w-0"><p className="text-sm font-medium text-blue-700">Add external recipient</p><p className="text-xs text-slate-400 truncate">{recipientSearch.trim()}</p></div>
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -932,23 +965,6 @@ export default function AdminDashboard() {
                       <button key={cat} onClick={() => addAllByCategory(cat)} className="text-[11px] text-slate-500 hover:text-slate-700 px-2 py-0.5 rounded border border-slate-200 hover:border-slate-300 transition-colors">{cat}</button>
                     ))}
                     <button onClick={() => { const all = allInvestors.filter(i => i.email).map(i => i.id); setSelectedIds(new Set(all)); }} className="text-[11px] text-slate-900 font-medium hover:text-slate-700 px-2 py-0.5 rounded border border-slate-300 hover:border-slate-400 transition-colors">All with email</button>
-                  </div>
-                </div>
-
-                {/* Manual email recipients */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">To — Additional Emails</label>
-                  <div className="flex flex-wrap gap-1.5 mb-2">
-                    {manualRecipients.map((r) => (
-                      <span key={r.address} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md border bg-blue-50 text-blue-700 border-blue-200">
-                        {r.address}
-                        <button onClick={() => removeManualRecipient(r.address)} className="ml-0.5 text-blue-400 hover:text-blue-600">&times;</button>
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <input type="email" value={manualEmailInput} onChange={(e) => setManualEmailInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addManualRecipient(); } }} placeholder="type@email.com and press Enter" className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
-                    <button onClick={addManualRecipient} className="px-3 py-2 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50">Add</button>
                   </div>
                 </div>
 
@@ -970,8 +986,15 @@ export default function AdminDashboard() {
 
                 <AnimatePresence>
                   {sendResult && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`p-4 rounded-lg border ${sendResult.failed === 0 ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"}`}>
-                      <p className="text-sm font-medium text-slate-900">{sendResult.sent} email{sendResult.sent !== 1 ? "s" : ""} sent successfully{sendResult.failed > 0 && <span className="text-red-600 ml-2">{sendResult.failed} failed</span>}</p>
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`p-4 rounded-lg border ${sendResult.error && sendResult.sent === 0 ? "bg-red-50 border-red-200" : sendResult.failed === 0 ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"}`}>
+                      {sendResult.error && sendResult.sent === 0 ? (
+                        <p className="text-sm font-medium text-red-700">{sendResult.error}</p>
+                      ) : (
+                        <>
+                          <p className="text-sm font-medium text-slate-900">{sendResult.sent} email{sendResult.sent !== 1 ? "s" : ""} sent successfully{sendResult.failed > 0 && <span className="text-red-600 ml-2">{sendResult.failed} failed</span>}</p>
+                          {sendResult.error && <p className="text-xs text-red-500 mt-1">{sendResult.error}</p>}
+                        </>
+                      )}
                     </motion.div>
                   )}
                   {draftSaved && (
