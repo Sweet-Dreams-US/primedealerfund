@@ -223,3 +223,287 @@ export async function createBooking(params: {
 
   return { success: true };
 }
+
+// ═══════════════════════════════════════════════
+// OUTLOOK MAIL — Read inbox, create drafts, send
+// ═══════════════════════════════════════════════
+
+export interface OutlookMessage {
+  id: string;
+  subject: string;
+  bodyPreview: string;
+  body: { contentType: string; content: string };
+  from: { emailAddress: { name: string; address: string } };
+  toRecipients: { emailAddress: { name: string; address: string } }[];
+  ccRecipients: { emailAddress: { name: string; address: string } }[];
+  receivedDateTime: string;
+  sentDateTime: string;
+  isRead: boolean;
+  isDraft: boolean;
+  hasAttachments: boolean;
+  importance: string;
+  flag: { flagStatus: string };
+  conversationId: string;
+  webLink: string;
+}
+
+export interface OutlookMailResponse {
+  value: OutlookMessage[];
+  "@odata.nextLink"?: string;
+}
+
+/**
+ * Fetch Ralph's inbox messages.
+ * Supports pagination, filtering, and search.
+ */
+export async function getInboxMessages(params: {
+  top?: number;
+  skip?: number;
+  search?: string;
+  filter?: string;
+  folder?: string;
+  orderBy?: string;
+}): Promise<{ messages: OutlookMessage[]; total: number; nextLink?: string }> {
+  const token = await getGraphToken();
+  const { top = 25, skip = 0, search, filter, folder = "inbox", orderBy = "receivedDateTime desc" } = params;
+
+  let url = `https://graph.microsoft.com/v1.0/users/${RALPH_EMAIL}/mailFolders/${folder}/messages?$top=${top}&$skip=${skip}&$orderby=${orderBy}&$select=id,subject,bodyPreview,body,from,toRecipients,ccRecipients,receivedDateTime,sentDateTime,isRead,isDraft,hasAttachments,importance,flag,conversationId,webLink`;
+
+  if (search) {
+    url += `&$search="${encodeURIComponent(search)}"`;
+  }
+  if (filter) {
+    url += `&$filter=${encodeURIComponent(filter)}`;
+  }
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Prefer: `outlook.timezone="${TIMEZONE}"`,
+    },
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Graph mail error: ${err}`);
+  }
+
+  const data: OutlookMailResponse = await res.json();
+  return {
+    messages: data.value || [],
+    total: data.value?.length || 0,
+    nextLink: data["@odata.nextLink"],
+  };
+}
+
+/**
+ * Get a single message by ID with full body.
+ */
+export async function getMessage(messageId: string): Promise<OutlookMessage> {
+  const token = await getGraphToken();
+  const res = await fetch(
+    `https://graph.microsoft.com/v1.0/users/${RALPH_EMAIL}/messages/${messageId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Prefer: `outlook.timezone="${TIMEZONE}"`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Graph message error: ${err}`);
+  }
+
+  return res.json();
+}
+
+/**
+ * Mark a message as read/unread.
+ */
+export async function markMessageRead(messageId: string, isRead: boolean): Promise<void> {
+  const token = await getGraphToken();
+  const res = await fetch(
+    `https://graph.microsoft.com/v1.0/users/${RALPH_EMAIL}/messages/${messageId}`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ isRead }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Graph markRead error: ${err}`);
+  }
+}
+
+/**
+ * Create a draft in Ralph's Outlook drafts folder.
+ */
+export async function createDraft(params: {
+  subject: string;
+  body: string;
+  bodyType?: "HTML" | "Text";
+  toRecipients: { name?: string; address: string }[];
+  ccRecipients?: { name?: string; address: string }[];
+  importance?: "low" | "normal" | "high";
+}): Promise<OutlookMessage> {
+  const token = await getGraphToken();
+
+  const message = {
+    subject: params.subject,
+    body: {
+      contentType: params.bodyType || "HTML",
+      content: params.body,
+    },
+    toRecipients: params.toRecipients.map((r) => ({
+      emailAddress: { name: r.name || r.address, address: r.address },
+    })),
+    ccRecipients: (params.ccRecipients || []).map((r) => ({
+      emailAddress: { name: r.name || r.address, address: r.address },
+    })),
+    importance: params.importance || "normal",
+  };
+
+  const res = await fetch(
+    `https://graph.microsoft.com/v1.0/users/${RALPH_EMAIL}/messages`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Graph createDraft error: ${err}`);
+  }
+
+  return res.json();
+}
+
+/**
+ * Send a draft that's already in Outlook.
+ */
+export async function sendDraft(messageId: string): Promise<void> {
+  const token = await getGraphToken();
+  const res = await fetch(
+    `https://graph.microsoft.com/v1.0/users/${RALPH_EMAIL}/messages/${messageId}/send`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Graph sendDraft error: ${err}`);
+  }
+}
+
+/**
+ * Send a new message directly (no draft step).
+ */
+export async function sendMail(params: {
+  subject: string;
+  body: string;
+  bodyType?: "HTML" | "Text";
+  toRecipients: { name?: string; address: string }[];
+  ccRecipients?: { name?: string; address: string }[];
+}): Promise<void> {
+  const token = await getGraphToken();
+
+  const payload = {
+    message: {
+      subject: params.subject,
+      body: {
+        contentType: params.bodyType || "HTML",
+        content: params.body,
+      },
+      toRecipients: params.toRecipients.map((r) => ({
+        emailAddress: { name: r.name || r.address, address: r.address },
+      })),
+      ccRecipients: (params.ccRecipients || []).map((r) => ({
+        emailAddress: { name: r.name || r.address, address: r.address },
+      })),
+    },
+    saveToSentItems: true,
+  };
+
+  const res = await fetch(
+    `https://graph.microsoft.com/v1.0/users/${RALPH_EMAIL}/sendMail`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Graph sendMail error: ${err}`);
+  }
+}
+
+/**
+ * Reply to a message.
+ */
+export async function replyToMessage(messageId: string, comment: string): Promise<void> {
+  const token = await getGraphToken();
+  const res = await fetch(
+    `https://graph.microsoft.com/v1.0/users/${RALPH_EMAIL}/messages/${messageId}/reply`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ comment }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Graph reply error: ${err}`);
+  }
+}
+
+/**
+ * Get mail folder counts (inbox unread, drafts count, etc.)
+ */
+export async function getMailFolders(): Promise<{
+  inbox: { total: number; unread: number };
+  drafts: { total: number };
+  sentItems: { total: number };
+}> {
+  const token = await getGraphToken();
+
+  const folders = ["inbox", "drafts", "sentitems"];
+  const results = await Promise.all(
+    folders.map(async (folder) => {
+      const res = await fetch(
+        `https://graph.microsoft.com/v1.0/users/${RALPH_EMAIL}/mailFolders/${folder}?$select=totalItemCount,unreadItemCount`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!res.ok) return { totalItemCount: 0, unreadItemCount: 0 };
+      return res.json();
+    })
+  );
+
+  return {
+    inbox: { total: results[0].totalItemCount, unread: results[0].unreadItemCount },
+    drafts: { total: results[1].totalItemCount },
+    sentItems: { total: results[2].totalItemCount },
+  };
+}
