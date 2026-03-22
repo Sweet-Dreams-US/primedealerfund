@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -40,16 +41,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Verify user is in admin_users table
-  const serviceClient = createServerClient(
+  // Verify user is in admin_users table using service role (bypasses RLS)
+  const serviceClient = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() { return []; },
-        setAll() {},
-      },
-    }
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
   const { data: adminUser } = await serviceClient
