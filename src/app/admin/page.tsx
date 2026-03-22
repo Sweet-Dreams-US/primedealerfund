@@ -630,7 +630,7 @@ export default function AdminDashboard() {
                     {comms.map((c) => (
                       <tr key={c.id} className="border-b border-slate-100 hover:bg-slate-50/50">
                         <td className="p-3 text-slate-500 whitespace-nowrap">{c.date}</td>
-                        <td className="p-3 text-slate-900 font-medium whitespace-nowrap">{c.investors ? `${c.investors.first_name} ${c.investors.last_name || ""}` : "-"}</td>
+                        <td className="p-3 text-slate-900 font-medium whitespace-nowrap">{c.investors ? `${c.investors.first_name} ${c.investors.last_name || ""}` : (c.subject?.match(/→ ([^\]]+)/)?.[1] || "External")}</td>
                         <td className="p-3"><span className={`px-2 py-0.5 text-xs font-medium rounded-full ${commTypeBadge[c.type] || "bg-slate-50 text-slate-600"}`}>{c.type}</span></td>
                         <td className="p-3 text-slate-600 max-w-[300px] truncate">{c.subject || "-"}</td>
                         <td className="p-3"><span className={`text-sm font-medium ${c.response === "Yes" ? "text-emerald-600" : c.response === "Pending" ? "text-amber-600" : "text-slate-400"}`}>{c.response || "-"}</span></td>

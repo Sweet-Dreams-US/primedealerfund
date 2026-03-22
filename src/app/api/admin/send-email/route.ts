@@ -143,18 +143,17 @@ export async function POST(request: Request) {
     .single();
 
   if (emailLog) {
-    // Only log communications for database investors
-    const investorResults = results.filter((r) => r.investorId);
-    if (investorResults.length > 0) {
-      const commEntries = investorResults.map((r) => ({
-        investor_id: r.investorId,
-        date: new Date().toISOString().split("T")[0],
-        type: "Email",
-        subject: `[Admin Email] ${subject}`,
-        response: "Pending",
-        next_step: "Await response",
-      }));
+    // Log communications for all recipients (database investors and external)
+    const commEntries = results.map((r) => ({
+      investor_id: r.investorId || null,
+      date: new Date().toISOString().split("T")[0],
+      type: "Email",
+      subject: r.investorId ? `[Admin Email] ${subject}` : `[Admin Email → ${r.email}] ${subject}`,
+      response: r.status === "sent" ? "Pending" : "Failed to send",
+      next_step: r.status === "sent" ? "Await response" : "Retry send",
+    }));
 
+    if (commEntries.length > 0) {
       await supabase.from("communication_log").insert(commEntries);
     }
 
