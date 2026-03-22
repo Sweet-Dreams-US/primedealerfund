@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { createServerClient } from "@/lib/supabase";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 export async function POST(request: Request) {
   const { recipientIds, subject, body, senderEmail } = await request.json();
@@ -30,6 +32,7 @@ export async function POST(request: Request) {
   }
 
   // Send emails via Resend (batch)
+  const resend = getResend();
   const results = [];
   for (const recipient of validRecipients) {
     const personalizedBody = body
