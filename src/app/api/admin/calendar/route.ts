@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 const TENANT_ID = process.env.AZURE_TENANT_ID!;
 const CLIENT_ID = process.env.AZURE_CLIENT_ID!;
 const CLIENT_SECRET = process.env.AZURE_CLIENT_SECRET!;
-const RALPH_EMAIL = "ralph@primedealerfund.com";
+const RALPH_EMAIL = "Ralph@PrimeDealerFund.com";
 const TIMEZONE = "America/New_York";
 
 let cachedToken: { token: string; expires: number } | null = null;
