@@ -23,7 +23,7 @@ const faqs: FAQ[] = [
   {
     category: "Investment",
     question: "What are the target returns?",
-    answer: "We target a net IRR of 21-31%, targeting an 8% annual distribution to investors. Returns are generated through operational improvements, equity appreciation, and strategic exits. Past performance is not indicative of future results.",
+    answer: "We target a net IRR of 21-31%, targeting a minimum of 8% annual distribution to investors. Target returns are generated through operational improvements, equity appreciation, and strategic exits. Past performance is not indicative of future results.",
   },
   {
     category: "Investment",
@@ -68,7 +68,7 @@ const faqs: FAQ[] = [
   {
     category: "Reporting",
     question: "When are distributions paid?",
-    answer: "Distributions are paid annually, subject to available cash flow and GP discretion, targeting an 8% annual distribution.",
+    answer: "Distributions are paid annually, subject to available cash flow and GP discretion, targeting a minimum of 8% annual distribution.",
   },
   {
     category: "Legal",

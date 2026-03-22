@@ -85,7 +85,7 @@ export default function Hero() {
         >
           Prime Dealer Equity Fund is a private equity vehicle co-investing with
           Coleman Automotive Group in the acquisition and optimization of
-          automotive dealerships across the U.S. Fund interest targeting 8% annual distribution.
+          automotive dealerships across the U.S. Fund interest targeting a minimum of 8% annual distribution.
         </motion.p>
 
         <motion.div
