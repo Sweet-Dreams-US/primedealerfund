@@ -122,6 +122,32 @@ export default function AdminDashboard() {
   });
   const [addingContact, setAddingContact] = useState(false);
 
+  // Settings
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordMsg, setPasswordMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  async function handleChangePassword() {
+    if (newPassword.length < 8) { setPasswordMsg({ type: "error", text: "Password must be at least 8 characters" }); return; }
+    if (newPassword !== confirmPassword) { setPasswordMsg({ type: "error", text: "Passwords do not match" }); return; }
+    setChangingPassword(true);
+    setPasswordMsg(null);
+    const res = await fetch("/api/admin/auth/update-password", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: newPassword }),
+    });
+    if (res.ok) {
+      setPasswordMsg({ type: "success", text: "Password updated successfully" });
+      setNewPassword("");
+      setConfirmPassword("");
+    } else {
+      const data = await res.json();
+      setPasswordMsg({ type: "error", text: data.error || "Failed to update password" });
+    }
+    setChangingPassword(false);
+  }
+
   const fetchInvestors = useCallback(async () => {
     const params = new URLSearchParams();
     if (categoryFilter !== "all") params.set("category", categoryFilter);
@@ -284,6 +310,9 @@ export default function AdminDashboard() {
             <button onClick={() => setEmailOpen(true)} className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 text-white text-sm rounded-md hover:bg-slate-800 transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
               Compose{selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}
+            </button>
+            <button onClick={() => setSettingsOpen(true)} className="p-1.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </button>
             <button onClick={handleLogout} className="text-slate-400 hover:text-slate-600 text-sm transition-colors">Sign out</button>
           </div>
@@ -788,6 +817,42 @@ export default function AdminDashboard() {
                 <div className="px-6 py-4 border-t border-slate-200 flex justify-end gap-3">
                   <button onClick={() => setAddContactOpen(false)} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Cancel</button>
                   <button onClick={handleAddContact} disabled={!newContact.first_name.trim() || addingContact} className="px-5 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed">{addingContact ? "Adding..." : "Add Contact"}</button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ═══════════ SETTINGS MODAL ═══════════ */}
+      <AnimatePresence>
+        {settingsOpen && (
+          <>
+            <motion.div className="fixed inset-0 bg-black/30 z-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => { setSettingsOpen(false); setPasswordMsg(null); }} />
+            <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
+              <div className="bg-white rounded-xl shadow-xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+                <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                  <h2 className="text-base font-semibold text-slate-900">Account Settings</h2>
+                  <button onClick={() => { setSettingsOpen(false); setPasswordMsg(null); }} className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900 mb-3">Change Password</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs font-medium text-slate-500 mb-1 block">New Password</label>
+                        <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min 8 characters" className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-slate-500 mb-1 block">Confirm Password</label>
+                        <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Re-enter password" className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                      </div>
+                      {passwordMsg && (
+                        <p className={`text-xs ${passwordMsg.type === "success" ? "text-emerald-600" : "text-red-500"}`}>{passwordMsg.text}</p>
+                      )}
+                      <button onClick={handleChangePassword} disabled={changingPassword || !newPassword} className="w-full py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed">{changingPassword ? "Updating..." : "Update Password"}</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
