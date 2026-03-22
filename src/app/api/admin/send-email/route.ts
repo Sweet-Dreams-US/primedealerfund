@@ -65,52 +65,79 @@ function buildEmailHtml(body: string, recipientName: string) {
 }
 
 export async function POST(request: Request) {
-  const { recipientIds, subject, body } = await request.json();
+  const { recipientIds, adhocEmails, subject, body } = await request.json();
 
-  if (!recipientIds?.length || !subject || !body) {
+  const hasRecipientIds = recipientIds?.length > 0;
+  const hasAdhocEmails = adhocEmails?.length > 0;
+
+  if ((!hasRecipientIds && !hasAdhocEmails) || !subject || !body) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
   const supabase = createServerClient();
-
-  const { data: recipients } = await supabase
-    .from("investors")
-    .select("id, first_name, last_name, email")
-    .in("id", recipientIds);
-
-  if (!recipients?.length) {
-    return NextResponse.json({ error: "No valid recipients found" }, { status: 400 });
-  }
-
-  const validRecipients = recipients.filter((r) => r.email);
-
-  if (!validRecipients.length) {
-    return NextResponse.json({ error: "No recipients have email addresses" }, { status: 400 });
-  }
-
   const resend = getResend();
-  const results = [];
-  for (const recipient of validRecipients) {
-    const personalizedBody = body
-      .replace(/{{first_name}}/g, recipient.first_name || "")
-      .replace(/{{last_name}}/g, recipient.last_name || "")
-      .replace(/{{full_name}}/g, `${recipient.first_name || ""} ${recipient.last_name || ""}`.trim());
+  const results: { investorId?: string; email: string; status: string; resendId?: string; error?: string }[] = [];
 
-    const recipientName = `${recipient.first_name || ""} ${recipient.last_name || ""}`.trim();
-    const html = buildEmailHtml(personalizedBody, recipientName);
+  // Send to database investors
+  if (hasRecipientIds) {
+    const { data: recipients } = await supabase
+      .from("investors")
+      .select("id, first_name, last_name, email")
+      .in("id", recipientIds);
 
-    try {
-      const { data } = await resend.emails.send({
-        from: "Ralph Marcuccilli <ralph@primedealerfund.com>",
-        to: recipient.email,
-        subject,
-        html,
-      });
+    const validRecipients = (recipients || []).filter((r) => r.email);
 
-      results.push({ investorId: recipient.id, email: recipient.email, status: "sent", resendId: data?.id });
-    } catch (err) {
-      results.push({ investorId: recipient.id, email: recipient.email, status: "failed", error: String(err) });
+    for (const recipient of validRecipients) {
+      const personalizedBody = body
+        .replace(/{{first_name}}/g, recipient.first_name || "")
+        .replace(/{{last_name}}/g, recipient.last_name || "")
+        .replace(/{{full_name}}/g, `${recipient.first_name || ""} ${recipient.last_name || ""}`.trim());
+
+      const recipientName = `${recipient.first_name || ""} ${recipient.last_name || ""}`.trim();
+      const html = buildEmailHtml(personalizedBody, recipientName);
+
+      try {
+        const { data } = await resend.emails.send({
+          from: "Ralph Marcuccilli <ralph@primedealerfund.com>",
+          to: recipient.email,
+          subject,
+          html,
+        });
+
+        results.push({ investorId: recipient.id, email: recipient.email, status: "sent", resendId: data?.id });
+      } catch (err) {
+        results.push({ investorId: recipient.id, email: recipient.email, status: "failed", error: String(err) });
+      }
     }
+  }
+
+  // Send to ad-hoc email addresses (not in database)
+  if (hasAdhocEmails) {
+    for (const adhoc of adhocEmails as { email: string; name: string }[]) {
+      const personalizedBody = body
+        .replace(/{{first_name}}/g, adhoc.name || "")
+        .replace(/{{last_name}}/g, "")
+        .replace(/{{full_name}}/g, adhoc.name || "");
+
+      const html = buildEmailHtml(personalizedBody, adhoc.name || adhoc.email);
+
+      try {
+        const { data } = await resend.emails.send({
+          from: "Ralph Marcuccilli <ralph@primedealerfund.com>",
+          to: adhoc.email,
+          subject,
+          html,
+        });
+
+        results.push({ email: adhoc.email, status: "sent", resendId: data?.id });
+      } catch (err) {
+        results.push({ email: adhoc.email, status: "failed", error: String(err) });
+      }
+    }
+  }
+
+  if (results.length === 0) {
+    return NextResponse.json({ error: "No valid recipients found" }, { status: 400 });
   }
 
   const { data: emailLog } = await supabase
@@ -119,7 +146,7 @@ export async function POST(request: Request) {
       sender: "ralph@primedealerfund.com",
       subject,
       body,
-      recipient_count: validRecipients.length,
+      recipient_count: results.length,
       recipients: results,
       status: results.every((r) => r.status === "sent") ? "sent" : "partial",
     })
@@ -127,20 +154,24 @@ export async function POST(request: Request) {
     .single();
 
   if (emailLog) {
-    const commEntries = validRecipients.map((r) => ({
-      investor_id: r.id,
-      date: new Date().toISOString().split("T")[0],
-      type: "Email",
-      subject: `[Admin Email] ${subject}`,
-      response: "Pending",
-      next_step: "Await response",
-    }));
+    // Only log communications for database investors
+    const investorResults = results.filter((r) => r.investorId);
+    if (investorResults.length > 0) {
+      const commEntries = investorResults.map((r) => ({
+        investor_id: r.investorId,
+        date: new Date().toISOString().split("T")[0],
+        type: "Email",
+        subject: `[Admin Email] ${subject}`,
+        response: "Pending",
+        next_step: "Await response",
+      }));
 
-    await supabase.from("communication_log").insert(commEntries);
+      await supabase.from("communication_log").insert(commEntries);
+    }
 
     const recipientEntries = results.map((r) => ({
       email_log_id: emailLog.id,
-      investor_id: r.investorId,
+      investor_id: r.investorId || null,
       email: r.email,
       status: r.status,
     }));
@@ -151,6 +182,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     sent: results.filter((r) => r.status === "sent").length,
     failed: results.filter((r) => r.status === "failed").length,
-    total: validRecipients.length,
+    total: results.length,
   });
 }

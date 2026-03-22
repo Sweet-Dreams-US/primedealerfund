@@ -106,6 +106,9 @@ export default function AdminDashboard() {
   const [recipientDropdown, setRecipientDropdown] = useState(false);
   const recipientInputRef = useRef<HTMLInputElement>(null);
 
+  // Ad-hoc email recipients (not in database)
+  const [adhocEmails, setAdhocEmails] = useState<{ email: string; name: string }[]>([]);
+
   // Detail panel
   const [detailInvestor, setDetailInvestor] = useState<Investor | null>(null);
   const [detailComms, setDetailComms] = useState<CommLog[]>([]);
@@ -121,6 +124,7 @@ export default function AdminDashboard() {
     notes: "", source: "Admin Added", friend_of_ralph: false, amount_of_interest: 0,
   });
   const [addingContact, setAddingContact] = useState(false);
+  const [addContactError, setAddContactError] = useState<string | null>(null);
 
   // Settings
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -215,15 +219,34 @@ export default function AdminDashboard() {
     const ids = allInvestors.filter((i) => i.category === cat && i.email).map((i) => i.id);
     setSelectedIds((prev) => { const n = new Set(prev); ids.forEach((id) => n.add(id)); return n; });
   }
+  function isValidEmail(email: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+  function addAdhocEmail(email: string) {
+    const trimmed = email.trim();
+    if (!isValidEmail(trimmed)) return;
+    if (adhocEmails.some((a) => a.email.toLowerCase() === trimmed.toLowerCase())) return;
+    if (allInvestors.some((i) => i.email?.toLowerCase() === trimmed.toLowerCase())) return;
+    // Extract name from "Name <email>" format or use email as name
+    const nameMatch = recipientSearch.match(/^(.+?)\s*<[^>]+>$/);
+    const name = nameMatch ? nameMatch[1].trim() : trimmed.split("@")[0];
+    setAdhocEmails((prev) => [...prev, { email: trimmed, name }]);
+    setRecipientSearch("");
+    setRecipientDropdown(false);
+    recipientInputRef.current?.focus();
+  }
+  function removeAdhocEmail(email: string) {
+    setAdhocEmails((prev) => prev.filter((a) => a.email !== email));
+  }
 
   async function handleSendEmail() {
-    if (!emailSubject || !emailBody || selectedIds.size === 0) return;
+    if (!emailSubject || !emailBody || (selectedIds.size === 0 && adhocEmails.length === 0)) return;
     setSending(true);
     setSendResult(null);
     const res = await fetch("/api/admin/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ recipientIds: Array.from(selectedIds), subject: emailSubject, body: emailBody }),
+      body: JSON.stringify({ recipientIds: Array.from(selectedIds), adhocEmails, subject: emailSubject, body: emailBody }),
     });
     if (res.ok) {
       const result = await res.json();
@@ -231,6 +254,7 @@ export default function AdminDashboard() {
       setEmailSubject("");
       setEmailBody("");
       setSelectedIds(new Set());
+      setAdhocEmails([]);
     }
     setSending(false);
   }
@@ -245,17 +269,26 @@ export default function AdminDashboard() {
   async function handleAddContact() {
     if (!newContact.first_name.trim()) return;
     setAddingContact(true);
-    const res = await fetch("/api/admin/investors", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newContact),
-    });
-    if (res.ok) {
-      setAddContactOpen(false);
-      setNewContact({ first_name: "", last_name: "", email: "", phone: "", category: "New Lead", notes: "", source: "Admin Added", friend_of_ralph: false, amount_of_interest: 0 });
-      fetchInvestors();
-      fetchAllInvestors();
-      fetchStats();
+    setAddContactError(null);
+    try {
+      const res = await fetch("/api/admin/investors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newContact),
+      });
+      if (res.ok) {
+        setAddContactOpen(false);
+        setAddContactError(null);
+        setNewContact({ first_name: "", last_name: "", email: "", phone: "", category: "New Lead", notes: "", source: "Admin Added", friend_of_ralph: false, amount_of_interest: 0 });
+        fetchInvestors();
+        fetchAllInvestors();
+        fetchStats();
+      } else {
+        const data = await res.json().catch(() => null);
+        setAddContactError(data?.error || `Failed to add contact (${res.status})`);
+      }
+    } catch (err) {
+      setAddContactError(`Network error: ${err instanceof Error ? err.message : "Could not reach server"}`);
     }
     setAddingContact(false);
   }
@@ -271,7 +304,7 @@ export default function AdminDashboard() {
   async function saveNotes() { if (!detailInvestor) return; await updateInvestor(detailInvestor.id, { notes: editNotes }); setEditingNotes(false); }
 
   const selectedInvestors = allInvestors.filter((i) => selectedIds.has(i.id));
-  const hasEmailRecipients = selectedInvestors.some((i) => i.email);
+  const hasEmailRecipients = selectedInvestors.some((i) => i.email) || adhocEmails.length > 0;
 
   if (loading) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -696,18 +729,35 @@ export default function AdminDashboard() {
                         <button onClick={() => toggleSelect(i.id)} className="ml-0.5 text-slate-400 hover:text-slate-600">&times;</button>
                       </span>
                     ))}
-                    {selectedIds.size === 0 && <span className="text-xs text-slate-400 py-0.5">Search below to add recipients</span>}
+                    {adhocEmails.map((a) => (
+                      <span key={a.email} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md border bg-blue-50 text-blue-700 border-blue-200">
+                        {a.email}
+                        <button onClick={() => removeAdhocEmail(a.email)} className="ml-0.5 text-blue-400 hover:text-blue-600">&times;</button>
+                      </span>
+                    ))}
+                    {selectedIds.size === 0 && adhocEmails.length === 0 && <span className="text-xs text-slate-400 py-0.5">Search below to add recipients, or type an email address</span>}
                   </div>
                   <div className="relative">
-                    <input ref={recipientInputRef} type="text" value={recipientSearch} onChange={(e) => { setRecipientSearch(e.target.value); setRecipientDropdown(true); }} onFocus={() => setRecipientDropdown(true)} placeholder="Type a name or email to add..." className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-b-lg text-sm text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                    <input ref={recipientInputRef} type="text" value={recipientSearch} onChange={(e) => { setRecipientSearch(e.target.value); setRecipientDropdown(true); }} onFocus={() => setRecipientDropdown(true)} onKeyDown={(e) => { if (e.key === "Enter" && recipientSearch.trim() && isValidEmail(recipientSearch.trim())) { e.preventDefault(); addAdhocEmail(recipientSearch); } }} placeholder="Type a name or email to add..." className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-b-lg text-sm text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
                     {recipientDropdown && recipientSearch.trim() && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
-                        {recipientResults.length === 0 ? <div className="px-3 py-4 text-sm text-slate-400 text-center">No matches found</div> : recipientResults.map((inv) => (
+                        {recipientResults.length === 0 && !isValidEmail(recipientSearch.trim()) && (
+                          <div className="px-3 py-4 text-sm text-slate-400 text-center">No matches found — type a full email to add an external recipient</div>
+                        )}
+                        {recipientResults.map((inv) => (
                           <button key={inv.id} onClick={() => addRecipient(inv.id)} className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 transition-colors text-left">
                             <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600 shrink-0">{inv.first_name[0]}{(inv.last_name || "")[0] || ""}</div>
                             <div className="flex-1 min-w-0"><p className="text-sm font-medium text-slate-900">{inv.first_name} {inv.last_name || ""}</p><p className="text-xs text-slate-400 truncate">{inv.email || "No email"} · {inv.category}</p></div>
                           </button>
                         ))}
+                        {isValidEmail(recipientSearch.trim()) && !adhocEmails.some((a) => a.email.toLowerCase() === recipientSearch.trim().toLowerCase()) && (
+                          <button onClick={() => addAdhocEmail(recipientSearch)} className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 transition-colors text-left border-t border-slate-100">
+                            <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-600 shrink-0">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            </div>
+                            <div className="flex-1 min-w-0"><p className="text-sm font-medium text-blue-700">Add external recipient</p><p className="text-xs text-slate-400 truncate">{recipientSearch.trim()}</p></div>
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -747,8 +797,8 @@ export default function AdminDashboard() {
               </div>
 
               <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-4 flex items-center justify-between">
-                <p className="text-xs text-slate-400">From: ralph@primedealerfund.com · {selectedInvestors.filter(i => i.email).length} recipients</p>
-                <button onClick={handleSendEmail} disabled={sending || !hasEmailRecipients || !emailSubject || !emailBody} className="px-5 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">{sending ? "Sending..." : "Send Email"}</button>
+                <p className="text-xs text-slate-400">From: ralph@primedealerfund.com · {selectedInvestors.filter(i => i.email).length + adhocEmails.length} recipients</p>
+                <button onClick={handleSendEmail} disabled={sending || !hasEmailRecipients || !emailSubject || !emailBody} className="px-5 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">{sending ? "Sending..." : `Send Email`}</button>
               </div>
             </motion.div>
           </>
@@ -759,12 +809,12 @@ export default function AdminDashboard() {
       <AnimatePresence>
         {addContactOpen && (
           <>
-            <motion.div className="fixed inset-0 bg-black/30 z-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setAddContactOpen(false)} />
+            <motion.div className="fixed inset-0 bg-black/30 z-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => { setAddContactOpen(false); setAddContactError(null); }} />
             <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
               <div className="bg-white rounded-xl shadow-xl w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
                 <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                   <h2 className="text-base font-semibold text-slate-900">Add Contact</h2>
-                  <button onClick={() => setAddContactOpen(false)} className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+                  <button onClick={() => { setAddContactOpen(false); setAddContactError(null); }} className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
                 </div>
                 <div className="p-6 space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -814,9 +864,16 @@ export default function AdminDashboard() {
                     <textarea value={newContact.notes} onChange={(e) => setNewContact({ ...newContact, notes: e.target.value })} rows={3} className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 resize-none" />
                   </div>
                 </div>
-                <div className="px-6 py-4 border-t border-slate-200 flex justify-end gap-3">
-                  <button onClick={() => setAddContactOpen(false)} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Cancel</button>
-                  <button onClick={handleAddContact} disabled={!newContact.first_name.trim() || addingContact} className="px-5 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed">{addingContact ? "Adding..." : "Add Contact"}</button>
+                <div className="px-6 py-4 border-t border-slate-200 flex flex-col gap-3">
+                  {addContactError && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-600">{addContactError}</p>
+                    </div>
+                  )}
+                  <div className="flex justify-end gap-3">
+                    <button onClick={() => { setAddContactOpen(false); setAddContactError(null); }} className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700">Cancel</button>
+                    <button onClick={handleAddContact} disabled={!newContact.first_name.trim() || addingContact} className="px-5 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed">{addingContact ? "Adding..." : "Add Contact"}</button>
+                  </div>
                 </div>
               </div>
             </motion.div>
