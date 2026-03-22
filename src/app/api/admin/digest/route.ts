@@ -178,8 +178,8 @@ export async function POST() {
     // Send
     const resend = getResend();
     await resend.emails.send({
-      from: "Prime Dealer Fund <ralph@primedealerfund.com>",
-      to: "ralph@primedealerfund.com",
+      from: "Prime Dealer Fund <Ralph@PrimeDealerFund.com>",
+      to: "Ralph@PrimeDealerFund.com",
       subject: `${hasUrgent ? "⚡ " : ""}Daily Digest — ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })}${overdueTasks?.length ? ` · ${overdueTasks.length} overdue` : ""}`,
       html,
     });

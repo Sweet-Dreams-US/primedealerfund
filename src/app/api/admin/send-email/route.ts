@@ -84,7 +84,7 @@ export async function POST(request: Request) {
 
         try {
           const { data } = await resend.emails.send({
-            from: "Ralph Marcuccilli <ralph@primedealerfund.com>",
+            from: "Ralph Marcuccilli <Ralph@PrimeDealerFund.com>",
             to: recipient.email,
             subject,
             html,
@@ -113,7 +113,7 @@ export async function POST(request: Request) {
 
       try {
         const { data } = await resend.emails.send({
-          from: "Ralph Marcuccilli <ralph@primedealerfund.com>",
+          from: "Ralph Marcuccilli <Ralph@PrimeDealerFund.com>",
           to: adhoc.email,
           subject,
           html,
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
     const { data: emailLog } = await supabase
       .from("email_log")
       .insert({
-        sender: "ralph@primedealerfund.com",
+        sender: "Ralph@PrimeDealerFund.com",
         subject,
         body,
         recipient_count: results.length,

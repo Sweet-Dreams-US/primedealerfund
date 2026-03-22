@@ -40,8 +40,8 @@ export default function Footer() {
               />
             </Link>
             <p className="text-[#9ca3af] text-sm leading-relaxed mb-6">
-              Institutional-quality automotive dealership investment. Acquiring,
-              optimizing, and scaling franchise dealerships across America.
+              A private equity vehicle co-investing with Coleman Automotive Group
+              in the acquisition and optimization of automotive dealerships across the U.S.
             </p>
           </div>
 
@@ -72,26 +72,32 @@ export default function Footer() {
           <p className="text-[#6b7280] text-xs leading-relaxed">
             <strong className="text-[#9ca3af]">Important Legal Notice:</strong> This
             website and all materials herein are for informational purposes only and
-            do not constitute an offer to sell or a solicitation of an offer to
-            purchase any securities. Any offering of interests in Prime Dealer
-            Equity Fund is made only to accredited investors as defined in Rule 501
-            of Regulation D, pursuant to a Private Placement Memorandum (PPM).
+            are not intended to constitute an offer to sell any securities. Any
+            offering of interests in Prime Dealer Equity Fund (the Fund) is made
+            only to &ldquo;accredited investors&rdquo; (as defined in Rule 501 of
+            Regulation D of the federal securities laws) pursuant to Regulation D,
+            Rule 506(c) of the Securities Act of 1933, as amended, and applicable
+            state securities laws, pursuant to the Fund&apos;s Private Placement
+            Memorandum (PPM).
           </p>
           <p className="text-[#6b7280] text-xs leading-relaxed">
             Investing in private equity involves significant risk, including the
-            potential loss of principal. Past performance is not indicative of
+            potential loss of your investment. Past performance is not indicative of
             future results. Projected returns are targets only and are not
             guaranteed. Operational results cited on this website reflect the
             performance of specific Coleman Automotive Group dealerships and are
             provided as evidence of the operator&apos;s execution capabilities
-            only. These results do not represent past or projected fund returns.
+            only. These results do not represent past or projected Fund assets or Fund returns.
           </p>
           <p className="text-[#6b7280] text-xs leading-relaxed">
-            Prospective investors should review the PPM in full and consult with
+            Prospective investors should review the PPM and consult with
             their own legal, tax, and financial advisors before making any
-            investment decision. Securities offered pursuant to Regulation D, Rule
-            506(c) of the Securities Act of 1933, as amended. Available only to
-            accredited investors.
+            investment decision.
+          </p>
+          <p className="text-[#6b7280] text-xs leading-relaxed">
+            The Fund is managed by Prime Management Partners, LLC, an Indiana LLC
+            and exempt reporting adviser located at 11117 Creekwood Ct., Fort Wayne,
+            IN 46814.
           </p>
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
             <p className="text-[#4b5563] text-xs">
@@ -99,7 +105,7 @@ export default function Footer() {
               reserved.
             </p>
             <p className="text-[#4b5563] text-xs">
-              A Coleman Prime Automotive venture.
+              Managed by Prime Management Partners, LLC.
             </p>
           </div>
         </div>

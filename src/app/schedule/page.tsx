@@ -542,10 +542,10 @@ export default function SchedulePage() {
                 <p className="text-navy-400 text-sm">
                   Questions? Contact us at{" "}
                   <a
-                    href="mailto:ralph@PrimeDealerFund.com"
+                    href="mailto:Ralph@PrimeDealerFund.com"
                     className="text-gold-400 hover:underline"
                   >
-                    ralph@PrimeDealerFund.com
+                    Ralph@PrimeDealerFund.com
                   </a>
                 </p>
               </motion.div>

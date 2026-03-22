@@ -20,20 +20,20 @@ const timeline = [
     year: "2022\u20132023",
     title: "Building the Playbook",
     description:
-      "Kyle Coleman acquires and turns around multiple franchise dealerships in the Midwest, proving the operational methodology and building the track record that will become the foundation for institutional-scale deployment.",
+      "Kyle Coleman acquires and turns around multiple franchise dealerships in the Midwest, proving the operational methodology and building the track record that will become the foundation for the Fund's investment strategy.",
   },
   {
     year: "2024",
     title: "Fund Formation & Rapid Expansion",
     description:
-      "Prime Dealer Equity Fund is established to bring institutional capital to automotive retail. Three dealerships acquired in rapid succession: Nissan Warsaw (IN), Mt. Pleasant Chevy GMC CDJR (IA), and Le Mars Chevy GMC CDJR (IA). Ralph Marcuccilli joins as strategic advisor.",
+      "Prime Dealer Equity Fund is established to offer private investment opportunities in automotive retail. Three dealerships acquired in rapid succession: Nissan Warsaw (IN), Mt. Pleasant Chevy GMC CDJR (IA), and Le Mars Chevy GMC CDJR (IA). Ralph Marcuccilli joins as strategic advisor.",
     image: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/FrontofStoreNissanWarsaw.webp",
   },
   {
     year: "2025",
     title: "Nissan Streetsboro & National Scale",
     description:
-      "Coleman Automotive expands into Ohio with the acquisition of Nissan Streetsboro, serving the greater Akron-Cleveland metro. The Road to 40 rooftops accelerates with a pipeline of qualified acquisition targets across multiple states.",
+      "Coleman Automotive expands into Ohio with the acquisition of Nissan Streetsboro, serving the greater Akron-Cleveland metro. The \u201CRoad to 40 rooftops\u201D accelerates with a pipeline of qualified acquisition targets for the Fund's investment strategy across multiple states.",
     image: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Streetsboro/streetsborofrontofstore.webp",
   },
   {
@@ -75,7 +75,7 @@ function TimelineSection() {
         <SectionHeader
           label="Timeline"
           title="Our Journey"
-          subtitle="From a single dealership to an institutional-grade investment platform."
+          subtitle="From a single dealership to a Fund structured as a single purpose vehicle (SPV) investing directly or indirectly in interests in multiple dealerships."
         />
         <motion.div
           ref={ref}
@@ -198,7 +198,7 @@ export default function StoryPage() {
             className="text-lg text-navy-300 max-w-2xl mx-auto leading-relaxed"
           >
             Prime Dealer Equity Fund was born from hands-on dealership operations — not a
-            spreadsheet. Our team has bought, fixed, and scaled dealerships from the
+            spreadsheet. Our co-investor&apos;s team has bought, fixed, and scaled dealerships from the
             ground up, developing a repeatable playbook that drives consistent returns.
           </motion.p>
         </div>
@@ -214,7 +214,7 @@ export default function StoryPage() {
             Meet the Team Behind the Fund
           </h2>
           <p className="text-navy-300 mb-8">
-            Learn about the operators and advisors driving Prime Dealer Equity Fund.
+            Learn about the operators and advisor driving Prime Dealer Equity Fund.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <MagneticButton href="/team" variant="primary">

@@ -68,7 +68,7 @@ export const blogPosts: BlogPost[] = [
     content: [
       {
         type: "paragraph",
-        text: "Most investors have never seriously considered owning a car dealership. They should.",
+        text: "Most investors have never seriously considered investing in a car dealership. They should.",
       },
       {
         type: "paragraph",
@@ -76,7 +76,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "While institutional capital has spent the last decade chasing multifamily, self-storage, and triple-net retail, the franchised auto dealership has quietly delivered a combination of tangible real estate security, diversified operational cash flow, and legal protections that none of those asset classes can match. The reason most investors have missed it is simple: dealerships look complicated from the outside. From the inside, the math is remarkably clear.",
+        text: "While private capital has spent the last decade chasing multifamily, self-storage, and triple-net retail, the franchised auto dealership has quietly delivered a combination of tangible real estate security, diversified operational cash flow, and legal protections that none of those asset classes provide. The reason most investors have missed this investment opportunity is simple: dealerships look complicated from the outside. From the inside, the math is remarkably clear.",
       },
       {
         type: "subheading",
@@ -88,7 +88,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: 'A franchised dealership generates income from new vehicle sales, used vehicle sales, finance and insurance products, and fixed operations \u2014 the parts, service, and collision departments. Industry professionals call this the "four-legged stool," and it is the structural reason dealerships survive recessions that wipe out single-revenue retail businesses.',
+        text: 'A franchised dealership generates income from new vehicle sales, used vehicle sales, finance and insurance (F&I) products, and fixed operations \u2014 the parts, service, and collision departments. Industry professionals call this the "four-legged stool," and it is the structural reason dealerships survive recessions that wipe out single-revenue retail businesses.',
       },
       {
         type: "paragraph",
@@ -141,8 +141,8 @@ export const blogPosts: BlogPost[] = [
       {
         type: "callout-prime",
         lines: [
-          "Prime Dealer Equity Fund structures every acquisition to capture both sides of the value equation \u2014 the real estate as a stable, tangible base and the operational cash flow as the return accelerator.",
-          "Investors hold preferred equity with priority capital return before any secondary distributions.",
+          "Prime Dealer Equity Fund structures every co-investment in a dealership acquisition to capture both sides of the value equation \u2014 the real estate as a stable, tangible base and the operational cash flow as the return accelerator.",
+          "The Fund will hold preferred equity as its minority ownership interest in an acquisition entity with priority capital return before any distributions to the majority owner (Coleman Auto).",
         ],
         link: {
           text: "Learn how the fund structure works",
@@ -264,7 +264,7 @@ export const blogPosts: BlogPost[] = [
     subtitle:
       "The largest ownership turnover in automotive retail history is happening right now. Most investors don\u2019t even know it exists.",
     author: "Ralph Marcuccilli",
-    authorRole: "Fund Manager \u2014 Prime Dealer Equity Fund",
+    authorRole: "Managing Member of Fund Manager \u2014 Prime Dealer Equity Fund",
     date: "March 17, 2026",
     readTime: "10 min read",
     heroImage: {
@@ -278,7 +278,7 @@ export const blogPosts: BlogPost[] = [
     content: [
       {
         type: "paragraph",
-        text: "There are approximately 18,000 franchised new-car dealerships operating in the United States right now. The vast majority of them are still owned by families \u2014 many by the same families who opened them thirty, forty, or fifty years ago. The owners who built these businesses are now in their seventies and eighties. Their children, in growing numbers, do not want them.",
+        text: "There are approximately 18,000 franchised new-car dealerships operating in the United States right now. The vast majority of them are still owned by families \u2014 many by the same families who opened them thirty, forty, or fifty years ago. The owners who built these businesses are now in their seventies and eighties. Their children, in growing numbers, do not want to own or operate them.",
       },
       {
         type: "paragraph",
@@ -481,7 +481,7 @@ export const blogPosts: BlogPost[] = [
     title:
       "What Happens in the First 90 Days After We Acquire a Dealership",
     subtitle:
-      "The clock starts the moment the keys change hands. Here is exactly how we turn an underperforming store into a cash-flowing asset.",
+      "The clock starts the moment the dealership keys change hands. Here is exactly how we turn an underperforming store into a cash-flowing asset.",
     author: "Kyle Coleman",
     authorRole: "CEO \u2014 Coleman Automotive Group",
     date: "March 24, 2026",
@@ -497,11 +497,11 @@ export const blogPosts: BlogPost[] = [
     content: [
       {
         type: "paragraph",
-        text: "Every dealership acquisition looks the same from the outside. New name on the sign. Maybe a ribbon cutting. A press release about exciting new ownership.",
+        text: "Every dealership acquisition looks the same from the outside. New name on the sign. Maybe a ribbon cutting. A press release about exciting new controlling ownership.",
       },
       {
         type: "paragraph",
-        text: "From the inside, it looks nothing like that. The moment the keys change hands, the real work begins \u2014 and the first 90 days determine whether the capital deployed into that asset will generate returns or sit idle while legacy problems compound.",
+        text: "From the inside, it looks nothing like that. The moment the dealership keys change hands, the real work begins \u2014 and the first 90 days determine whether the capital deployed into that dealership (as an asset) will generate returns or sit idle while legacy problems compound.",
       },
       {
         type: "paragraph",
@@ -663,7 +663,7 @@ export const blogPosts: BlogPost[] = [
         type: "callout-prime",
         lines: [
           "The 90-day turnaround is the mechanism that protects investor capital. Every dollar deployed by Prime Dealer Equity Fund is subjected to this operational process \u2014 verified assets on day one, optimized cost structures by day 45, revenue acceleration by day 75, and autonomous operations by day 90.",
-          "The targeted 8% annual distribution is grounded in operational discipline and a repeatable turnaround methodology \u2014 though actual results may vary based on dealership performance and market conditions.",
+          "The Fund\u2019s targeted 8% annual distribution is grounded in revenue expectations based on operational discipline and a repeatable turnaround methodology \u2014 though actual results may vary based on dealership performance and market conditions.",
         ],
         link: {
           text: "Learn how the fund structure works",
@@ -692,15 +692,15 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "For a multi-store group, centralization amplifies this effect. Back-office functions \u2014 accounting, payroll, HR, compliance, IT \u2014 are consolidated at the group level so that individual stores are not duplicating administrative overhead. A centralized Business Development Center can manage inbound leads and service appointments for multiple locations, ensuring that no call goes unanswered and that the service advisors on the floor are focused on the customers standing in front of them, not the phone ringing behind them.",
+        text: "For a multi-store group, centralization amplifies this effect. Back-office functions \u2014 accounting, payroll, HR, compliance, IT \u2014 are consolidated at the group level so that individual stores are not duplicating administrative overhead. A centralized Business Development Center can manage inbound leads and service appointments for multiple locations, ensuring that no call goes unanswered and that the service advisors on the floor are focused on the customers standing in front of them, not the phone ringing.",
       },
       {
         type: "paragraph",
-        text: 'The endgame of Phase V is a store where the ownership group can shift its focus to the next acquisition with confidence that the current asset is delivering consistent, predictable results. The General Manager operates within the "box" \u2014 the core values and minimum performance standards \u2014 with full autonomy to make local decisions. The KPIs are visible. The DOC is running. The talent is aligned. The system is the management.',
+        text: 'The endgame of Phase V is a store where the ownership group can shift its focus to the next acquisition with confidence that the current asset is delivering consistent, predictable results. The General Manager operates within the "box" \u2014 the core values and minimum performance standards \u2014 with full autonomy to make local decisions. The KPIs are visible. The DOC is running. The talent is aligned. The system is the core of the management.',
       },
       {
         type: "paragraph",
-        text: "This is what allows the Coleman Automotive Group to scale. Each turnaround does not just fix a single store \u2014 it proves the repeatability of the process and creates the retained earnings that fund the next acquisition in the pipeline. The 90-day playbook is not a one-time project. It is the engine that drives the entire growth strategy.",
+        text: "This is what allows the Coleman Automotive Group to scale. Each turnaround does not just fix a single store \u2014 it proves the repeatability of the process and creates the retained earnings that fund the next acquisition in the pipeline. The 90-day playbook is not a one-time project. It is the engine that drives the entire growth strategy at each acquired dealership.",
       },
       {
         type: "subheading",
@@ -708,19 +708,19 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The speed of this process is not arbitrary. It is a direct function of the fund\u2019s financial architecture.",
+        text: "The speed of this process is not arbitrary. It is a direct function of the Fund\u2019s investment strategy.",
       },
       {
         type: "paragraph",
-        text: "Prime Dealer Equity Fund targets an 8% annual distribution with priority capital return projected within five years. That timeline only works if the capital deployed into each acquisition begins generating cash flow quickly \u2014 not in a year, not after a prolonged stabilization period, but within the first quarter of ownership. The 90-day turnaround is what makes that math work. It compresses the time between capital deployment and cash flow generation, which is the single most important variable in the fund\u2019s return profile.",
+        text: "Prime Dealer Equity Fund targets an 8% annual distribution with priority capital return projected within five years. That timeline only works if the capital deployed into each dealership acquisition begins generating cash flow quickly \u2014 not in a year, not after a prolonged stabilization period, but within the first quarter of dealership control. The 90-day turnaround is what makes that math work. It compresses the time between capital deployment and cash flow generation, which is the single most important variable in the Fund\u2019s investment strategy for returns on investment.",
       },
       {
         type: "paragraph",
-        text: "Every phase is designed to protect and accelerate the investor\u2019s capital. The forensic audit verifies that the assets are real. The vendor pruning eliminates margin leakage. The talent injection creates the revenue catalyst. The market activation turns the store\u2019s potential into actual transactions. And the autonomous system ensures that the returns are sustainable, not dependent on the constant presence of the turnaround team.",
+        text: "Every phase is designed to enable the Fund\u2019s investment strategy with respect to the investor\u2019s capital. The forensic audit verifies that the assets are real. The vendor pruning eliminates margin leakage. The talent injection creates the revenue catalyst. The market activation turns the store\u2019s potential into actual transactions. And the autonomous system ensures that the returns are sustainable, not dependent on the constant presence of the turnaround team.",
       },
       {
         type: "paragraph",
-        text: "The 90-day playbook is how Coleman Automotive turns an acquisition into an asset. It is how Prime Dealer Equity Fund turns investor capital into cash flow. And it is why the operational discipline behind this fund is not a talking point \u2014 it is the investment thesis itself.",
+        text: "The 90-day playbook is how Coleman Automotive turns an acquired dealership into a revenue producing asset. It is how Prime Dealer Equity Fund plans to turn investor capital into cash flow. And it is why the operational discipline behind the Manager\u2019s of the Fund is not a talking point \u2014 it is part of the Fund\u2019s investment strategy.",
       },
     ],
     relatedSlugs: [
@@ -841,7 +841,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "They restructure technician dispatching to maximize billable hours per bay. They audit parts inventory to eliminate obsolescence and free up trapped working capital. They negotiate statutory retail rate increases for manufacturer warranty work \u2014 a highly technical process that most dealerships leave money on the table with. They implement triage lane systems that increase throughput without expanding the physical footprint. And they build the customer retention frameworks that convert a one-time vehicle buyer into a lifetime service client.",
+        text: "They restructure technician dispatching to maximize billable hours per bay. They audit parts inventory to eliminate obsolescence and free up trapped working capital. They negotiate statutory retail rate increases for manufacturer warranty work \u2014 a highly technical process where most dealerships leave money on the table. They implement triage lane systems that increase throughput without expanding the physical footprint. And they build the customer retention frameworks that convert a satisfied vehicle buyer into a lifetime service client.",
       },
       {
         type: "paragraph",
@@ -853,7 +853,7 @@ export const blogPosts: BlogPost[] = [
         lines: [
           "2019 (Pre-Pandemic): 42%",
           "2025 (Current): 49%",
-          "The service bay is now the single largest profit center in the average dealership \u2014 and the quality of the person running it determines whether that profit is captured or left on the table.",
+          "The service bay can be the single largest profit center in the average dealership \u2014 and the quality of the person running it affects that profit.",
         ],
         link: {
           text: "How we optimize fixed operations in the first 90 days after acquisition",
@@ -909,12 +909,12 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The capital recovered through this process alone routinely covers a significant portion of the premium compensation paid to the executive who implemented it. The talent-first philosophy does not just create revenue. It stops the bleeding that less experienced leadership never notices.",
+        text: "The capital recovered through this process alone routinely covers a significant portion of the premium compensation paid to the executive who implemented it. The talent-first philosophy does not just create revenue it stops financial losses that less experienced leadership failed to address.",
       },
       {
         type: "callout-prime",
         lines: [
-          "Prime Dealer Equity Fund does not deploy capital into a raw startup and hope the right team materializes. The fund co-invests alongside a pre-assembled executive team \u2014 a CFO, COO, Director of Fixed Operations, and operational leadership bench \u2014 whose premium compensation is justified by measurable results at every previous store they have touched.",
+          "Prime Dealer Equity Fund does not deploy capital into a raw startup and hope the right team materializes. The Fund co-invests alongside a pre-assembled executive team \u2014 a CFO, COO, Director of Fixed Operations, and operational leadership bench \u2014 whose premium compensation is justified by measurable results at every previous store they have touched.",
           "The talent is not an expense line. It is the infrastructure that makes the returns possible.",
         ],
         link: {
@@ -944,7 +944,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "We would rather overextend on a leader who transforms the trajectory of the business than save money on someone who maintains the status quo. The math has proven us right at every store we have touched. And it is the single biggest reason the stores in this portfolio perform the way they do.",
+        text: "We would rather overextend on a leader who transforms the trajectory of the business than save money on someone who maintains the status quo. The math has proven us right at every store we have touched. And it is the single biggest reason the dealerships invested in by the Fund are expected to perform.",
       },
     ],
     relatedSlugs: [
@@ -1046,7 +1046,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Now consider a dealership operating at 100% absorption. At that threshold, fixed operations cover every dollar of fixed overhead. The entire gross profit from every vehicle sold, every F&I product originated, and every trade-in retailed flows directly to the bottom line as pure net profit. The sales floor is no longer subsidizing the building. It is operating on top of a fully funded foundation. The dealership can price vehicles more aggressively to gain market share, absorb a slow month without panic, and weather an economic downturn that would devastate a store running at 50% absorption.",
+        text: "Now consider a dealership operating at 100% absorption. At that threshold, fixed operations cover every dollar of fixed overhead. The entire gross profit from every vehicle sold, every F&I product originated, and every trade-in retail flows directly to the bottom line as pure net profit. The sales floor is no longer subsidizing the building. It is operating on top of a fully funded foundation. The dealership can price vehicles more aggressively to gain market share, absorb a slow month without panic, and weather an economic downturn that would devastate a store running at 50% absorption.",
       },
       {
         type: "image",
@@ -1135,7 +1135,7 @@ export const blogPosts: BlogPost[] = [
       {
         type: "callout-prime",
         lines: [
-          "When Prime Dealer Equity Fund evaluates an acquisition target, the fixed operations performance is the first line item examined. A store with a low absorption rate and a shallow service customer base is not a weak asset \u2014 it is an underoptimized one. The Coleman team has a proven playbook for moving that number.",
+          "When the Fund Managers for Prime Dealer Equity Fund evaluates a potential dealership investment, the fixed operations performance is the first line item examined. A store with a low absorption rate and a shallow service customer base is not a weak asset \u2014 it is an under-optimized one. The Coleman team has a proven playbook for moving that number.",
         ],
         link: {
           text: "Learn how the fund\u2019s co-investment model captures this operational upside",
@@ -1152,7 +1152,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The first is the aging vehicle fleet. The average age of a vehicle on American roads has reached a record 12.8 to 14 years. Elevated new vehicle prices \u2014 routinely above $47,000 \u2014 have pushed large segments of consumers out of the new car market entirely. High interest rates have made financing even less accessible. The result is an expanding population of older vehicles logging record miles \u2014 3.55 trillion miles driven in 2024 \u2014 that require increasingly frequent and increasingly expensive maintenance. Older vehicles do not need oil changes. They need suspension overhauls, transmission repairs, electrical diagnostics, and heavy mechanical work. That is high-margin, high-ticket customer-pay volume flowing directly into the service bay.",
+        text: "The first is the aging vehicle fleet. The average age of a vehicle on American roads has reached a record 12.8 to 14 years. Elevated new vehicle prices \u2014 routinely above $47,000 \u2014 have pushed large segments of consumers out of the new car market entirely. High interest rates have made financing even less accessible. The result is an expanding population of older vehicles logging record miles \u2014 3.55 trillion miles driven in 2024 \u2014 that require increasingly frequent and increasingly expensive maintenance. Older vehicles do not just need oil changes. They need suspension overhauls, transmission repairs, electrical diagnostics, and heavy mechanical work. That is high-margin, high-ticket customer-pay volume flowing directly into the service bay.",
       },
       {
         type: "paragraph",
@@ -1164,7 +1164,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The total U.S. auto care and repair market is estimated at $373 billion. Franchised dealers currently capture about 28% of it. The remaining $130 billion-plus sitting with independent shops represents immediate, captureable market share for any operator willing to solve the scheduling, transparency, and communication problems that drive customers away from the dealership in the first place.",
+        text: "The total U.S. auto care and repair market is estimated at $373 billion. Franchised dealers currently capture about 28% of it. The remaining $130 billion-plus sitting with independent shops represents immediate, capturable market share for any operator willing to solve the scheduling, transparency, and communication problems that drive customers away from the dealership in the first place.",
       },
       {
         type: "subheading",
@@ -1176,7 +1176,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Fixed operations is a $156 billion recurring revenue engine that is structurally insulated from every force that makes the sales floor unpredictable \u2014 interest rate shocks, inventory gluts, consumer confidence swings, tariff threats, and manufacturer pricing missteps. It generates gross margins that are five to ten times higher than new vehicle sales. It converts one-time buyers into lifetime service clients whose retention directly fuels the next vehicle sale. And it operates on a demand base \u2014 aging vehicles, increasing complexity, mandatory maintenance \u2014 that is expanding, not contracting.",
+        text: "Fixed operations is a $156 billion recurring revenue engine that is structurally insulated from every force that makes the sales floor unpredictable \u2014 interest rate shocks, inventory gluts, consumer confidence swings, tariff threats, and manufacturer pricing missteps. It generates gross margins that are five to ten times higher than new vehicle sales. It converts satisfied buyers into lifetime service clients whose retention directly fuels the next vehicle sale. And it operates on a demand base \u2014 aging vehicles, increasing complexity, mandatory maintenance \u2014 that is expanding, not contracting.",
       },
       {
         type: "paragraph",
@@ -1184,7 +1184,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "That is the investment we make every time we acquire a store. And it is the reason the stores in this portfolio perform the way they do.",
+        text: "That is the investment we make every time we acquire a store. And it is the reason the stores in the Fund portfolio are expected to perform the way they will.",
       },
     ],
     relatedSlugs: [
@@ -1304,7 +1304,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "But the alternative was worse. Proceeding with a deal where the forward-looking regulatory exposure could not be reconciled would have meant deploying investor capital into an asset with structural headwinds that no amount of operational excellence could fully offset. We can optimize a sales floor. We can restructure a service department. We can overhaul vendor contracts and inject elite leadership talent. What we cannot do is change the manufacturer\u2019s EV production mandate or rewrite federal fuel economy standards.",
+        text: "But the alternative was worse. Proceeding with a deal where the forward-looking regulatory exposure could not be reconciled would have meant deploying investor capital into an asset with structural headwinds that no amount of operational excellence could fully offset. We can optimize a sales floor. We can restructure a service department. We can re-negotiate vendor contracts and inject elite leadership talent. What we cannot do is change the manufacturer\u2019s EV production mandate or rewrite federal fuel economy standards.",
       },
       {
         type: "callout-floor",
@@ -1380,7 +1380,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "subheading",
-        text: "Why This Matters for Investors",
+        text: "Why This Matters for Fund Investors",
       },
       {
         type: "image",
@@ -1444,7 +1444,7 @@ export const blogPosts: BlogPost[] = [
     subtitle:
       "When the operator\u2019s money is in the deal alongside yours, the incentives stop being theoretical.",
     author: "Ralph Marcuccilli",
-    authorRole: "Fund Manager \u2014 Prime Dealer Equity Fund",
+    authorRole: "Managing Member of Fund Manager \u2014 Prime Dealer Equity Fund",
     date: "April 21, 2026",
     readTime: "10 min read",
     heroImage: {
@@ -1458,7 +1458,7 @@ export const blogPosts: BlogPost[] = [
     content: [
       {
         type: "paragraph",
-        text: "The most common question we hear from prospective investors is not about the dealerships. It is about alignment.",
+        text: "The most common question we hear from prospective Fund investors is not about the dealerships. It is about alignment.",
       },
       {
         type: "paragraph",
@@ -1470,7 +1470,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The fund operates on a co-investment model. That means Coleman Automotive does not act as a hired manager collecting fees on investor capital. Coleman Automotive invests its own corporate capital alongside the fund in every acquisition. The operator\u2019s balance sheet is at risk in the same deals, on the same terms, with the same exposure. When we say our interests are aligned, we are not describing a philosophy. We are describing a capital structure.",
+        text: "The Fund operates on a co-investment model. That means Coleman Automotive does not act as a hired manager collecting fees on investor capital. Coleman Automotive invests its own corporate capital alongside the Fund in every acquisition. The operator\u2019s balance sheet is at risk in the same deals, on the same terms, with the same exposure. When we say our interests are aligned, we are not describing a philosophy. We are describing a capital structure.",
       },
       {
         type: "subheading",
@@ -1482,11 +1482,11 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The Prime Dealer Equity Fund is structured differently.",
+        text: "The Prime Dealer Equity Fund investment strategy operates differently.",
       },
       {
         type: "paragraph",
-        text: "Coleman Automotive is the majority owner and operator of every dealership the fund invests in. This is not a fund that acquires assets, hires third-party management, and hopes for the best. The operator \u2014 the team that physically walks the lot, runs the service bays, manages the inventory, and oversees the P&L \u2014 has its own capital deployed alongside the fund\u2019s capital in every single acquisition.",
+        text: "Coleman Automotive is the majority owner and operator of every dealership the Fund invests in. This is not a Fund that acquires assets, hires third-party management, and hopes for the best. The operator \u2014 the team that physically walks the lot, runs the service bays, manages the inventory, and oversees the P&L \u2014 has its own capital deployed alongside the Fund\u2019s capital in every single acquisition in the Fund\u2019s portfolio.",
       },
       {
         type: "paragraph",
@@ -1512,23 +1512,23 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "In a typical dealership acquisition, the capital stack has three layers. At the top \u2014 senior to everything \u2014 is the bank debt: floorplan financing, real estate mortgage, or acquisition credit facility. This is the money the lender provides, and it has first claim on the assets if something goes wrong.",
+        text: "In a typical dealership acquisition, the capital stack has three layers. At the top \u2014 senior to everything \u2014 is the bank debt: floorplan financing, real estate mortgage, or acquisition credit facility. This is the money the lender provides, and it has first claim on the dealership\u2019s assets if something goes wrong.",
       },
       {
         type: "paragraph",
-        text: "Below the bank debt sits the fund\u2019s investment, structured as preferred equity. \u201cPreferred\u201d means exactly what it sounds like: the fund\u2019s capital has priority over the operator\u2019s common equity in the distribution waterfall. In a downside scenario \u2014 reduced profitability, forced liquidation, or a sale below expectations \u2014 the preferred equity holders are satisfied before the common equity holders receive anything.",
+        text: "Below the bank debt sits the Fund\u2019s minority investment, structured as preferred equity. \u201cPreferred\u201d means exactly what it sounds like: the Fund\u2019s capital has priority over the operator\u2019s common equity in the distribution waterfall. In a downside scenario \u2014 reduced profitability, forced liquidation, or a sale below expectations \u2014 the preferred equity holders are satisfied before the common equity holders receive anything.",
       },
       {
         type: "paragraph",
-        text: "Below the preferred equity is Coleman Automotive\u2019s common equity \u2014 the operator\u2019s own capital, which is the last to be paid and the first to absorb losses.",
+        text: "Below the preferred equity is Coleman Automotive\u2019s controlling interest held in common equity \u2014 the operator\u2019s own capital, which is the last to be paid and the first to absorb losses.",
       },
       {
         type: "paragraph",
-        text: "This layering is not incidental. It is the structural mechanism that protects investor capital. The operator\u2019s equity sits beneath the fund\u2019s equity in the stack, which means Coleman Automotive takes the first loss before a dollar of investor principal is impaired. The operator has every financial incentive to prevent that scenario \u2014 because their own money disappears first.",
+        text: "This layering is not incidental. It is the structural mechanism that protects investor capital. The operator\u2019s common equity sits beneath the Fund\u2019s preferred equity in the stack, which means Coleman Automotive takes the first loss before a dollar of investor principal is impaired. The operator has every financial incentive to prevent that scenario \u2014 because their own money disappears first.",
       },
       {
         type: "paragraph",
-        text: "Each investment flows into a specific LLC that owns the physical dealership and its associated real estate. Investors are not buying into an opaque, pooled vehicle where capital disappears into a black box. They are buying into identified, tangible assets \u2014 buildings, land, inventory, franchise agreements \u2014 with inherent liquidation value that exists independently of the operation\u2019s performance.",
+        text: "Each Fund portfolio investment is structured to flow into a specific LLC that owns the dealership and its associated real estate. Investors are not buying into an opaque, pooled vehicle where capital disappears into a black box. They are buying into identified, tangible assets \u2014 buildings, land, inventory, franchise agreements \u2014 with inherent liquidation value that exists independently of the operation\u2019s performance.",
       },
       {
         type: "subheading",
@@ -1536,11 +1536,11 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The distribution waterfall defines the order in which cash flows are returned to investors and the operator. In the Prime Dealer Equity Fund, the waterfall is built around a single principle: the investor gets paid first.",
+        text: "The distribution waterfall defines the order in which cash flows are returned to Fund investors and the operator. In the Prime Dealer Equity Fund, the waterfall is built around a single principle: the Fund investor\u2019s capital is returned prior to the common equity held by the operator.",
       },
       {
         type: "paragraph",
-        text: "Tier 1 \u2014 Return of Capital. One hundred percent of distributable cash flow is directed to investors until their original investment has been fully returned. This is not a split. This is not a pro-rata distribution. Every distributable dollar goes back to the investor until their principal is whole. The fund projects a full capital return within five years \u2014 a timeline driven by the intensive 90-day turnaround strategy and the operational optimization that follows.",
+        text: "Tier 1 \u2014 Return of Capital. One hundred percent of distributable cash flow is directed to Fund investors until their original investment has been fully returned. This is not a split. This is not a pro-rata distribution. Every distributable dollar goes back to the investor until their principal is whole. The fund projects a full capital return within five years \u2014 a timeline driven by the intensive 90-day turnaround strategy and the operational optimization that follows.",
       },
       {
         type: "paragraph",
@@ -1548,7 +1548,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Tier 3 \u2014 Residual Equity. After the initial capital is returned, investors collectively retain a 35% equity stake in the acquiring entity.",
+        text: "Tier 3 \u2014 Residual Equity. After the initial capital is returned, Fund investors still collectively retain a 35% equity stake in the acquiring entity.",
       },
       {
         type: "image",
@@ -1568,7 +1568,7 @@ export const blogPosts: BlogPost[] = [
           "Tier 1: 100% of cash flow \u2192 investors (until full capital return, projected within 5 years)",
           "Tier 2: 8% annual preferred return (hurdle rate)",
           "Tier 3: 35% residual equity retained by investors after capital return",
-          "The operator does not participate in upside until investor principal is whole.",
+          "The operator does not participate in upside until investor principal is returned.",
         ],
         link: {
           text: "Review the full fund structure",
@@ -1616,7 +1616,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "In a typical real estate syndication, investors receive pro-rata distributions from day one, which feels satisfying but means principal recovery is slow and often depends on a terminal sale event years down the road. The Prime Dealer Equity Fund prioritizes capital return velocity \u2014 getting the investor\u2019s principal back as fast as the operational turnaround allows, then transitioning to permanent equity participation.",
+        text: "In a typical real estate syndication, investors receive pro-rata distributions from day one, which feels satisfying but means principal recovery is slow and often depends on a terminal sale event years down the road. The Prime Dealer Equity Fund prioritizes capital return velocity \u2014 getting the investor\u2019s initial investment returned as fast as the operational turnaround allows, allowing investors to remain invested for capital gains participation.",
       },
       {
         type: "paragraph",
@@ -1624,12 +1624,12 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The result is a structure that does three things simultaneously: it protects principal through preferred positioning and priority return, it generates current income through the 8% target yield, and it creates long-term wealth through the 35% residual equity in a growing portfolio. Most alternative investment structures accomplish one of these. Very few accomplish all three.",
+        text: "The result is a structure that does three things simultaneously: it protects your initial investment through preferred positioning and priority return, it generates current income through the 8% target yield, and it creates long-term wealth through the 35% residual equity in a growing portfolio. Most alternative investment structures accomplish one of these. Very few accomplish all three.",
       },
       {
         type: "callout-prime",
         lines: [
-          "The fund\u2019s structure is not a traditional syndication or a debt instrument. It is a preferred equity co-investment that combines capital preservation, current yield, and permanent equity participation in a growing dealership portfolio \u2014 backed by tangible real estate and an operator with capital at risk alongside every investor.",
+          "The Fund\u2019s structure is not a traditional syndication or a debt instrument. It is a preferred equity co-investment that combines capital preservation, current yield, and permanent equity participation in the Fund\u2019s growing dealership portfolio \u2014 invested in tangible real estate and co-invested with the operator with capital to risk alongside every investor.",
         ],
         link: {
           text: "For qualified investor inquiries",
@@ -1642,23 +1642,23 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Structural alignment through co-investment is the primary protection. But governance adds a second layer.",
+        text: "Structural alignment through co-investment is the primary protection for Fund investors. But governance adds a second layer.",
       },
       {
         type: "paragraph",
-        text: "The Prime Dealer Equity Fund is managed by Ralph Marcuccilli \u2014 a serial entrepreneur with over three decades of institutional executive leadership in banking, fintech, and investment scaling. Before joining as Fund Manager, Marcuccilli founded and led Allied Payment Network, a fintech company that scaled to serve nearly 500 financial institutions across 49 states representing over $310 billion in underlying assets. He successfully guided that company through substantial private equity capital raises and strategic partnerships with firms like Plymouth Growth Partners and RF Investment Partners.",
+        text: "The Prime Dealer Equity Fund is managed by Prime Management Partners, LLC (the Fund Manager), for which Ralph Marcuccilli serves as the Managing Member. Ralph is an entrepreneur with over three decades of institutional executive leadership in banking, fintech, and investment scaling. Before joining the Fund Manager, Marcuccilli founded and led Allied Payment Network, a fintech company that scaled to serve nearly 500 financial institutions across 49 states representing over $310 billion in underlying assets. He successfully guided that company through substantial private equity capital raises and strategic partnerships with firms like Plymouth Growth Partners and RF Investment Partners.",
       },
       {
         type: "paragraph",
-        text: "Kyle Coleman runs the dealerships. Ralph Marcuccilli manages the fund. The two roles are structurally separated \u2014 what we describe in the next post in this series as the \u201cchurch and state\u201d governance model. Coleman is focused entirely on driving EBITDA at the rooftop level. Marcuccilli is focused entirely on fund governance, capital deployment, regulatory compliance, and LP communications.",
+        text: "Kyle Coleman is the CEO of Coleman Automotive, which will be the majority owner and operator of the Fund\u2019s portfolio dealerships. Ralph Marcuccilli serves as the Managing Member of the Fund Manager. The two roles are structurally separated \u2014 what we describe in the next post in this series as the \u201cchurch and state\u201d governance model. Coleman is focused entirely on driving EBITDA at the dealership rooftop level. Marcuccilli is focused entirely on Fund governance, capital deployment, regulatory compliance, and limited investor communications.",
       },
       {
         type: "paragraph",
-        text: "This separation exists for one reason: so that no single individual controls both the operation of the assets and the management of investor capital. The fund manager watches the operator\u2019s performance on behalf of the investors. The operator watches the fund manager\u2019s capital deployment on behalf of the enterprise. Neither entity has unchecked authority, and both are accountable to the structure.",
+        text: "This separation exists for one reason: so that no single individual controls both the operation of the dealerships (Fund assets) and the management of investor capital. The Fund Manager watches the operator\u2019s performance on behalf of the Fund investors. The operator watches the Fund Manager\u2019s capital deployment on behalf of the dealerships. Neither has unchecked authority, and both are accountable in this structure.",
       },
       {
         type: "paragraph",
-        text: "For investors who have seen funds where the founder is the operator, the fund manager, the compliance officer, and the IR department all in one person \u2014 this separation is the governance standard they have been looking for.",
+        text: "For investors who have seen Funds where the founder is also the operator, and the fund manager, the compliance officer, and the IR department all in one person \u2014 this separation provides for accountability under a governance standard.",
       },
       {
         type: "subheading",
@@ -1670,7 +1670,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "What the structure does is ensure that every one of those risks is shared. The operator\u2019s capital is exposed to the same forces as the investor\u2019s capital. The waterfall prioritizes the investor\u2019s recovery before the operator participates. The preferred equity position provides a structural buffer. The tangible real estate provides liquidation value. And the 35% residual ensures that the investor participates in the long-term upside that the operator\u2019s talent-first team and fixed operations expertise are engineered to create.",
+        text: "What the structure does is ensure that every one of those risks is shared. The operator\u2019s capital is exposed to the same risks as the investor\u2019s capital. The waterfall prioritizes the investor\u2019s recovery before the operator\u2019s investment. The preferred equity position provides a structural buffer. The tangible real estate of the dealership held as an indirect Fund investment provides liquidation value. And the 35% residual ensures that the limited investors participate in the long-term upside that the operator\u2019s talent-first team and fixed operations expertise are incentivized to create.",
       },
     ],
     relatedSlugs: [
@@ -1698,7 +1698,7 @@ export const blogPosts: BlogPost[] = [
         "Le Mars Chevy GMC CDJR in rural Iowa. Lower overhead, deeper customer relationships, and geographic insulation from price competition create a margin profile that most metro stores cannot match. Photo: Sweet Dreams US LLC",
     },
     excerpt:
-      "The stores in the Coleman Automotive portfolio are not on metro auto rows. They are in Warsaw, Indiana. Mt. Pleasant, Iowa. Le Mars, Iowa. And the economics that make them defensible are structural, not circumstantial.",
+      "The stores in the Coleman Automotive portfolio are not on metro auto rows. They are in Warsaw, Indiana. Mt. Pleasant, Iowa and Le Mars, Iowa. And the economics that make them defensible are structural, not circumstantial.",
     content: [
       {
         type: "paragraph",
@@ -1706,7 +1706,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The stores in the Coleman Automotive portfolio are not located on metro auto rows. They are located in Warsaw, Indiana. Mt. Pleasant, Iowa. Le Mars, Iowa. Towns where the nearest same-brand competitor is fifty to a hundred miles away. Towns where the dealership is a primary employer, a community institution, and the only qualified service provider for an entire region.",
+        text: "The stores in the Coleman Automotive portfolio are not located on metro auto rows. They are located in Warsaw, Indiana. Mt. Pleasant, Iowa and Le Mars, Iowa. Towns where the nearest same-brand competitor is 50 to 100 miles away. Towns where the dealership is a primary employer, a community institution, and the only qualified service provider for an entire region.",
       },
       {
         type: "paragraph",
@@ -1714,7 +1714,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "In the first post in this series, we explained why automotive dealerships are a compelling asset class. This post explains why the specific type of dealership we acquire \u2014 the rural, underperforming, geographically insulated store \u2014 produces the margin profile that makes the entire fund thesis work.",
+        text: "In the first post in this series, we explained why automotive dealerships are a compelling asset class. This post explains why the specific type of dealership we acquire \u2014 the rural, underperforming, geographically insulated store \u2014 produces the margin profile that support the Fund\u2019s investment strategy.",
       },
       {
         type: "subheading",
@@ -1722,7 +1722,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The single most valuable characteristic of a rural dealership is the one that cannot be purchased, replicated, or competed away: geographic insulation.",
+        text: "The single most valuable characteristic of a rural dealership is its geographic isolation.",
       },
       {
         type: "paragraph",
@@ -1910,7 +1910,7 @@ export const blogPosts: BlogPost[] = [
     subtitle:
       "The person running the dealerships should not be the same person managing the fund. That is not a preference. It is a structural requirement.",
     author: "Ralph Marcuccilli",
-    authorRole: "Fund Manager \u2014 Prime Dealer Equity Fund",
+    authorRole: "Managing Member of Fund Manager \u2014 Prime Dealer Equity Fund",
     date: "May 5, 2026",
     readTime: "9 min read",
     heroImage: {
@@ -2150,7 +2150,7 @@ export const blogPosts: BlogPost[] = [
     subtitle:
       "The most powerful feature of this portfolio is not any single dealership. It is what happens when the profits from one store fund the acquisition of the next.",
     author: "Ralph Marcuccilli",
-    authorRole: "Fund Manager \u2014 Prime Dealer Equity Fund",
+    authorRole: "Managing Member of Fund Manager \u2014 Prime Dealer Equity Fund",
     date: "May 12, 2026",
     readTime: "10 min read",
     heroImage: {

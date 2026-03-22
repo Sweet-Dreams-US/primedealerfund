@@ -34,7 +34,7 @@ export default function Hero() {
         {/* Animated headline — single line, Zalando Sans Expanded */}
         <div className="mb-6">
           <div
-            className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl xl:text-9xl font-normal leading-[1] tracking-tight flex items-center justify-center gap-[0.2em] whitespace-nowrap"
+            className="text-[clamp(1.75rem,5.5vw,8rem)] md:text-6xl lg:text-8xl xl:text-9xl font-normal leading-[1] tracking-tight flex items-center justify-center gap-[0.2em] flex-wrap"
             style={{ fontFamily: "var(--font-zalando), var(--font-inter), system-ui, sans-serif" }}
           >
             {/* PRIME — outline text, fills on hover */}
@@ -83,8 +83,9 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 1.3 }}
           className="text-lg md:text-xl text-[#c5c9d1] max-w-2xl mx-auto mb-10 leading-relaxed"
         >
-          Acquiring, optimizing, and scaling franchise dealerships across America.
-          Institutional-grade returns backed by hard assets.
+          Prime Dealer Equity Fund is a private equity vehicle co-investing with
+          Coleman Automotive Group in the acquisition and optimization of
+          automotive dealerships across the U.S. Fund interest targeting 8% annual distribution.
         </motion.p>
 
         <motion.div

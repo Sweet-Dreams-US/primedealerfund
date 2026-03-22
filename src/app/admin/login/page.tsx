@@ -76,7 +76,7 @@ function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-3 bg-[#1a1a2e] border border-[#2d2d44] rounded-lg text-white placeholder-[#4b5563] focus:border-[#d4a853] focus:outline-none transition-colors"
-              placeholder="admin@primedealerfund.com"
+              placeholder="admin@PrimeDealerFund.com"
             />
           </div>
 
