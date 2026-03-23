@@ -76,12 +76,12 @@ function LeadershipSection() {
               className="flex flex-col lg:flex-row gap-8 p-8 md:p-12 rounded-2xl bg-navy-900/50 border border-navy-800/50"
             >
               <div className="w-full lg:w-56 shrink-0">
-                <div className="relative w-full aspect-[3/4] lg:aspect-[3/4] rounded-xl overflow-hidden">
+                <div className="relative w-full aspect-square rounded-xl overflow-hidden">
                   <Image
                     src={person.photo}
                     alt={person.name}
                     fill
-                    className="object-cover"
+                    className="object-cover object-top"
                     sizes="(max-width: 1024px) 100vw, 224px"
                   />
                 </div>
