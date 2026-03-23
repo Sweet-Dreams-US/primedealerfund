@@ -38,10 +38,6 @@ const operations = [
     title: "Director of Operations",
   },
   {
-    name: "Rich Ogilvie",
-    title: "Fixed Operations Director",
-  },
-  {
     name: "Jay Nelson",
     title: "Variable Operations Director",
   },
