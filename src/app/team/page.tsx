@@ -45,6 +45,10 @@ const operations = [
     name: "Jay Nelson",
     title: "Variable Operations Director",
   },
+  {
+    name: "Andrea Shockey",
+    title: "Chief Financial Officer",
+  },
 ];
 
 
