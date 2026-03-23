@@ -226,7 +226,7 @@ export default function SchedulePage() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-cream-50 tracking-tight mb-6"
           >
-            Book a <span className="text-gold-gradient">Private Meeting</span>
+            Book an <span className="text-gold-gradient">Introduction Call</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 40 }}
@@ -234,7 +234,7 @@ export default function SchedulePage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-lg text-navy-300 max-w-2xl mx-auto leading-relaxed"
           >
-            Schedule a 30-minute consultation with our investment team.
+            Book a 15-minute introduction call to learn more about the fund.
             Answer a few quick questions and pick a time that works for you.
           </motion.p>
         </div>
