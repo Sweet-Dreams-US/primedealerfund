@@ -249,6 +249,8 @@ export default function AdminDashboard() {
   // Edit mode
   const [editingNotes, setEditingNotes] = useState(false);
   const [editNotes, setEditNotes] = useState("");
+  const [editingDetail, setEditingDetail] = useState(false);
+  const [editDetail, setEditDetail] = useState<Partial<Investor>>({});
 
   // Add contact modal
   const [addContactOpen, setAddContactOpen] = useState(false);
@@ -745,9 +747,34 @@ export default function AdminDashboard() {
     router.refresh();
   }
 
-  function openDetail(inv: Investor) { setDetailInvestor(inv); setEditingNotes(false); fetchComms(inv.id); }
-  function closeDetail() { setDetailInvestor(null); setDetailComms([]); setEditingNotes(false); }
+  function openDetail(inv: Investor) { setDetailInvestor(inv); setEditingNotes(false); setEditingDetail(false); fetchComms(inv.id); }
+  function closeDetail() { setDetailInvestor(null); setDetailComms([]); setEditingNotes(false); setEditingDetail(false); }
   async function saveNotes() { if (!detailInvestor) return; await updateInvestor(detailInvestor.id, { notes: editNotes }); setEditingNotes(false); }
+  function startEditDetail() {
+    if (!detailInvestor) return;
+    setEditDetail({
+      first_name: detailInvestor.first_name,
+      last_name: detailInvestor.last_name,
+      email: detailInvestor.email,
+      phone: detailInvestor.phone,
+      source: detailInvestor.source,
+      amount_of_interest: detailInvestor.amount_of_interest,
+      amount_invested: detailInvestor.amount_invested,
+      added_date: detailInvestor.added_date,
+      last_contact_date: detailInvestor.last_contact_date,
+      next_action: detailInvestor.next_action,
+      next_action_date: detailInvestor.next_action_date,
+      preferred_tone: detailInvestor.preferred_tone,
+      friend_of_ralph: detailInvestor.friend_of_ralph,
+      notes: detailInvestor.notes,
+    });
+    setEditingDetail(true);
+  }
+  async function saveDetail() {
+    if (!detailInvestor) return;
+    await updateInvestor(detailInvestor.id, editDetail);
+    setEditingDetail(false);
+  }
 
   function openComposeToMessage(msg: OutlookMessage) {
     setEmailSubject(`Re: ${msg.subject}`);
@@ -1443,7 +1470,17 @@ export default function AdminDashboard() {
                     <p className="text-xs text-slate-400">{detailInvestor.email || "No email"}</p>
                   </div>
                 </div>
-                <button onClick={closeDetail} className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+                <div className="flex items-center gap-2">
+                  {!editingDetail ? (
+                    <button onClick={startEditDetail} className="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors">Edit</button>
+                  ) : (
+                    <>
+                      <button onClick={() => setEditingDetail(false)} className="px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 rounded-md transition-colors">Cancel</button>
+                      <button onClick={saveDetail} className="px-3 py-1.5 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors">Save All</button>
+                    </>
+                  )}
+                  <button onClick={closeDetail} className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+                </div>
               </div>
               <div className="p-6 space-y-6">
                 {/* Ball in Court status */}
@@ -1478,11 +1515,53 @@ export default function AdminDashboard() {
                   {detailInvestor.friend_of_ralph && <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200">Friend of Ralph</span>}
                   {detailInvestor.invested && <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200">Invested</span>}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  {[{ label: "Phone", value: detailInvestor.phone }, { label: "Source", value: detailInvestor.source }, { label: "Interest", value: detailInvestor.amount_of_interest > 0 ? fmt(detailInvestor.amount_of_interest) : null }, { label: "Invested", value: detailInvestor.amount_invested > 0 ? fmt(detailInvestor.amount_invested) : null }, { label: "Added", value: detailInvestor.added_date }, { label: "Last Contact", value: detailInvestor.last_contact_date }, { label: "Email Sequence", value: `#${detailInvestor.email_sequence}` }, { label: "Preferred Tone", value: detailInvestor.preferred_tone }].map((f) => (
-                    <div key={f.label}><p className="text-xs text-slate-400 mb-0.5">{f.label}</p><p className="text-sm text-slate-900">{f.value || "-"}</p></div>
-                  ))}
-                </div>
+                {editingDetail ? (
+                  <div className="space-y-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Edit Contact Details</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">First Name</label><input type="text" value={editDetail.first_name || ""} onChange={(e) => setEditDetail((p) => ({ ...p, first_name: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Last Name</label><input type="text" value={editDetail.last_name || ""} onChange={(e) => setEditDetail((p) => ({ ...p, last_name: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Email</label><input type="email" value={editDetail.email || ""} onChange={(e) => setEditDetail((p) => ({ ...p, email: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Phone</label><input type="text" value={editDetail.phone || ""} onChange={(e) => setEditDetail((p) => ({ ...p, phone: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Source</label>
+                        <select value={editDetail.source || ""} onChange={(e) => setEditDetail((p) => ({ ...p, source: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                          {["Admin Added", "Referral", "LinkedIn", "Apollo", "Website", "Podcast", "Event", "Other"].map((s) => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                      </div>
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Preferred Tone</label><input type="text" value={editDetail.preferred_tone || ""} onChange={(e) => setEditDetail((p) => ({ ...p, preferred_tone: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Interest Amount ($)</label><input type="number" value={editDetail.amount_of_interest || 0} onChange={(e) => setEditDetail((p) => ({ ...p, amount_of_interest: Number(e.target.value) }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Invested Amount ($)</label><input type="number" value={editDetail.amount_invested || 0} onChange={(e) => setEditDetail((p) => ({ ...p, amount_invested: Number(e.target.value) }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Last Contact Date</label><input type="date" value={editDetail.last_contact_date || ""} onChange={(e) => setEditDetail((p) => ({ ...p, last_contact_date: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Added Date</label><input type="date" value={editDetail.added_date || ""} onChange={(e) => setEditDetail((p) => ({ ...p, added_date: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Next Action</label><input type="text" value={editDetail.next_action || ""} onChange={(e) => setEditDetail((p) => ({ ...p, next_action: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                      <div><label className="text-xs text-slate-400 mb-0.5 block">Next Action Date</label><input type="date" value={editDetail.next_action_date || ""} onChange={(e) => setEditDetail((p) => ({ ...p, next_action_date: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-0.5 block">Notes</label>
+                      <textarea value={editDetail.notes || ""} onChange={(e) => setEditDetail((p) => ({ ...p, notes: e.target.value }))} rows={4} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 resize-none" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" id="edit-friend" checked={editDetail.friend_of_ralph || false} onChange={(e) => setEditDetail((p) => ({ ...p, friend_of_ralph: e.target.checked }))} className="rounded border-slate-300" />
+                      <label htmlFor="edit-friend" className="text-sm text-slate-700">Friend of Ralph</label>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    {[{ label: "Phone", value: detailInvestor.phone }, { label: "Source", value: detailInvestor.source }, { label: "Interest", value: detailInvestor.amount_of_interest > 0 ? fmt(detailInvestor.amount_of_interest) : null }, { label: "Invested", value: detailInvestor.amount_invested > 0 ? fmt(detailInvestor.amount_invested) : null }, { label: "Added", value: detailInvestor.added_date }, { label: "Last Contact", value: detailInvestor.last_contact_date }, { label: "Email Sequence", value: `#${detailInvestor.email_sequence}` }, { label: "Preferred Tone", value: detailInvestor.preferred_tone }].map((f) => (
+                      <div key={f.label}><p className="text-xs text-slate-400 mb-0.5">{f.label}</p><p className="text-sm text-slate-900">{f.value || "-"}</p></div>
+                    ))}
+                  </div>
+                )}
                 <div>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Progress</p>
                   <div className="flex items-center gap-2">
@@ -1491,24 +1570,28 @@ export default function AdminDashboard() {
                     ))}
                   </div>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Category</p>
-                  <select value={detailInvestor.category} onChange={(e) => updateInvestor(detailInvestor.id, { category: e.target.value })} className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
-                    {CATEGORIES.filter((c) => c !== "all").map((c) => (<option key={c} value={c}>{c}</option>))}
-                  </select>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Next Action</p>
-                  <p className="text-sm text-slate-900">{detailInvestor.next_action || "-"}</p>
-                  {detailInvestor.next_action_date && <p className="text-xs text-slate-400 mt-1">Due: {detailInvestor.next_action_date}</p>}
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Notes</p>
-                    {!editingNotes ? <button onClick={() => { setEditingNotes(true); setEditNotes(detailInvestor.notes || ""); }} className="text-xs text-slate-400 hover:text-slate-600">Edit</button> : <div className="flex gap-2"><button onClick={() => setEditingNotes(false)} className="text-xs text-slate-400 hover:text-slate-600">Cancel</button><button onClick={saveNotes} className="text-xs text-slate-900 font-medium hover:text-slate-700">Save</button></div>}
-                  </div>
-                  {editingNotes ? <textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={4} className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 resize-none" /> : <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">{detailInvestor.notes || "No notes yet"}</p>}
-                </div>
+                {!editingDetail && (
+                  <>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Category</p>
+                      <select value={detailInvestor.category} onChange={(e) => updateInvestor(detailInvestor.id, { category: e.target.value })} className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                        {CATEGORIES.filter((c) => c !== "all").map((c) => (<option key={c} value={c}>{c}</option>))}
+                      </select>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Next Action</p>
+                      <p className="text-sm text-slate-900">{detailInvestor.next_action || "-"}</p>
+                      {detailInvestor.next_action_date && <p className="text-xs text-slate-400 mt-1">Due: {detailInvestor.next_action_date}</p>}
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Notes</p>
+                        {!editingNotes ? <button onClick={() => { setEditingNotes(true); setEditNotes(detailInvestor.notes || ""); }} className="text-xs text-slate-400 hover:text-slate-600">Edit</button> : <div className="flex gap-2"><button onClick={() => setEditingNotes(false)} className="text-xs text-slate-400 hover:text-slate-600">Cancel</button><button onClick={saveNotes} className="text-xs text-slate-900 font-medium hover:text-slate-700">Save</button></div>}
+                      </div>
+                      {editingNotes ? <textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={4} className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 resize-none" /> : <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">{detailInvestor.notes || "No notes yet"}</p>}
+                    </div>
+                  </>
+                )}
                 <div>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Communication History</p>
                   {detailComms.length === 0 ? <p className="text-sm text-slate-400">No communications logged</p> : (
