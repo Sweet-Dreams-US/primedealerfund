@@ -251,6 +251,8 @@ export default function AdminDashboard() {
   const [editNotes, setEditNotes] = useState("");
   const [editingDetail, setEditingDetail] = useState(false);
   const [editDetail, setEditDetail] = useState<Partial<Investor>>({});
+  const [addingComm, setAddingComm] = useState(false);
+  const [newComm, setNewComm] = useState({ type: "Email", direction: "inbound", subject: "", response: "", next_step: "" });
 
   // Add contact modal
   const [addContactOpen, setAddContactOpen] = useState(false);
@@ -774,6 +776,28 @@ export default function AdminDashboard() {
     if (!detailInvestor) return;
     await updateInvestor(detailInvestor.id, editDetail);
     setEditingDetail(false);
+  }
+  async function saveCommEntry() {
+    if (!detailInvestor || !newComm.subject.trim()) return;
+    const today = new Date().toISOString().split("T")[0];
+    await fetch("/api/admin/communications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        investor_id: detailInvestor.id,
+        date: today,
+        type: newComm.type,
+        direction: newComm.direction,
+        subject: newComm.subject,
+        response: newComm.response || null,
+        next_step: newComm.next_step || null,
+      }),
+    });
+    // Also update last_contact_date
+    await updateInvestor(detailInvestor.id, { last_contact_date: today });
+    setNewComm({ type: "Email", direction: "inbound", subject: "", response: "", next_step: "" });
+    setAddingComm(false);
+    fetchComms(detailInvestor.id);
   }
 
   function openComposeToMessage(msg: OutlookMessage) {
@@ -1593,8 +1617,57 @@ export default function AdminDashboard() {
                   </>
                 )}
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Communication History</p>
-                  {detailComms.length === 0 ? <p className="text-sm text-slate-400">No communications logged</p> : (
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Communication History</p>
+                    {!addingComm ? (
+                      <button onClick={() => setAddingComm(true)} className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                        Add Entry
+                      </button>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button onClick={() => { setAddingComm(false); setNewComm({ type: "Email", direction: "inbound", subject: "", response: "", next_step: "" }); }} className="text-xs text-slate-400 hover:text-slate-600">Cancel</button>
+                        <button onClick={saveCommEntry} className="text-xs text-slate-900 font-medium hover:text-slate-700">Save</button>
+                      </div>
+                    )}
+                  </div>
+                  {addingComm && (
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-3 space-y-2.5">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] text-slate-400 uppercase block mb-0.5">Type</label>
+                          <select value={newComm.type} onChange={(e) => setNewComm((p) => ({ ...p, type: e.target.value }))} className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-xs text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                            <option value="Email">Email</option>
+                            <option value="Phone Call">Phone Call</option>
+                            <option value="Zoom Meeting">Zoom Meeting</option>
+                            <option value="Text Message">Text Message</option>
+                            <option value="In Person">In Person</option>
+                            <option value="Note">Note</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-slate-400 uppercase block mb-0.5">Direction</label>
+                          <select value={newComm.direction} onChange={(e) => setNewComm((p) => ({ ...p, direction: e.target.value }))} className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-xs text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                            <option value="inbound">Inbound (from them)</option>
+                            <option value="outbound">Outbound (from us)</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-400 uppercase block mb-0.5">Subject / Summary</label>
+                        <input type="text" value={newComm.subject} onChange={(e) => setNewComm((p) => ({ ...p, subject: e.target.value }))} placeholder="e.g. Replied to intro email, interested in learning more" className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-xs text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-400 uppercase block mb-0.5">Response / Details (optional)</label>
+                        <textarea value={newComm.response} onChange={(e) => setNewComm((p) => ({ ...p, response: e.target.value }))} rows={2} placeholder="Additional details about the interaction..." className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-xs text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 resize-none" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-400 uppercase block mb-0.5">Next Step (optional)</label>
+                        <input type="text" value={newComm.next_step} onChange={(e) => setNewComm((p) => ({ ...p, next_step: e.target.value }))} placeholder="e.g. Schedule Zoom call next week" className="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-md text-xs text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                      </div>
+                    </div>
+                  )}
+                  {detailComms.length === 0 && !addingComm ? <p className="text-sm text-slate-400">No communications logged</p> : (
                     <div className="space-y-3">
                       {detailComms.slice(0, 10).map((c) => (
                         <div key={c.id} className="flex items-start gap-3 text-sm">

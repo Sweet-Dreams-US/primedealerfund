@@ -26,12 +26,12 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { investor_id, date, type, subject, response, next_step } = body;
+  const { investor_id, date, type, subject, response, next_step, direction } = body;
 
   const supabase = createServerClient();
   const { data, error } = await supabase
     .from("communication_log")
-    .insert({ investor_id, date, type, subject, response, next_step })
+    .insert({ investor_id, date, type, subject, response, next_step, direction: direction || null })
     .select()
     .single();
 
