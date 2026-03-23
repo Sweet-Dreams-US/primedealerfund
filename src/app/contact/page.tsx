@@ -226,7 +226,7 @@ export default function ContactPage() {
                   Schedule a Call
                 </h3>
                 <p className="text-navy-400 text-sm mb-4">
-                  Book a 15-minute introduction call to learn more about the fund.
+                  Schedule a 15-minute introduction call to learn more about the fund.
                 </p>
                 <span className="text-gold-400 text-sm font-mono group-hover:text-gold-300 transition-colors">
                   Book Now &rarr;
