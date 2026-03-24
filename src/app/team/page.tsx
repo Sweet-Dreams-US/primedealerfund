@@ -37,7 +37,7 @@ const operations: { name: string; title: string; photo?: string }[] = [
   {
     name: "Ryan Coleman",
     title: "Director of Operations",
-    photo: "/assets/ryan-coleman.jpg",
+    photo: "/assets/ryan-coleman.png",
   },
   {
     name: "Jay Nelson",
