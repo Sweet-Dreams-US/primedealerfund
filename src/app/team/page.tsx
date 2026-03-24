@@ -28,10 +28,11 @@ const leadership = [
   },
 ];
 
-const operations = [
+const operations: { name: string; title: string; photo?: string }[] = [
   {
     name: "Jami Langham",
     title: "Chief Operations Officer",
+    photo: "/assets/jami-langham.jpg",
   },
   {
     name: "Ryan Coleman",
@@ -71,14 +72,14 @@ function LeadershipSection() {
               variants={staggerItem}
               className="flex flex-col lg:flex-row gap-8 p-8 md:p-12 rounded-2xl bg-navy-900/50 border border-navy-800/50"
             >
-              <div className="w-full lg:w-56 shrink-0">
-                <div className="relative w-full aspect-square rounded-xl overflow-hidden">
+              <div className="w-full lg:w-56 shrink-0 flex justify-center">
+                <div className="relative w-48 h-60 overflow-hidden" style={{ borderRadius: "50%" }}>
                   <Image
                     src={person.photo}
                     alt={person.name}
                     fill
                     className="object-cover object-top"
-                    sizes="(max-width: 1024px) 100vw, 224px"
+                    sizes="(max-width: 1024px) 192px, 192px"
                   />
                 </div>
               </div>
@@ -137,11 +138,17 @@ function OperationsSection() {
               variants={staggerItem}
               className="p-8 rounded-2xl bg-navy-950/50 border border-navy-800/30 text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-5">
-                <span className="font-display text-xl text-gold-400">
-                  {person.name.split(" ").map((n) => n[0]).join("")}
-                </span>
-              </div>
+              {person.photo ? (
+                <div className="relative w-20 h-24 mx-auto mb-5 overflow-hidden" style={{ borderRadius: "50%" }}>
+                  <Image src={person.photo} alt={person.name} fill className="object-cover object-top" sizes="80px" />
+                </div>
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-5">
+                  <span className="font-display text-xl text-gold-400">
+                    {person.name.split(" ").map((n) => n[0]).join("")}
+                  </span>
+                </div>
+              )}
               <h3 className="font-display text-lg font-semibold text-cream-50 mb-1">
                 {person.name}
               </h3>

@@ -109,6 +109,10 @@ export async function getAvailableSlots(date: string): Promise<string[]> {
       const now = new Date();
       if (slotStart.getTime() < now.getTime()) continue;
 
+      // Block lunch: no slots from 11:30 AM to 1:15 PM
+      const slotMinutes = h * 60 + m;
+      if (slotMinutes >= 690 && slotMinutes < 795) continue; // 690=11:30, 795=13:15
+
       // Check if slot overlaps any busy interval
       const isBusy = busyIntervals.some(
         (b) => slotStart.getTime() < b.end && slotEnd.getTime() > b.start
@@ -183,12 +187,72 @@ export async function createBooking(params: {
     });
   }
 
+  // Create Zoom meeting if credentials are available
+  let zoomJoinUrl = "";
+  const zoomAccountId = process.env.ZOOM_ACCOUNT_ID;
+  const zoomClientId = process.env.ZOOM_CLIENT_ID;
+  const zoomClientSecret = process.env.ZOOM_CLIENT_SECRET;
+
+  if (zoomAccountId && zoomClientId && zoomClientSecret) {
+    try {
+      // Get Zoom OAuth token (Server-to-Server)
+      const zoomTokenRes = await fetch(
+        `https://zoom.us/oauth/token?grant_type=account_credentials&account_id=${zoomAccountId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${Buffer.from(`${zoomClientId}:${zoomClientSecret}`).toString("base64")}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      const zoomTokenData = await zoomTokenRes.json();
+
+      if (zoomTokenData.access_token) {
+        // Create Zoom meeting
+        const zoomMeetingRes = await fetch(
+          `https://api.zoom.us/v2/users/${RALPH_EMAIL}/meetings`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${zoomTokenData.access_token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              topic: `Prime Dealer Fund - Introduction Call: ${params.firstName} ${params.lastName}`,
+              type: 2, // Scheduled meeting
+              start_time: `${startDT}`,
+              duration: 30,
+              timezone: TIMEZONE,
+              settings: {
+                join_before_host: true,
+                waiting_room: false,
+                auto_recording: "none",
+              },
+            }),
+          }
+        );
+        const zoomMeeting = await zoomMeetingRes.json();
+        if (zoomMeeting.join_url) {
+          zoomJoinUrl = zoomMeeting.join_url;
+        }
+      }
+    } catch (e) {
+      console.error("Zoom meeting creation failed:", e);
+    }
+  }
+
+  const zoomSection = zoomJoinUrl
+    ? `<p><strong>Zoom Meeting:</strong> <a href="${zoomJoinUrl}">${zoomJoinUrl}</a></p>`
+    : `<p><em>Zoom link will be added separately.</em></p>`;
+
   const event = {
-    subject: `Prime Dealer Fund - Investor Consultation: ${params.firstName} ${params.lastName}`,
+    subject: `Prime Dealer Fund - Introduction Call: ${params.firstName} ${params.lastName}`,
     body: {
       contentType: "HTML",
       content: `
-        <h3>Investor Consultation</h3>
+        <h3>Introduction Call</h3>
+        ${zoomSection}
         <p><strong>Prospect:</strong> ${params.firstName} ${params.lastName}</p>
         <p><strong>Email:</strong> ${params.email}</p>
         <p><strong>Phone:</strong> ${params.phone}</p>
@@ -200,8 +264,7 @@ export async function createBooking(params: {
     start: { dateTime: startDT, timeZone: TIMEZONE },
     end: { dateTime: endDT, timeZone: TIMEZONE },
     attendees,
-    isOnlineMeeting: true,
-    onlineMeetingProvider: "teamsForBusiness",
+    isOnlineMeeting: false,
   };
 
   const res = await fetch(

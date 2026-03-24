@@ -699,7 +699,7 @@ export default function SchedulePage() {
                   <div className="flex justify-between">
                     <span className="text-navy-400 text-sm">Format</span>
                     <span className="text-cream-100 text-sm font-medium">
-                      Microsoft Teams (link in calendar invite)
+                      Zoom (link in calendar invite)
                     </span>
                   </div>
                 </div>
@@ -802,7 +802,7 @@ export default function SchedulePage() {
                   .
                 </p>
                 <p className="text-navy-400 text-sm mb-8">
-                  A calendar invitation with a Microsoft Teams link has been
+                  A calendar invitation with a Zoom link has been
                   sent to your email. We look forward to speaking with you.
                 </p>
                 <Link
