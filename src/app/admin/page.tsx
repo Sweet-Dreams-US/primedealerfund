@@ -679,13 +679,20 @@ export default function AdminDashboard() {
   async function handleAddContact() {
     if (!newContact.first_name.trim()) return;
     setAddingContact(true);
-    const res = await fetch("/api/admin/investors", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newContact),
-    });
-    if (res.ok) {
-      setAddContactOpen(false);
-      setNewContact({ first_name: "", last_name: "", email: "", phone: "", category: "New Lead", notes: "", source: "Admin Added", friend_of_ralph: false, amount_of_interest: 0 });
-      fetchInvestors(); fetchAllInvestors(); fetchStats();
+    try {
+      const res = await fetch("/api/admin/investors", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newContact),
+      });
+      if (res.ok) {
+        setAddContactOpen(false);
+        setNewContact({ first_name: "", last_name: "", email: "", phone: "", category: "New Lead", notes: "", source: "Admin Added", friend_of_ralph: false, amount_of_interest: 0 });
+        fetchInvestors(); fetchAllInvestors(); fetchStats();
+      } else {
+        const err = await res.json().catch(() => ({ error: "Failed to add contact" }));
+        alert(err.error || "Failed to add contact. Please try again.");
+      }
+    } catch (err) {
+      alert(`Network error: ${err instanceof Error ? err.message : "Please try again."}`);
     }
     setAddingContact(false);
   }

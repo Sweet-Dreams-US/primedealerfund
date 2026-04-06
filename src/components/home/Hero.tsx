@@ -23,7 +23,7 @@ export default function Hero() {
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="relative z-10 max-w-6xl mx-auto px-6 text-center"
+        className="relative z-10 max-w-6xl w-full mx-auto px-6 text-center overflow-hidden"
       >
         <motion.div variants={fadeIn} className="mb-6">
           <span className="inline-block px-4 py-1.5 text-gold-400 font-mono text-xs tracking-[0.25em] uppercase border border-gold-400/20 rounded-full">
@@ -31,11 +31,13 @@ export default function Hero() {
           </span>
         </motion.div>
 
-        {/* Animated headline — single line, Zalando Sans Expanded */}
-        <div className="mb-6">
+        {/* Animated headline — always single line, auto-shrinks to fit */}
+        <div className="mb-6 w-full">
           <div
-            className="text-[clamp(1.75rem,5.5vw,8rem)] md:text-6xl lg:text-8xl xl:text-9xl font-normal leading-[1] tracking-tight flex items-center justify-center gap-[0.2em] flex-wrap"
-            style={{ fontFamily: "var(--font-zalando), var(--font-inter), system-ui, sans-serif" }}
+            className="font-normal leading-[1] tracking-tight flex items-center justify-center gap-[0.2em] whitespace-nowrap text-[clamp(1rem,4.2vw,8rem)]"
+            style={{
+              fontFamily: "var(--font-zalando), var(--font-inter), system-ui, sans-serif",
+            }}
           >
             {/* PRIME — outline text, fills on hover */}
             <motion.span
