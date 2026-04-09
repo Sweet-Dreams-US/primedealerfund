@@ -1,51 +1,12 @@
-export type ContentBlock =
-  | { type: "paragraph"; text: string }
-  | { type: "subheading"; text: string }
-  | {
-      type: "image";
-      src: string;
-      alt: string;
-      caption: string;
-    }
-  | {
-      type: "callout-numbers";
-      title: string;
-      lines: string[];
-      link?: { text: string; href: string };
-    }
-  | {
-      type: "callout-prime";
-      lines: string[];
-      link?: { text: string; href: string };
-    }
-  | {
-      type: "callout-floor";
-      quote: string;
-      attribution: string;
-      stats?: string[];
-      link?: { text: string; href: string };
-    };
-
-export interface BlogPost {
-  slug: string;
-  category: string;
-  title: string;
-  subtitle: string;
-  author: string;
-  authorRole: string;
-  date: string;
-  readTime: string;
-  heroImage: {
-    src: string;
-    alt: string;
-    caption: string;
-  };
-  excerpt: string;
-  content: ContentBlock[];
-  relatedSlugs: string[];
-}
+export type { ContentBlock, BlogPost } from "./blog-types";
+import type { BlogPost } from "./blog-types";
+import { januaryPosts } from "./blog-january";
+import { februaryPosts } from "./blog-february";
+import { marchAprilPosts } from "./blog-march-april";
 
 export const blogPosts: BlogPost[] = [
+  ...januaryPosts,
+  ...februaryPosts,
   {
     slug: "why-car-dealerships-most-overlooked-asset-class",
     category: "Investment Thesis",
@@ -205,10 +166,10 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/colemanpic1.jpg",
-        alt: "Kyle Coleman, CEO of Coleman Automotive Group",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/MtPleasentVetterInterrior.webp",
+        alt: "Inside a Coleman Automotive dealership showroom",
         caption:
-          "Kyle Coleman, CEO of Coleman Automotive Group. Photo: Sweet Dreams US LLC",
+          "A modern showroom interior at a Coleman Automotive dealership. Photo: Sweet Dreams US LLC",
       },
       {
         type: "paragraph",
@@ -409,8 +370,8 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/colemanpic1.jpg",
-        alt: "Kyle Coleman at a dealership acquisition site",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/NissanWarsawSticker.webp",
+        alt: "Nissan Warsaw dealership vehicle detail",
         caption:
           "Dealership acquisitions built on direct relationships, not broker auctions. Photo: Sweet Dreams US LLC",
       },
@@ -1204,7 +1165,7 @@ export const blogPosts: BlogPost[] = [
       "The hardest discipline in dealership acquisitions is not finding the right deal. It is walking away from the wrong one.",
     author: "Kyle Coleman",
     authorRole: "CEO \u2014 Coleman Automotive Group",
-    date: "April 14, 2026",
+    date: "February 24, 2026",
     readTime: "8 min read",
     heroImage: {
       src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/mtpleasantdrone.png",
@@ -1445,7 +1406,7 @@ export const blogPosts: BlogPost[] = [
       "When the operator\u2019s money is in the deal alongside yours, the incentives stop being theoretical.",
     author: "Ralph Marcuccilli",
     authorRole: "Managing Member of Fund Manager \u2014 Prime Dealer Equity Fund",
-    date: "April 21, 2026",
+    date: "February 17, 2026",
     readTime: "10 min read",
     heroImage: {
       src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/ChargerOutFront.webp",
@@ -1689,7 +1650,7 @@ export const blogPosts: BlogPost[] = [
       "The biggest dealerships are not always the most profitable. The most profitable dealerships are often the ones nobody outside the county has heard of.",
     author: "Kyle Coleman",
     authorRole: "CEO \u2014 Coleman Automotive Group",
-    date: "April 28, 2026",
+    date: "February 10, 2026",
     readTime: "9 min read",
     heroImage: {
       src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/LEmars/frontofstore.webp",
@@ -1911,7 +1872,7 @@ export const blogPosts: BlogPost[] = [
       "The person running the dealerships should not be the same person managing the fund. That is not a preference. It is a structural requirement.",
     author: "Ralph Marcuccilli",
     authorRole: "Managing Member of Fund Manager \u2014 Prime Dealer Equity Fund",
-    date: "May 5, 2026",
+    date: "February 3, 2026",
     readTime: "9 min read",
     heroImage: {
       src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/CDJRsign.webp",
@@ -1984,10 +1945,10 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/colemanpic1.jpg",
-        alt: "Kyle Coleman, CEO of Coleman Automotive Group, in an operational dealership setting",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/MtPleasentTruck.webp",
+        alt: "Truck on the lot at Mt. Pleasant dealership",
         caption:
-          "Kyle Coleman\u2019s focus is singular: driving operational performance at the rooftop level. Everything else \u2014 fund governance, capital deployment, LP communications \u2014 sits on the other side of the wall. Photo: Sweet Dreams US LLC",
+          "Operational focus at the rooftop level drives dealership performance. Everything else \u2014 fund governance, capital deployment, LP communications \u2014 sits on the other side of the wall. Photo: Sweet Dreams US LLC",
       },
       {
         type: "paragraph",
@@ -2034,10 +1995,10 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "image",
-        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/ralphmarcuccilli1.jpg",
-        alt: "Ralph Marcuccilli, Fund Manager of Prime Dealer Equity Fund, in a professional setting",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Streetsboro/streetsborofrontofstore.webp",
+        alt: "Front exterior of Nissan Streetsboro dealership",
         caption:
-          "Ralph Marcuccilli brings over three decades of institutional leadership in banking, fintech, and investment scaling to the fund\u2019s governance structure. Photo: Sweet Dreams US LLC",
+          "The fund\u2019s governance structure brings institutional discipline to dealership operations. Photo: Sweet Dreams US LLC",
       },
       {
         type: "paragraph",
@@ -2151,7 +2112,7 @@ export const blogPosts: BlogPost[] = [
       "The most powerful feature of this portfolio is not any single dealership. It is what happens when the profits from one store fund the acquisition of the next.",
     author: "Ralph Marcuccilli",
     authorRole: "Managing Member of Fund Manager \u2014 Prime Dealer Equity Fund",
-    date: "May 12, 2026",
+    date: "January 27, 2026",
     readTime: "10 min read",
     heroImage: {
       src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/NissanWarsawMainSignwithTruck.webp",
@@ -2382,6 +2343,7 @@ export const blogPosts: BlogPost[] = [
       "why-car-dealerships-most-overlooked-asset-class",
     ],
   },
+  ...marchAprilPosts,
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {

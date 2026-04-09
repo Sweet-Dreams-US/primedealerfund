@@ -22,6 +22,20 @@ const primeDealerPodcast = [
       "A deep dive into how Coleman Automotive evaluates, acquires, and transforms underperforming dealerships into top-performing assets.",
     embedId: "9y6EHjpb4Fg",
   },
+  {
+    title: "Episode 3: We're Building AI That Sells Cars for Us",
+    tag: "Episode 3",
+    description:
+      "How the team is leveraging artificial intelligence to transform the car-selling process and drive dealership performance.",
+    embedId: "1Bw-9pUso80",
+  },
+  {
+    title: "Episode 4: Why I Bet on This Fund",
+    tag: "Episode 4",
+    description:
+      "An investor's perspective on why the Prime Dealer Equity Fund stood out — the thesis, the team, and the opportunity.",
+    embedId: "62bl2YAA3rg",
+  },
 ];
 
 const podcasts = [
