@@ -1,8 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import PageLayout from "@/components/layout/PageLayout";
 import GoldDivider from "@/components/ui/GoldDivider";
@@ -58,6 +59,102 @@ const legacyArticles: Record<
   },
 };
 
+/* ---------- Helpers ---------- */
+function toId(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function getSubheadings(content: ContentBlock[]) {
+  return content
+    .filter((b): b is ContentBlock & { type: "subheading" } => b.type === "subheading")
+    .map((b) => ({ id: toId(b.text), text: b.text }));
+}
+
+/* ---------- Scroll-tracking hook ---------- */
+function useActiveHeading(headings: { id: string; text: string }[]) {
+  const [activeId, setActiveId] = useState("");
+
+  useEffect(() => {
+    const handleScroll = () => {
+      let current = "";
+      for (const h of headings) {
+        const el = document.getElementById(h.id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= 120) current = h.id;
+      }
+      setActiveId(current);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [headings]);
+
+  return activeId;
+}
+
+/* ---------- Desktop TOC sidebar ---------- */
+function DesktopTOC({ headings, activeId }: { headings: { id: string; text: string }[]; activeId: string }) {
+  if (headings.length === 0) return null;
+
+  return (
+    <nav className="hidden lg:block sticky top-24 self-start" aria-label="Table of contents">
+      <p className="text-gold-400 font-mono text-[10px] tracking-[0.2em] uppercase mb-4">
+        In This Article
+      </p>
+      <ul className="space-y-2 border-l border-navy-800/50">
+        {headings.map((h) => (
+          <li key={h.id}>
+            <a
+              href={`#${h.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById(h.id)?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className={`block pl-4 py-1 text-sm leading-snug transition-all duration-200 border-l-2 -ml-px ${
+                activeId === h.id
+                  ? "border-gold-400 text-cream-50"
+                  : "border-transparent text-navy-500 hover:text-navy-300"
+              }`}
+            >
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+/* ---------- Mobile TOC bottom bar ---------- */
+function MobileTOC({ headings, activeId }: { headings: { id: string; text: string }[]; activeId: string }) {
+  if (headings.length === 0) return null;
+
+  return (
+    <AnimatePresence>
+      {activeId && (
+        <motion.div
+          initial={{ y: 60, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 60, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-[#1a1a2e]/90 backdrop-blur-md border-t border-navy-800/50 px-4 py-2.5"
+        >
+          <p className="text-[11px] text-navy-500 font-mono tracking-wider uppercase">
+            Reading
+          </p>
+          <p className="text-cream-100 text-sm font-medium truncate">
+            {headings.find((h) => h.id === activeId)?.text}
+          </p>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 /* ---------- Render a single content block ---------- */
 function RenderBlock({ block }: { block: ContentBlock }) {
   switch (block.type) {
@@ -67,7 +164,10 @@ function RenderBlock({ block }: { block: ContentBlock }) {
       );
     case "subheading":
       return (
-        <h2 className="font-display text-2xl md:text-3xl font-bold text-cream-50 mt-12 mb-4">
+        <h2
+          id={toId(block.text)}
+          className="font-display text-2xl md:text-3xl font-bold text-cream-50 mt-12 mb-4 scroll-mt-24"
+        >
           {block.text}
         </h2>
       );
@@ -110,6 +210,137 @@ function RenderBlock({ block }: { block: ContentBlock }) {
   }
 }
 
+/* ---------- Rich blog post wrapper (needs hooks) ---------- */
+function RichBlogPost({ blog }: { blog: NonNullable<ReturnType<typeof getBlogPost>> }) {
+  const headings = getSubheadings(blog.content);
+  const activeId = useActiveHeading(headings);
+
+  const relatedPosts = blog.relatedSlugs
+    .map((s) => {
+      const bp = blogPosts.find((p) => p.slug === s);
+      if (bp) return { slug: bp.slug, title: bp.title };
+      const la = legacyArticles[s];
+      if (la) return { slug: s, title: la.title };
+      return null;
+    })
+    .filter(Boolean) as { slug: string; title: string }[];
+
+  return (
+    <PageLayout>
+      {/* Hero image */}
+      <section className="relative h-[50vh] md:h-[65vh] overflow-hidden">
+        <Image
+          src={blog.heroImage.src}
+          alt={blog.heroImage.alt}
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a2e] via-[#1a1a2e]/40 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 p-8 md:p-16 z-10">
+          <p className="text-navy-400 text-xs italic">
+            {blog.heroImage.caption}
+          </p>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-24">
+        <div className="max-w-5xl mx-auto px-6">
+          {/* Back link */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8"
+          >
+            <Link
+              href="/insights"
+              className="text-navy-400 hover:text-gold-400 transition-colors text-sm flex items-center gap-2"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+                />
+              </svg>
+              Back to Insights
+            </Link>
+          </motion.div>
+
+          {/* Header block — full width */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="max-w-3xl"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-gold-400 font-mono text-xs tracking-wider uppercase">
+                {blog.category}
+              </span>
+              <span className="text-navy-700">&middot;</span>
+              <span className="text-navy-500 text-xs">{blog.readTime}</span>
+            </div>
+
+            <h1 className="font-display text-4xl md:text-5xl font-bold text-cream-50 tracking-tight mb-4 leading-tight">
+              {blog.title}
+            </h1>
+
+            <p className="text-navy-300 text-lg mb-6">{blog.subtitle}</p>
+
+            <div className="flex items-center gap-3 mb-8">
+              <span className="text-cream-200 text-sm font-medium">
+                {blog.author}
+              </span>
+              <span className="text-navy-600 text-xs">
+                {blog.authorRole}
+              </span>
+              <span className="text-navy-700">&middot;</span>
+              <span className="text-navy-500 text-xs">{blog.date}</span>
+            </div>
+          </motion.div>
+
+          <GoldDivider className="mb-12" />
+
+          {/* Content + TOC grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12">
+            {/* Content blocks */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="space-y-6 min-w-0"
+            >
+              {blog.content.map((block, i) => (
+                <RenderBlock key={i} block={block} />
+              ))}
+
+              {/* CTA */}
+              <BlogCTA />
+
+              {/* Related posts */}
+              <RelatedPosts posts={relatedPosts} />
+            </motion.div>
+
+            {/* Desktop TOC sidebar */}
+            <DesktopTOC headings={headings} activeId={activeId} />
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile TOC bar — outside the grid, at page level */}
+      <MobileTOC headings={headings} activeId={activeId} />
+    </PageLayout>
+  );
+}
+
 export default function ArticlePage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -120,120 +351,7 @@ export default function ArticlePage() {
 
   /* ---- Rich blog post ---- */
   if (blog) {
-    const relatedPosts = blog.relatedSlugs
-      .map((s) => {
-        const bp = blogPosts.find((p) => p.slug === s);
-        if (bp) return { slug: bp.slug, title: bp.title };
-        const la = legacyArticles[s];
-        if (la) return { slug: s, title: la.title };
-        return null;
-      })
-      .filter(Boolean) as { slug: string; title: string }[];
-
-    return (
-      <PageLayout>
-        {/* Hero image */}
-        <section className="relative h-[50vh] md:h-[65vh] overflow-hidden">
-          <Image
-            src={blog.heroImage.src}
-            alt={blog.heroImage.alt}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a2e] via-[#1a1a2e]/40 to-transparent" />
-          <div className="absolute bottom-0 inset-x-0 p-8 md:p-16 z-10">
-            <p className="text-navy-400 text-xs italic">
-              {blog.heroImage.caption}
-            </p>
-          </div>
-        </section>
-
-        <section className="py-16 md:py-24">
-          <div className="max-w-3xl mx-auto px-6">
-            {/* Back link */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="mb-8"
-            >
-              <Link
-                href="/insights"
-                className="text-navy-400 hover:text-gold-400 transition-colors text-sm flex items-center gap-2"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-                  />
-                </svg>
-                Back to Insights
-              </Link>
-            </motion.div>
-
-            {/* Header block */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-gold-400 font-mono text-xs tracking-wider uppercase">
-                  {blog.category}
-                </span>
-                <span className="text-navy-700">&middot;</span>
-                <span className="text-navy-500 text-xs">{blog.readTime}</span>
-              </div>
-
-              <h1 className="font-display text-4xl md:text-5xl font-bold text-cream-50 tracking-tight mb-4 leading-tight">
-                {blog.title}
-              </h1>
-
-              <p className="text-navy-300 text-lg mb-6">{blog.subtitle}</p>
-
-              <div className="flex items-center gap-3 mb-8">
-                <span className="text-cream-200 text-sm font-medium">
-                  {blog.author}
-                </span>
-                <span className="text-navy-600 text-xs">
-                  {blog.authorRole}
-                </span>
-                <span className="text-navy-700">&middot;</span>
-                <span className="text-navy-500 text-xs">{blog.date}</span>
-              </div>
-            </motion.div>
-
-            <GoldDivider className="mb-12" />
-
-            {/* Content blocks */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="space-y-6"
-            >
-              {blog.content.map((block, i) => (
-                <RenderBlock key={i} block={block} />
-              ))}
-            </motion.div>
-
-            {/* CTA */}
-            <BlogCTA />
-
-            {/* Related posts */}
-            <RelatedPosts posts={relatedPosts} />
-          </div>
-        </section>
-      </PageLayout>
-    );
+    return <RichBlogPost blog={blog} />;
   }
 
   /* ---- Legacy article ---- */

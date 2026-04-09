@@ -51,12 +51,23 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "Prime Dealer Equity Fund",
+    url: "https://primedealerfund.com",
   },
   twitter: {
     card: "summary_large_image",
     title: "Prime Dealer Equity Fund",
     description:
       "Institutional-quality automotive dealership investment. Recession-resistant. Asset-backed. Revenue-proven.",
+  },
+  other: {
+    "og:see_also": [
+      "https://www.linkedin.com/company/prime-dealer-equity-fund",
+      "https://www.youtube.com/@PrimeDealerEquityFund",
+      "https://www.instagram.com/primedealerequityfund/",
+      "https://www.facebook.com/p/Prime-Dealer-Equity-Fund-61577255588261/",
+      "https://open.spotify.com/show/1HKo2seiNq8iRj4iQZCZua",
+      "https://podcasts.apple.com/us/podcast/prime-dealer-podcast/id1887343379",
+    ],
   },
   robots: {
     index: true,
