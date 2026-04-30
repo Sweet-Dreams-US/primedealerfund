@@ -171,23 +171,39 @@ function RenderBlock({ block }: { block: ContentBlock }) {
           {block.text}
         </h2>
       );
-    case "image":
+    case "image": {
+      const isPortrait = block.orientation === "portrait";
       return (
         <figure className="my-10">
-          <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden">
+          <div
+            className={`relative mx-auto rounded-xl overflow-hidden bg-navy-950 ${
+              isPortrait
+                ? "aspect-[3/4] max-w-md"
+                : "w-full aspect-[16/9]"
+            }`}
+          >
             <Image
               src={block.src}
               alt={block.alt}
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, 720px"
+              sizes={
+                isPortrait
+                  ? "(max-width: 768px) 100vw, 448px"
+                  : "(max-width: 768px) 100vw, 720px"
+              }
             />
           </div>
-          <figcaption className="text-navy-500 text-xs mt-3 italic">
+          <figcaption
+            className={`text-navy-500 text-xs mt-3 italic ${
+              isPortrait ? "text-center max-w-md mx-auto" : ""
+            }`}
+          >
             {block.caption}
           </figcaption>
         </figure>
       );
+    }
     case "callout-numbers":
       return (
         <CalloutNumbers
@@ -205,6 +221,7 @@ function RenderBlock({ block }: { block: ContentBlock }) {
           attribution={block.attribution}
           stats={block.stats}
           link={block.link}
+          attributionPrefix={block.attributionPrefix}
         />
       );
   }

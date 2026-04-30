@@ -9,7 +9,7 @@ export const mayPosts: BlogPost[] = [
     title:
       "Coleman Prime Acquires Nissan of Elgin, Reaching Five Dealerships in One Year and Expanding Into the Chicago Metro",
     subtitle:
-      "Fifth co-investment under the Coleman–Prime partnership rebrands the Elgin store as Nissan of Elgin, marks the platform’s first asset in Illinois, and pushes annualized revenue above $200 million.",
+      "Fifth co-investment under the Coleman Prime partnership rebrands the Elgin store as Nissan of Elgin, marks the platform’s first asset in Illinois, and pushes annualized revenue above $200 million.",
     author: "Prime Dealer Equity Fund",
     authorRole: "Official Announcement",
     date: "May 1, 2026",
@@ -18,18 +18,18 @@ export const mayPosts: BlogPost[] = [
       src: `${ELGIN}/ColemanPrimeTeamInFrontofNewStore.jpg`,
       alt: "The Coleman Prime team in front of Nissan of Elgin on closing day",
       caption:
-        "The Coleman Prime team in front of the newly acquired Nissan of Elgin, Elgin, Illinois — May 1, 2026.",
+        "The Coleman Prime team in front of the newly acquired Nissan of Elgin, Elgin, Illinois. May 1, 2026.",
     },
     excerpt:
-      "ELGIN, IL — Coleman Prime Automotive has acquired Nissan of Elgin from McGrath Nissan of Elgin, completing its fifth dealership acquisition exactly one year to the day after closing on its first store. The deal extends the platform into the Chicago metropolitan market and advances the partnership’s long-term “Road to 40” strategy.",
+      "Coleman Prime Automotive has acquired Nissan of Elgin from McGrath Nissan of Elgin, completing its fifth dealership acquisition exactly one year to the day after closing on its first store. The deal extends the platform into the Chicago metropolitan market and advances the partnership’s long-term “Road to 40” strategy.",
     content: [
       {
         type: "paragraph",
-        text: "FOR IMMEDIATE RELEASE — ELGIN, IL — May 1, 2026. Coleman Prime Automotive LLC, the joint venture between Prime Dealer Equity Fund LLC and Coleman Automotive Group LLC, today announced the closing of its acquisition of McGrath Nissan of Elgin. The dealership will operate going forward as Nissan of Elgin.",
+        text: "Coleman Prime Automotive LLC, the joint venture between Prime Dealer Equity Fund LLC and Coleman Automotive Group LLC, today announced the closing of its acquisition of McGrath Nissan of Elgin. The dealership will operate going forward as Nissan of Elgin.",
       },
       {
         type: "paragraph",
-        text: "The transaction is the fifth co-investment executed under the Coleman–Prime partnership and the platform’s first rooftop in the Chicago metropolitan area. Nissan of Elgin becomes the third Nissan store in the Coleman Automotive portfolio, joining Nissan of Warsaw in Indiana and Nissan of Streetsboro in Ohio, and pushes Coleman Prime’s annualized revenue above $200 million.",
+        text: "The transaction is the fifth co-investment executed under the Coleman Prime partnership and the platform’s first rooftop in the Chicago metropolitan area. Nissan of Elgin becomes the third Nissan store in the Coleman Automotive portfolio, joining Nissan of Warsaw in Indiana and Nissan of Streetsboro in Ohio, and pushes Coleman Prime’s annualized revenue above $200 million.",
       },
       {
         type: "image",
@@ -44,11 +44,11 @@ export const mayPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Reaching the fifth co-investment exactly twelve months after the partnership’s first close is a meaningful milestone in the “Road to 40” — the partnership’s ten-year roadmap to acquire and operate forty franchise dealership rooftops across the United States by 2035. The Elgin entry represents a deliberate step from the partnership’s established footprint in smaller Midwestern markets into a major metropolitan trade area.",
+        text: "Reaching the fifth co-investment exactly twelve months after the partnership’s first close is a meaningful milestone in the “Road to 40,” the partnership’s ten-year roadmap to acquire and operate forty franchise dealership rooftops across the United States by 2035. The Elgin entry represents a deliberate step from the partnership’s established footprint in smaller Midwestern markets into a major metropolitan trade area.",
       },
       {
         type: "paragraph",
-        text: "Coleman Automotive Group will deploy its proprietary operational playbook at Nissan of Elgin beginning at close — focused on stabilizing inherited operations, modernizing the dealer management system, expanding fixed operations capacity, and aligning variable operations with the group’s performance standards across the existing rooftops.",
+        text: "Coleman Automotive Group will deploy its proprietary operational playbook at Nissan of Elgin beginning at close. The focus is on stabilizing inherited operations, modernizing the dealer management system, expanding fixed operations capacity, and aligning variable operations with the group’s performance standards across the existing rooftops.",
       },
       {
         type: "image",
@@ -59,7 +59,7 @@ export const mayPosts: BlogPost[] = [
       },
       {
         type: "callout-numbers",
-        title: "The Coleman–Prime Partnership Today",
+        title: "The Coleman Prime Partnership Today",
         lines: [
           "5 dealerships acquired in 12 months",
           "3 Nissan rooftops (Warsaw, Streetsboro, Elgin)",
@@ -81,7 +81,8 @@ export const mayPosts: BlogPost[] = [
         quote:
           "Elgin is a strong, growing market, and Nissan of Elgin gives us an outstanding platform to serve customers in the Chicago area. This is our third Nissan store, and we have built real expertise around the brand and the customer. The team at McGrath built a solid business, and our focus from day one is to keep delivering an excellent experience for every customer and every employee in this store.",
         attribution:
-          "Kyle Coleman, CEO, Coleman Automotive Group — Operating Partner, Coleman Prime Automotive",
+          "Kyle Coleman, CEO, Coleman Automotive Group and Operating Partner, Coleman Prime Automotive",
+        attributionPrefix: "",
       },
       {
         type: "image",
@@ -96,6 +97,7 @@ export const mayPosts: BlogPost[] = [
           "Closing our fifth dealership exactly one year after our first is a significant milestone, and it puts us firmly on the path to our long-term goal of forty dealerships. Entering the Chicago market with a strong Nissan store is a meaningful step forward for the platform and for our investors. Kyle and his team have executed at a very high level, and the results speak for themselves.",
         attribution:
           "Ralph Marcuccilli, Managing Partner, Prime Dealer Equity Fund",
+        attributionPrefix: "",
       },
       {
         type: "image",
@@ -103,13 +105,15 @@ export const mayPosts: BlogPost[] = [
         alt: "Kyle Coleman and Ralph Marcuccilli on closing day at Nissan of Elgin",
         caption:
           "Kyle Coleman (left) and Ralph Marcuccilli (right) on closing day at Nissan of Elgin. Photo: Sweet Dreams US LLC",
+        orientation: "portrait",
       },
       {
         type: "callout-floor",
         quote:
-          "We are thrilled to be in the Chicago market with our third Nissan store. The Nissan lineup — from the Rogue and Sentra to the all-electric Ariya and the redesigned Pathfinder — fits the Elgin consumer perfectly, and the team here is genuinely excited about the playbook we are bringing in. Our priority on day one is the people in this building. When the team wins, the customer wins.",
+          "We are thrilled to be in the Chicago market with our third Nissan store. The Nissan lineup, from the Rogue and Sentra to the all electric Ariya and the redesigned Pathfinder, fits the Elgin consumer perfectly, and the team here is genuinely excited about the playbook we are bringing in. Our priority on day one is the people in this building. When the team wins, the customer wins.",
         attribution:
           "Jami Langham, COO, Coleman Automotive Group",
+        attributionPrefix: "",
       },
       {
         type: "image",
@@ -117,6 +121,7 @@ export const mayPosts: BlogPost[] = [
         alt: "Jami Langham, COO of Coleman Automotive Group, at Nissan of Elgin",
         caption:
           "Jami Langham, COO of Coleman Automotive Group, on the showroom floor at Nissan of Elgin. Photo: Sweet Dreams US LLC",
+        orientation: "portrait",
       },
       {
         type: "callout-floor",
@@ -124,6 +129,7 @@ export const mayPosts: BlogPost[] = [
           "I have been in this market for years, and what excites me about joining Coleman Prime is the discipline they bring to the sales floor without losing the personal feel customers in Elgin have come to expect. We are keeping the team that built this store and giving them better tools to win. The energy here on day one says everything you need to know.",
         attribution:
           "Sean Trice, Sales Manager, Nissan of Elgin",
+        attributionPrefix: "",
       },
       {
         type: "subheading",
@@ -131,20 +137,20 @@ export const mayPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Nissan of Elgin will continue to operate at its current location and retain its existing employees. Coleman Prime Automotive plans to invest in the store’s people, facilities, and customer experience as part of its broader operating model — including expanded service capacity, modernized customer-facing technology, and the same training and accountability standards deployed across the partnership’s other rooftops.",
+        text: "Nissan of Elgin will continue to operate at its current location and retain its existing employees. Coleman Prime Automotive plans to invest in the store’s people, facilities, and customer experience as part of its broader operating model, including expanded service capacity, modernized customer facing technology, and the same training and accountability standards deployed across the partnership’s other rooftops.",
       },
       {
         type: "image",
         src: `${ELGIN}/ServiceDepartment.jpg`,
         alt: "Service department at Nissan of Elgin",
         caption:
-          "The service drive at Nissan of Elgin — the first area of operational investment under the Coleman playbook. Photo: Sweet Dreams US LLC",
+          "The service drive at Nissan of Elgin, the first area of operational investment under the Coleman playbook. Photo: Sweet Dreams US LLC",
       },
       {
         type: "callout-prime",
         lines: [
           "Coleman Prime Automotive LLC is the joint venture between Prime Dealer Equity Fund LLC and Coleman Automotive Group LLC, formed to acquire and operate franchise dealerships across the United States.",
-          "The platform pairs institutional capital with experienced dealership operators to build a scaled, multi-store group focused on long-term value creation — with an investor-first distribution structure that targets a minimum annual distribution before the Fund participates in profits.",
+          "The platform pairs institutional capital with experienced dealership operators to build a scaled, multi store group focused on long term value creation, with an investor first distribution structure that targets a minimum annual distribution before the Fund participates in profits.",
         ],
         link: {
           text: "Learn how the Fund is structured",
@@ -157,7 +163,7 @@ export const mayPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Ralph Marcuccilli, Managing Partner, Prime Dealer Equity Fund — Ralph@PrimeDealerFund.com — (260) 417-6016 — www.PrimeDealerFund.com",
+        text: "Ralph Marcuccilli, Managing Partner, Prime Dealer Equity Fund. Ralph@PrimeDealerFund.com. (260) 417-6016. www.PrimeDealerFund.com",
       },
       {
         type: "paragraph",

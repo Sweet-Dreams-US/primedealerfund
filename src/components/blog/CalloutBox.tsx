@@ -71,6 +71,7 @@ interface CalloutFloorProps {
   attribution: string;
   stats?: string[];
   link?: { text: string; href: string };
+  attributionPrefix?: string;
 }
 
 export function CalloutFloor({
@@ -78,6 +79,7 @@ export function CalloutFloor({
   attribution,
   stats,
   link,
+  attributionPrefix = "— ",
 }: CalloutFloorProps) {
   return (
     <div className="my-10 rounded-2xl border border-navy-700/50 bg-navy-950/60 p-8">
@@ -87,7 +89,7 @@ export function CalloutFloor({
       <blockquote className="text-cream-100 text-lg leading-relaxed italic mb-3">
         &ldquo;{quote}&rdquo;
       </blockquote>
-      <p className="text-navy-400 text-sm mb-5">&mdash; {attribution}</p>
+      <p className="text-navy-400 text-sm mb-5">{attributionPrefix}{attribution}</p>
       {stats && stats.length > 0 && (
         <div className="space-y-1.5 border-t border-navy-800/50 pt-4 mb-5">
           {stats.map((stat, i) => (

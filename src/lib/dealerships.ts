@@ -41,10 +41,6 @@ export const dealerships: Dealership[] = [
     gallery: [
       "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/FrontofNissanElgin.jpg",
       "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/ColemanPrimeTeamInFrontofNewStore.jpg",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/ExecutiveTeamWalkingIntoNewStore.jpg",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/Kyle%26Ralph%20(1).jpg",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/KyleExcitment.jpg",
-      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/JamiLaughing.jpg",
       "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/ServiceDepartment.jpg",
     ],
   },

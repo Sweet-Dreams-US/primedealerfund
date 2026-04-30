@@ -6,6 +6,7 @@ export type ContentBlock =
       src: string;
       alt: string;
       caption: string;
+      orientation?: "wide" | "portrait";
     }
   | {
       type: "callout-numbers";
@@ -24,6 +25,7 @@ export type ContentBlock =
       attribution: string;
       stats?: string[];
       link?: { text: string; href: string };
+      attributionPrefix?: string;
     };
 
 export interface BlogPost {
