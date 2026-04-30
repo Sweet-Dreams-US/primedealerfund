@@ -9,7 +9,7 @@ export const mayPosts: BlogPost[] = [
     title:
       "Coleman Prime Acquires Nissan of Elgin, Reaching Five Dealerships in One Year and Expanding Into the Chicago Metro",
     subtitle:
-      "Fifth co-investment under the Coleman Prime partnership rebrands the McGrath Elgin store as Nissan of Elgin, marks the platform’s first asset in Illinois, and pushes annualized revenue above $200 million.",
+      "Fifth co-investment under the Coleman Prime partnership rebrands the McGrath Nissan of Elgin store as Nissan of Elgin, marks the platform’s first asset in Illinois, and pushes annualized revenue above $200 million.",
     author: "Prime Dealer Equity Fund",
     authorRole: "Official Announcement",
     date: "May 1, 2026",
@@ -138,11 +138,11 @@ export const mayPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "The Elgin store comes with a meaningful operational advantage: the building is less than one year old. McGrath Nissan relocated from its prior 945 E Chicago St location to the newly constructed 2635 Auto Mall Dr facility in Elgin, Illinois 60124 when the new building was completed. The result is a modern showroom and a service department configured to current Nissan standards from day one.",
+        text: "The Elgin store comes with a meaningful operational advantage: the building is less than one year old. McGrath Nissan relocated from its prior 945 E Chicago St location to the newly constructed 2635 Auto Mall Dr facility in Elgin when the new building was completed. The result is a modern showroom and a service department configured to very latest Nissan standards from day one.",
       },
       {
         type: "paragraph",
-        text: "At the center of that service capacity are 17 service bays, giving Nissan of Elgin one of the larger fixed operations footprints in the Coleman Prime portfolio. Expanded service capacity is the single highest-leverage area of operational investment under the Coleman playbook, and Nissan of Elgin starts with the physical infrastructure already in place.",
+        text: "At the center of that service capacity are 17 service bays, giving Nissan of Elgin one of the larger service operations footprints in the Coleman Prime portfolio. Expanded service capacity is the single highest-leverage area of operational investment under the Coleman playbook, and Nissan of Elgin starts with the physical infrastructure already in place.",
       },
       {
         type: "subheading",
