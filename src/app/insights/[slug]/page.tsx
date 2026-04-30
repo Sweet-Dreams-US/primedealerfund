@@ -269,7 +269,7 @@ function RichBlogPost({ blog }: { blog: NonNullable<ReturnType<typeof getBlogPos
   return (
     <PageLayout>
       {/* Hero image */}
-      <section className="relative h-[50vh] md:h-[65vh] overflow-hidden">
+      <section className="relative h-[32vh] md:h-[65vh] overflow-hidden">
         <Image
           src={blog.heroImage.src}
           alt={blog.heroImage.alt}
