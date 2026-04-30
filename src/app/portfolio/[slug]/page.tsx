@@ -176,6 +176,47 @@ export default function DealershipPage() {
         </div>
       </section>
 
+      {/* Press Release */}
+      {dealership.pressRelease && (
+        <section className="py-12 md:py-16">
+          <div className="max-w-4xl mx-auto px-6">
+            <Link
+              href={`/insights/${dealership.pressRelease.slug}`}
+              className="group block rounded-2xl bg-navy-900/50 border border-navy-800/50 hover:border-gold-400/40 transition-all duration-500 p-8 md:p-10"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-gold-400 font-mono text-[10px] tracking-[0.2em] uppercase">
+                  Press Release
+                </span>
+                <span className="text-navy-700">&middot;</span>
+                <span className="text-navy-500 text-xs font-mono tracking-wider">
+                  {dealership.pressRelease.date}
+                </span>
+              </div>
+              <h3 className="font-display text-xl md:text-2xl font-semibold text-cream-50 mb-4 group-hover:text-gold-400 transition-colors leading-snug">
+                {dealership.pressRelease.title}
+              </h3>
+              <div className="inline-flex items-center gap-2 text-gold-400 font-mono text-sm tracking-wider">
+                Read the announcement
+                <svg
+                  className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                  />
+                </svg>
+              </div>
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* Video */}
       {dealership.video && (
         <section className="py-16 md:py-24">

@@ -3,8 +3,10 @@ import type { BlogPost } from "./blog-types";
 import { januaryPosts } from "./blog-january";
 import { februaryPosts } from "./blog-february";
 import { marchAprilPosts } from "./blog-march-april";
+import { mayPosts } from "./blog-may";
 
 export const blogPosts: BlogPost[] = [
+  ...mayPosts,
   ...januaryPosts,
   ...februaryPosts,
   {

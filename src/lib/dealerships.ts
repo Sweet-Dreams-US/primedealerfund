@@ -14,9 +14,40 @@ export interface Dealership {
     type: "cloudflare";
     id: string;
   };
+  pressRelease?: {
+    slug: string;
+    title: string;
+    date: string;
+  };
 }
 
 export const dealerships: Dealership[] = [
+  {
+    name: "Nissan of Elgin",
+    slug: "nissan-elgin",
+    location: "Elgin, IL",
+    state: "IL",
+    brands: ["Nissan"],
+    status: "operational",
+    description:
+      "Coleman Prime's first dealership in the Chicago metropolitan market and the partnership's third Nissan rooftop. Acquired May 2026 from McGrath Nissan of Elgin, the store anchors the group's expansion into greater Chicago.",
+    pressRelease: {
+      slug: "nissan-of-elgin-acquisition-press-release",
+      title:
+        "Coleman Prime Acquires Nissan of Elgin, Reaching Five Dealerships in One Year and Expanding Into the Chicago Metro",
+      date: "May 1, 2026",
+    },
+    heroImage: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/FrontofNissanElgin.jpg",
+    gallery: [
+      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/FrontofNissanElgin.jpg",
+      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/ColemanPrimeTeamInFrontofNewStore.jpg",
+      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/ExecutiveTeamWalkingIntoNewStore.jpg",
+      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/Kyle%26Ralph%20(1).jpg",
+      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/KyleExcitment.jpg",
+      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/JamiLaughing.jpg",
+      "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/ServiceDepartment.jpg",
+    ],
+  },
   {
     name: "Nissan Warsaw",
     slug: "nissan-warsaw",
@@ -105,7 +136,9 @@ export function getDealershipBySlug(slug: string): Dealership | undefined {
 /** Curated set of best photos across all dealerships for the homepage gallery */
 export const galleryHighlights = [
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/mtpleasantdrone.png",
+  "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/FrontofNissanElgin.jpg",
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/FrontofStoreNissanWarsaw.webp",
+  "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/ColemanPrimeTeamInFrontofNewStore.jpg",
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/MtPleasantFront.webp",
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/NissanWarsawMainSignwithTruck.webp",
   "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/ChargerOutFront.webp",
@@ -116,6 +149,7 @@ export const galleryHighlights = [
 
 export const stateLocations: Record<string, { x: string; y: string }> = {
   IA: { x: "44%", y: "38%" },
+  IL: { x: "51%", y: "41%" },
   IN: { x: "56%", y: "42%" },
   OH: { x: "62%", y: "40%" },
 };
