@@ -9,6 +9,13 @@ export type ContentBlock =
       orientation?: "wide" | "portrait";
     }
   | {
+      type: "image-pair";
+      images: [
+        { src: string; alt: string; caption: string },
+        { src: string; alt: string; caption: string }
+      ];
+    }
+  | {
       type: "callout-numbers";
       title: string;
       lines: string[];

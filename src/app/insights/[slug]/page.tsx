@@ -204,6 +204,30 @@ function RenderBlock({ block }: { block: ContentBlock }) {
         </figure>
       );
     }
+    case "image-pair":
+      return (
+        <figure className="my-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {block.images.map((img, i) => (
+              <div
+                key={i}
+                className="relative aspect-[3/4] rounded-xl overflow-hidden bg-navy-950"
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 100vw, 360px"
+                />
+              </div>
+            ))}
+          </div>
+          <figcaption className="text-navy-500 text-xs mt-3 italic text-center">
+            {block.images.map((img) => img.caption).join(" / ")}
+          </figcaption>
+        </figure>
+      );
     case "callout-numbers":
       return (
         <CalloutNumbers
