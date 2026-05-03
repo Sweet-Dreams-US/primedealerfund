@@ -33,6 +33,12 @@ export type ContentBlock =
       stats?: string[];
       link?: { text: string; href: string };
       attributionPrefix?: string;
+    }
+  | {
+      type: "youtube";
+      embedId: string;
+      title?: string;
+      caption?: string;
     };
 
 export interface BlogPost {

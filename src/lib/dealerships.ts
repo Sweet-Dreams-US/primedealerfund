@@ -10,10 +10,15 @@ export interface Dealership {
   gallery: string[];
   website?: string;
   disclaimer?: string;
-  video?: {
-    type: "cloudflare";
-    id: string;
-  };
+  video?:
+    | {
+        type: "cloudflare";
+        id: string;
+      }
+    | {
+        type: "youtube";
+        id: string;
+      };
   pressRelease?: {
     slug: string;
     title: string;
@@ -43,6 +48,10 @@ export const dealerships: Dealership[] = [
       "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/ColemanPrimeTeamInFrontofNewStore.jpg",
       "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/ServiceDepartment.jpg",
     ],
+    video: {
+      type: "youtube",
+      id: "mi7M95pYGNM",
+    },
   },
   {
     name: "Nissan Warsaw",

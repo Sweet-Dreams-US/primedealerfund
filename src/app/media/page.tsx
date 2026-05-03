@@ -55,6 +55,13 @@ const podcasts = [
 
 const videos = [
   {
+    title: "Coleman Prime Acquires Nissan of Elgin",
+    tag: "Acquisition Announcement",
+    description:
+      "Closing day at Nissan of Elgin — Coleman Prime's fifth dealership in twelve months and the platform's first store in the Chicago metropolitan market.",
+    embedId: "mi7M95pYGNM",
+  },
+  {
     title: "Prime Dealer Equity Fund Thesis",
     tag: "Fund Overview",
     description:

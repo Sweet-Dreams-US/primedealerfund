@@ -248,6 +248,26 @@ function RenderBlock({ block }: { block: ContentBlock }) {
           attributionPrefix={block.attributionPrefix}
         />
       );
+    case "youtube":
+      return (
+        <figure className="my-10">
+          <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-navy-950 border border-navy-800/50">
+            <iframe
+              src={`https://www.youtube.com/embed/${block.embedId}?rel=0`}
+              title={block.title ?? "YouTube video"}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+              className="absolute inset-0 w-full h-full"
+            />
+          </div>
+          {block.caption && (
+            <figcaption className="text-navy-500 text-xs mt-3 italic">
+              {block.caption}
+            </figcaption>
+          )}
+        </figure>
+      );
   }
 }
 

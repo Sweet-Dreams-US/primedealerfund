@@ -225,12 +225,23 @@ export default function DealershipPage() {
               Featured Video
             </h2>
             <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-black/10">
-              <iframe
-                src={`https://customer-w6h9o08eg118alny.cloudflarestream.com/${dealership.video.id}/iframe`}
-                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
-                allowFullScreen
-                className="absolute inset-0 w-full h-full"
-              />
+              {dealership.video.type === "youtube" ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${dealership.video.id}?rel=0`}
+                  title={`${dealership.name} feature video`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                />
+              ) : (
+                <iframe
+                  src={`https://customer-w6h9o08eg118alny.cloudflarestream.com/${dealership.video.id}/iframe`}
+                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                />
+              )}
             </div>
           </div>
         </section>

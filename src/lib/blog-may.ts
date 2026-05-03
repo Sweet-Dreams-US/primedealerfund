@@ -39,6 +39,13 @@ export const mayPosts: BlogPost[] = [
           "Nissan of Elgin, Elgin, Illinois. The store will continue to operate at its current location and retain its existing employees. Photo: Sweet Dreams US LLC",
       },
       {
+        type: "youtube",
+        embedId: "mi7M95pYGNM",
+        title: "Coleman Prime Acquires Nissan of Elgin",
+        caption:
+          "Closing day at Nissan of Elgin — Coleman Prime’s fifth dealership and first in the Chicago metro.",
+      },
+      {
         type: "subheading",
         text: "Five Dealerships in One Year",
       },

@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FloatingCTA from "@/components/layout/FloatingCTA";
 import Hero from "@/components/home/Hero";
+import LatestNews from "@/components/home/LatestNews";
 import VideoSpotlight from "@/components/home/VideoSpotlight";
 import PortfolioShowcase from "@/components/home/PortfolioShowcase";
 import ThesisCards from "@/components/home/ThesisCards";
@@ -18,6 +19,7 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
+        <LatestNews />
         <VideoSpotlight />
         <PortfolioShowcase />
         <ThesisCards />
