@@ -31,7 +31,7 @@ const leadership = [
   },
 ];
 
-const operations: { name: string; title: string; photo?: string }[] = [
+const operations: { name: string; title: string; photo: string }[] = [
   {
     name: "Jami Langham",
     title: "Chief Operations Officer",
@@ -46,6 +46,11 @@ const operations: { name: string; title: string; photo?: string }[] = [
     name: "Jay Nelson",
     title: "Variable Operations Director",
     photo: `${HEADSHOTS}/Jay.jpg`,
+  },
+  {
+    name: "Rich Ogilvie",
+    title: "Director of Fixed Operations",
+    photo: `${HEADSHOTS}/Rich.jpg`,
   },
   {
     name: "Andrea Shockey",
@@ -78,14 +83,14 @@ function LeadershipSection() {
               variants={staggerItem}
               className="flex flex-col lg:flex-row gap-8 p-8 md:p-12 rounded-2xl bg-navy-900/50 border border-navy-800/50"
             >
-              <div className="w-full lg:w-56 shrink-0 flex justify-center">
-                <div className="relative w-48 h-60 overflow-hidden" style={{ borderRadius: "50%" }}>
+              <div className="w-full lg:w-72 shrink-0 flex justify-center">
+                <div className="relative w-60 h-72 md:w-64 md:h-80 overflow-hidden" style={{ borderRadius: "50%" }}>
                   <Image
                     src={person.photo}
                     alt={person.name}
                     fill
                     className="object-cover object-top"
-                    sizes="(max-width: 1024px) 192px, 192px"
+                    sizes="(max-width: 768px) 240px, 256px"
                   />
                 </div>
               </div>
@@ -136,25 +141,26 @@ function OperationsSection() {
           variants={staggerContainer}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6"
         >
           {operations.map((person) => (
             <motion.div
               key={person.name}
               variants={staggerItem}
-              className="p-8 rounded-2xl bg-navy-950/50 border border-navy-800/30 text-center"
+              className="p-6 md:p-8 rounded-2xl bg-navy-950/50 border border-navy-800/30 text-center"
             >
-              {person.photo ? (
-                <div className="relative w-20 h-24 mx-auto mb-5 overflow-hidden" style={{ borderRadius: "50%" }}>
-                  <Image src={person.photo} alt={person.name} fill className="object-cover object-top" sizes="80px" />
-                </div>
-              ) : (
-                <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-5">
-                  <span className="font-display text-xl text-gold-400">
-                    {person.name.split(" ").map((n) => n[0]).join("")}
-                  </span>
-                </div>
-              )}
+              <div
+                className="relative w-36 h-44 md:w-40 md:h-48 mx-auto mb-5 overflow-hidden"
+                style={{ borderRadius: "50%" }}
+              >
+                <Image
+                  src={person.photo}
+                  alt={person.name}
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 768px) 144px, 160px"
+                />
+              </div>
               <h3 className="font-display text-lg font-semibold text-cream-50 mb-1">
                 {person.name}
               </h3>
