@@ -2,16 +2,28 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { staggerContainer, staggerItem } from "@/lib/animations";
+import { fadeInUp } from "@/lib/animations";
 import SectionHeader from "@/components/ui/SectionHeader";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+
+/**
+ * Two-person leadership card. Kyle and Ralph share a single photo
+ * (taken together at the Nissan of Elgin closing), with each person's
+ * mini-bio stacked vertically alongside the image. The shared photo
+ * reinforces the partnership framing of Coleman Prime — Operator + Fund.
+ */
+const partnership = {
+  photo:
+    "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/Kyle%26Ralph%20(1).jpg",
+  alt: "Kyle Coleman and Ralph Marcuccilli at Nissan of Elgin",
+  caption: "Kyle Coleman and Ralph Marcuccilli — Coleman Prime partnership",
+};
 
 const leaders = [
   {
     name: "Kyle Coleman",
     title: "CEO",
-    photo: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/colemanpic1.jpg",
     summary:
       "Over 20 years in retail automotive and finance. Proven track record acquiring, turning around, and scaling franchise dealerships above industry benchmarks.",
     expertise: ["Dealership Operations", "M&A Strategy"],
@@ -19,7 +31,6 @@ const leaders = [
   {
     name: "Ralph Marcuccilli",
     title: "Manager",
-    photo: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/ralphmarcuccilli1.jpg",
     summary:
       "Three decades of leadership in banking, fintech, and investing. Expert in leveraging technology and automation to transform business operations and drive growth.",
     expertise: ["Financial Technology", "Capital Markets"],
@@ -40,20 +51,29 @@ export default function Leadership() {
 
         <motion.div
           ref={ref}
-          variants={staggerContainer}
+          variants={fadeInUp}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12"
+          className="overflow-hidden rounded-2xl bg-navy-900/40 border border-navy-800/40 hover:border-gold-400/20 transition-all duration-500 mb-12"
         >
-          {leaders.map((person) => (
-            <motion.div
-              key={person.name}
-              variants={staggerItem}
-              className="group relative overflow-hidden rounded-2xl bg-navy-900/40 border border-navy-800/40 hover:border-gold-400/20 transition-all duration-500"
-            >
-              <div className="flex flex-col sm:flex-row items-end gap-0">
-                {/* Info — left side, vertically centered */}
-                <div className="flex-1 p-6 md:p-8">
+          <div className="grid grid-cols-1 md:grid-cols-[420px_1fr]">
+            {/* Shared photo — left on desktop, top on mobile */}
+            <div className="relative w-full h-72 sm:h-96 md:h-auto md:min-h-[520px]">
+              <Image
+                src={partnership.photo}
+                alt={partnership.alt}
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 768px) 100vw, 420px"
+              />
+              {/* Soft fade so the divider into bios feels integrated */}
+              <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-r from-transparent to-navy-900/40 hidden md:block" />
+            </div>
+
+            {/* Two stacked bios — right on desktop, below on mobile */}
+            <div className="divide-y divide-navy-800/40">
+              {leaders.map((person) => (
+                <div key={person.name} className="p-6 md:p-8">
                   <h3 className="font-display text-2xl font-bold text-cream-50 mb-0.5">
                     {person.name}
                   </h3>
@@ -74,20 +94,9 @@ export default function Leadership() {
                     ))}
                   </div>
                 </div>
-
-                {/* Photo — right side, bottom-aligned */}
-                <div className="relative w-full sm:w-48 md:w-56 shrink-0 h-56 sm:h-64 md:h-72 overflow-hidden sm:rounded-tl-2xl">
-                  <Image
-                    src={person.photo}
-                    alt={person.name}
-                    fill
-                    className="object-cover object-top"
-                    sizes="(max-width: 640px) 100vw, 224px"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              ))}
+            </div>
+          </div>
         </motion.div>
 
         <div className="text-center">

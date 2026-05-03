@@ -9,11 +9,14 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import { fadeInUp, staggerContainer, staggerItem } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
+const HEADSHOTS =
+  "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/headshots";
+
 const leadership = [
   {
     name: "Kyle Coleman",
     title: "CEO",
-    photo: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/colemanpic1.jpg",
+    photo: `${HEADSHOTS}/Kyle.jpg`,
     bio: "Over 20 years of experience in the retail automotive industry and finance. Mr. Coleman is the CEO and majority owner of Coleman Automotive Group LLC. He has been the General Manager of multiple new car dealerships, consistently exceeding industry performance metrics. Mr. Coleman has a proven track record of acquiring, turning around, and optimizing automotive dealerships to perform above industry standards. He has also developed a talented team ready to relocate and take on key roles within dealerships that Coleman Automotive intends to optimize.",
     bio2: "Through Mr. Coleman's extensive industry relationships, he has built broker relationships within the automotive dealership and retail industry. The Fund Manager believes it enjoys a competitive advantage due to these broker relationships.",
     expertise: ["Dealership Operations", "OEM Relations", "M&A Strategy", "Turnaround Management"],
@@ -21,7 +24,7 @@ const leadership = [
   {
     name: "Ralph Marcuccilli",
     title: "Manager of the Fund Manager, Prime Management Partners, LLC",
-    photo: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/ralphmarcuccilli1.jpg",
+    photo: `${HEADSHOTS}/Ralph.jpg`,
     bio: "Seasoned executive and investor with a strong track record of leadership in the banking, financial technology, and investing. With a career spanning over three decades, Ralph has been at the forefront of leveraging automation and cutting-edge technology to transform business. His expertise in developing user-centric, technology-driven solutions has helped organizations streamline operations, enhance customer experiences, and drive growth.",
     bio2: "Ralph is deeply committed to fostering innovation across all of the industries he spans, empowering organizations to adapt to the rapidly evolving technological landscape, and championing advancements that define his investment strategies.",
     expertise: ["Financial Technology", "Capital Markets", "Strategic Planning", "Business Innovation"],
@@ -32,20 +35,22 @@ const operations: { name: string; title: string; photo?: string }[] = [
   {
     name: "Jami Langham",
     title: "Chief Operations Officer",
-    photo: "/assets/jami-langham.jpg",
+    photo: `${HEADSHOTS}/Jami.jpg`,
   },
   {
     name: "Ryan Coleman",
     title: "Director of Operations",
-    photo: "/assets/ryan-coleman.png",
+    photo: `${HEADSHOTS}/Ryan.jpg`,
   },
   {
     name: "Jay Nelson",
     title: "Variable Operations Director",
+    photo: `${HEADSHOTS}/Jay.jpg`,
   },
   {
     name: "Andrea Shockey",
     title: "Chief Financial Officer",
+    photo: `${HEADSHOTS}/Andrea.jpg`,
   },
 ];
 
