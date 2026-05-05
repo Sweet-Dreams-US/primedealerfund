@@ -4,8 +4,10 @@ import { januaryPosts } from "./blog-january";
 import { februaryPosts } from "./blog-february";
 import { marchAprilPosts } from "./blog-march-april";
 import { mayPosts } from "./blog-may";
+import { may2026Posts } from "./blog-may-2026";
 
 export const blogPosts: BlogPost[] = [
+  ...may2026Posts,
   ...mayPosts,
   ...januaryPosts,
   ...februaryPosts,
@@ -2348,6 +2350,38 @@ export const blogPosts: BlogPost[] = [
   ...marchAprilPosts,
 ];
 
+/**
+ * Returns true if a post's `date` string is in the past or today.
+ * Future-dated posts are treated as drafts/scheduled and hidden from
+ * the public-facing pages until their date arrives.
+ */
+function isPublished(post: BlogPost): boolean {
+  const postDate = new Date(post.date);
+  if (Number.isNaN(postDate.getTime())) {
+    // Malformed date → fail open so the post is still visible. This
+    // matches existing behavior where every legacy post was always shown.
+    return true;
+  }
+  // Compare at day granularity (end-of-day on the post's date) so a post
+  // dated "May 6, 2026" goes live anywhere in the world during May 6.
+  postDate.setUTCHours(23, 59, 59, 999);
+  return postDate.getTime() <= Date.now();
+}
+
+/**
+ * Public-facing blog list — excludes scheduled/future-dated posts.
+ * Use this in /insights pages and any visitor-facing surface.
+ * Use `blogPosts` (unfiltered) only for admin/preview surfaces.
+ */
+export const publishedBlogPosts: BlogPost[] = blogPosts.filter(isPublished);
+
+/**
+ * Lookup a post by slug, but only if it has been published.
+ * Returns undefined for scheduled/future-dated posts so the [slug] page
+ * can fall through to its 404/coming-soon UI.
+ */
 export function getBlogPost(slug: string): BlogPost | undefined {
-  return blogPosts.find((p) => p.slug === slug);
+  const post = blogPosts.find((p) => p.slug === slug);
+  if (!post) return undefined;
+  return isPublished(post) ? post : undefined;
 }

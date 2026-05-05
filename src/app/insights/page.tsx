@@ -7,7 +7,7 @@ import Link from "next/link";
 import PageLayout from "@/components/layout/PageLayout";
 import GoldDivider from "@/components/ui/GoldDivider";
 import { staggerContainer, staggerItem } from "@/lib/animations";
-import { blogPosts } from "@/lib/blog-data";
+import { publishedBlogPosts } from "@/lib/blog-data";
 
 interface Article {
   slug: string;
@@ -44,7 +44,7 @@ const legacyArticles: Article[] = [
 ];
 
 const allArticles: Article[] = [
-  ...blogPosts.map((bp) => ({
+  ...publishedBlogPosts.map((bp) => ({
     slug: bp.slug,
     title: bp.title,
     excerpt: bp.excerpt,

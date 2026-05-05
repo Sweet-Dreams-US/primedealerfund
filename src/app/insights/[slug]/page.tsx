@@ -15,7 +15,7 @@ import {
 } from "@/components/blog/CalloutBox";
 import BlogCTA from "@/components/blog/BlogCTA";
 import RelatedPosts from "@/components/blog/RelatedPosts";
-import { getBlogPost, blogPosts, type ContentBlock } from "@/lib/blog-data";
+import { getBlogPost, publishedBlogPosts, type ContentBlock } from "@/lib/blog-data";
 
 /* ---------- Legacy articles (simple paragraph format) ---------- */
 const legacyArticles: Record<
@@ -278,7 +278,7 @@ function RichBlogPost({ blog }: { blog: NonNullable<ReturnType<typeof getBlogPos
 
   const relatedPosts = blog.relatedSlugs
     .map((s) => {
-      const bp = blogPosts.find((p) => p.slug === s);
+      const bp = publishedBlogPosts.find((p) => p.slug === s);
       if (bp) return { slug: bp.slug, title: bp.title };
       const la = legacyArticles[s];
       if (la) return { slug: s, title: la.title };
