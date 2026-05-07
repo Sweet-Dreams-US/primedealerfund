@@ -253,6 +253,11 @@ export default function AdminDashboard() {
   const [draftWebLink, setDraftWebLink] = useState<string | null>(null);
   const [manualRecipients, setManualRecipients] = useState<{ name: string; address: string }[]>([]);
   const [manualEmailInput, setManualEmailInput] = useState("");
+  // Test-send-to-me preview state. The address persists across the session so
+  // Ralph doesn't re-type it; the result toast clears after a few seconds.
+  const [testEmail, setTestEmail] = useState("ralph@marcuccilli.com");
+  const [testSending, setTestSending] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; error?: string } | null>(null);
 
   // Detail panel
   const [detailInvestor, setDetailInvestor] = useState<Investor | null>(null);
@@ -658,8 +663,55 @@ export default function AdminDashboard() {
     }
   }
 
+  // Clear every recipient (CRM-selected + manual). Used by the "Clear All"
+  // button on the recipient chip area, and called automatically after a
+  // successful send / draft so Ralph can't accidentally re-send to the same
+  // batch.
+  function clearAllRecipients() {
+    setSelectedIds(new Set());
+    setManualRecipients([]);
+  }
+
+  async function handleTestSend() {
+    if (!emailSubject || !emailBody) return;
+    if (!isValidEmail(testEmail)) {
+      setTestResult({ ok: false, error: "Invalid test email address" });
+      return;
+    }
+    setTestSending(true);
+    setTestResult(null);
+    try {
+      const res = await fetch("/api/admin/test-send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: emailSubject,
+          body: emailBody,
+          testEmail,
+          previewName: "Ralph",
+        }),
+      });
+      const result = await res.json();
+      if (!res.ok || !result.ok) {
+        setTestResult({ ok: false, error: result.error || "Test send failed" });
+      } else {
+        setTestResult({ ok: true });
+        setTimeout(() => setTestResult(null), 6000);
+      }
+    } catch (err) {
+      setTestResult({ ok: false, error: `Network error: ${err instanceof Error ? err.message : String(err)}` });
+    }
+    setTestSending(false);
+  }
+
   function buildBrandedHtml(bodyText: string) {
-    const paragraphs = bodyText.split("\n").map((line: string) => line.trim() === "" ? "<br>" : `<p style="margin:0 0 12px 0;">${line}</p>`).join("\n");
+    // Mirrors the HTML-vs-plain detection used in the queue worker — pasted
+    // HTML stays as-is, plain text gets wrapped paragraph-per-line.
+    const trimmed = bodyText.trim();
+    const isHtml = trimmed.startsWith("<");
+    const paragraphs = isHtml
+      ? bodyText
+      : bodyText.split("\n").map((line: string) => line.trim() === "" ? "<br>" : `<p style="margin:0 0 12px 0;">${line}</p>`).join("\n");
     return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background-color:#ffffff;font-family:Aptos,Calibri,'Segoe UI',Helvetica,Arial,sans-serif;">
@@ -701,6 +753,9 @@ export default function AdminDashboard() {
         const data = await res.json();
         setDraftSaved(true);
         setDraftWebLink(data.draft?.webLink || null);
+        // Clear recipients so the next compose starts fresh and we don't
+        // accidentally re-draft to the same group.
+        clearAllRecipients();
         setTimeout(() => { setDraftSaved(false); setDraftWebLink(null); }, 10000);
       }
     } catch { /* ignore */ }
@@ -1790,7 +1845,18 @@ export default function AdminDashboard() {
               <div className="flex-1 overflow-y-auto p-6 space-y-5">
                 {/* Recipients from CRM */}
                 <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">To — CRM Contacts</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">To — CRM Contacts</label>
+                    {(selectedIds.size > 0 || manualRecipients.length > 0) && (
+                      <button
+                        type="button"
+                        onClick={clearAllRecipients}
+                        className="text-[11px] text-slate-500 hover:text-red-600 px-2 py-0.5 rounded border border-slate-200 hover:border-red-300 transition-colors"
+                      >
+                        Clear All
+                      </button>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-1.5 min-h-[36px] p-2 bg-slate-50 rounded-t-lg border border-slate-200 border-b-0">
                     {selectedInvestors.map((i) => (
                       <span key={i.id} className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md border ${i.email ? "bg-white text-slate-700 border-slate-200" : "bg-red-50 text-red-500 border-red-200 line-through"}`}>
@@ -1846,7 +1912,14 @@ export default function AdminDashboard() {
                 {/* Body with template picker */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Message</label>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Message
+                      {emailBody.trim().startsWith("<") && (
+                        <span className="ml-2 inline-block text-[10px] font-medium text-emerald-600 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5 normal-case tracking-normal">
+                          HTML detected
+                        </span>
+                      )}
+                    </label>
                     <span className="text-[10px] text-slate-400">Variables: {"{{first_name}}"} {"{{last_name}}"} {"{{full_name}}"}</span>
                   </div>
                   {templates.length > 0 && (
@@ -1860,7 +1933,7 @@ export default function AdminDashboard() {
                     </div>
                   )}
                   <textarea value={emailBody} onChange={(e) => setEmailBody(e.target.value)} rows={14} placeholder={"Hi {{first_name}},\n\nI wanted to reach out regarding our fund's latest acquisition opportunity...\n\nWould love to schedule a call to discuss further."} className="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 text-sm resize-none" />
-                  <p className="text-[10px] text-slate-400 mt-1">Sending via Resend uses Prime branding + Ralph&apos;s signature. Saving as Outlook draft creates a plain draft in Ralph&apos;s mailbox.</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Paste HTML directly to control formatting — when the body starts with a tag the layout is preserved as-is. Sending via Resend uses Prime branding + Ralph&apos;s signature; saving as Outlook draft creates a draft in Ralph&apos;s mailbox.</p>
                 </div>
 
                 <AnimatePresence>
@@ -1952,15 +2025,41 @@ export default function AdminDashboard() {
                 </AnimatePresence>
               </div>
 
-              <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-4 flex items-center justify-between">
-                <p className="text-xs text-slate-400">From: Ralph@PrimeDealerFund.com · {totalRecipientCount} recipient{totalRecipientCount !== 1 ? "s" : ""}</p>
-                <div className="flex items-center gap-2">
-                  <button onClick={handleSaveAsDraft} disabled={savingDraft || (!emailSubject && !emailBody)} className="px-4 py-2.5 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                    {savingDraft ? "Saving..." : "Save to Outlook Drafts"}
+              <div className="sticky bottom-0 bg-white border-t border-slate-200 px-6 py-3 space-y-3">
+                {/* Test-send row — single email to a preview address so Ralph
+                    sees the final layout before committing to a real batch. */}
+                <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-slate-100">
+                  <input
+                    type="email"
+                    value={testEmail}
+                    onChange={(e) => setTestEmail(e.target.value)}
+                    placeholder="ralph@marcuccilli.com"
+                    className="flex-1 min-w-[180px] px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleTestSend}
+                    disabled={testSending || !emailSubject || !emailBody || !isValidEmail(testEmail)}
+                    className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-amber-400 text-amber-950 rounded-lg hover:bg-amber-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {testSending ? "Sending..." : "Test Send to Me"}
                   </button>
-                  <button onClick={handleSendEmail} disabled={sending || !hasEmailRecipients || !emailSubject || !emailBody} className="px-5 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                    {sending ? "Queueing..." : "Send via Resend"}
-                  </button>
+                  {testResult && (
+                    <span className={`text-xs ${testResult.ok ? "text-emerald-600" : "text-red-600"}`}>
+                      {testResult.ok ? `Sent to ${testEmail}` : (testResult.error || "Test failed")}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-slate-400">From: Ralph@PrimeDealerFund.com · {totalRecipientCount} recipient{totalRecipientCount !== 1 ? "s" : ""}</p>
+                  <div className="flex items-center gap-2">
+                    <button onClick={handleSaveAsDraft} disabled={savingDraft || (!emailSubject && !emailBody)} className="px-4 py-2.5 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                      {savingDraft ? "Saving..." : "Save to Outlook Drafts"}
+                    </button>
+                    <button onClick={handleSendEmail} disabled={sending || !hasEmailRecipients || !emailSubject || !emailBody} className="px-5 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                      {sending ? "Queueing..." : "Send via Resend"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>

@@ -32,6 +32,15 @@ const FROM_ADDRESS = "Ralph Marcuccilli <Ralph@primedealerfund.com>";
 const SUMMARY_TO = "Ralph@primedealerfund.com";
 
 function buildEmailHtml(body: string) {
+  // If the body looks like an HTML fragment (first non-whitespace char is a
+  // tag), insert it verbatim so pasted HTML keeps its formatting. Otherwise
+  // paragraphize each line as before for plain-text drafts.
+  const trimmed = body.trim();
+  const isHtml = trimmed.startsWith("<");
+  const rendered = isHtml
+    ? body
+    : body.split("\n").map((line: string) => line.trim() === "" ? "<br>" : `<p style="margin:0 0 12px 0;">${line}</p>`).join("\n");
+
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
@@ -43,7 +52,7 @@ function buildEmailHtml(body: string) {
           <tr>
             <td style="padding:0;">
               <div style="color:#000000;font-size:14px;line-height:1.6;font-family:Aptos,Calibri,'Segoe UI',Helvetica,Arial,sans-serif;">
-                ${body.split("\n").map((line: string) => line.trim() === "" ? "<br>" : `<p style="margin:0 0 12px 0;">${line}</p>`).join("\n")}
+                ${rendered}
               </div>
               <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:24px;">
                 <tr>
