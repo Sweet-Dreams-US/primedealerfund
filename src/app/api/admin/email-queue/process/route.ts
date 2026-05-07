@@ -24,8 +24,12 @@ const RATE_LIMIT_DELAY_MS = 200; // 5 req/sec — Resend Pro plan
 const MAX_ATTEMPTS = 2; // initial + one retry
 const MAX_BATCH_SIZE = 250; // soft cap per worker invocation to stay under fn timeout
 
-const FROM_ADDRESS = "Ralph Marcuccilli <Ralph@PrimeDealerFund.com>";
-const SUMMARY_TO = "Ralph@PrimeDealerFund.com";
+// Resend verifies domains case-sensitively against its stored record.
+// The verified domain is "primedealerfund.com" (lowercase), so the
+// from-address local part can be capitalized but the domain MUST be
+// lowercase or Resend rejects the send with "domain is not verified".
+const FROM_ADDRESS = "Ralph Marcuccilli <Ralph@primedealerfund.com>";
+const SUMMARY_TO = "Ralph@primedealerfund.com";
 
 function buildEmailHtml(body: string) {
   return `<!DOCTYPE html>

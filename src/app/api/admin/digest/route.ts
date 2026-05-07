@@ -178,8 +178,9 @@ export async function POST() {
     // Send
     const resend = getResend();
     await resend.emails.send({
-      from: "Prime Dealer Fund <Ralph@PrimeDealerFund.com>",
-      to: "Ralph@PrimeDealerFund.com",
+      // Resend verifies the domain case-sensitively — must be lowercase
+      from: "Prime Dealer Fund <Ralph@primedealerfund.com>",
+      to: "Ralph@primedealerfund.com",
       subject: `${hasUrgent ? "⚡ " : ""}Daily Digest — ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" })}${overdueTasks?.length ? ` · ${overdueTasks.length} overdue` : ""}`,
       html,
     });
