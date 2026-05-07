@@ -1869,7 +1869,7 @@ export default function AdminDashboard() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      className={`p-4 rounded-lg border ${
+                      className={`relative p-4 rounded-lg border ${
                         sendResult.error && sendResult.sent === 0
                           ? "bg-red-50 border-red-200"
                           : sendResult.inProgress
@@ -1879,8 +1879,26 @@ export default function AdminDashboard() {
                           : "bg-amber-50 border-amber-200"
                       }`}
                     >
+                      {/* Dismiss button — also stops polling so a stuck progress
+                          panel can be cleared without reloading the page. */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (sendPollRef.current) {
+                            clearInterval(sendPollRef.current);
+                            sendPollRef.current = null;
+                          }
+                          setSendResult(null);
+                        }}
+                        aria-label="Dismiss"
+                        className="absolute top-2 right-2 p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-black/5 transition-colors"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
                       {sendResult.error && sendResult.sent === 0 ? (
-                        <p className="text-sm font-medium text-red-700">{sendResult.error}</p>
+                        <p className="text-sm font-medium text-red-700 pr-6">{sendResult.error}</p>
                       ) : sendResult.inProgress ? (
                         <>
                           <div className="flex items-center justify-between mb-2">
