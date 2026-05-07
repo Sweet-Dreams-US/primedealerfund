@@ -232,7 +232,19 @@ export default function AdminDashboard() {
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
   const [sending, setSending] = useState(false);
-  const [sendResult, setSendResult] = useState<{ sent: number; failed: number; error?: string } | null>(null);
+  const [sendResult, setSendResult] = useState<{
+    sent: number;
+    failed: number;
+    error?: string;
+    // Queue-mode fields (added when batch is in flight)
+    jobId?: string;
+    total?: number;
+    queued?: number;
+    retrying?: number;
+    percent?: number;
+    inProgress?: boolean;
+  } | null>(null);
+  const sendPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [recipientSearch, setRecipientSearch] = useState("");
   const [recipientDropdown, setRecipientDropdown] = useState(false);
   const recipientInputRef = useRef<HTMLInputElement>(null);
@@ -481,6 +493,15 @@ export default function AdminDashboard() {
   useEffect(() => { if (section === "Tasks") fetchTasks(); }, [section, fetchTasks]);
   useEffect(() => { if (section === "Calendar") fetchCalendarEvents(); }, [section, fetchCalendarEvents]);
 
+  // Stop email-queue polling when the admin page unmounts so we don't leak
+  // an interval handler if the user navigates away mid-batch.
+  useEffect(() => () => {
+    if (sendPollRef.current) {
+      clearInterval(sendPollRef.current);
+      sendPollRef.current = null;
+    }
+  }, []);
+
   const recipientResults = useMemo(() => {
     if (!recipientSearch.trim()) return [];
     const q = recipientSearch.toLowerCase();
@@ -561,6 +582,10 @@ export default function AdminDashboard() {
     if (!hasInvestorRecipients && !hasManualRecipients) return;
     setSending(true);
     setSendResult(null);
+    if (sendPollRef.current) {
+      clearInterval(sendPollRef.current);
+      sendPollRef.current = null;
+    }
     try {
       const res = await fetch("/api/admin/send-email", {
         method: "POST",
@@ -573,18 +598,64 @@ export default function AdminDashboard() {
         }),
       });
       const result = await res.json();
-      if (res.ok) {
-        setSendResult(result);
-        if (result.sent > 0) {
-          setEmailSubject(""); setEmailBody(""); setSelectedIds(new Set()); setManualRecipients([]);
-        }
-      } else {
-        setSendResult({ sent: 0, failed: 0, error: result.error || "Failed to send emails" });
+      if (!res.ok || !result.jobId) {
+        setSendResult({ sent: 0, failed: 0, error: result.error || "Failed to enqueue emails" });
+        setSending(false);
+        return;
       }
+
+      // Show optimistic "queued" state immediately and clear the form —
+      // sending continues in the background.
+      const initialTotal: number = result.total ?? 0;
+      setSendResult({
+        sent: 0,
+        failed: 0,
+        jobId: result.jobId,
+        total: initialTotal,
+        queued: initialTotal,
+        retrying: 0,
+        percent: 0,
+        inProgress: true,
+      });
+      setEmailSubject("");
+      setEmailBody("");
+      setSelectedIds(new Set());
+      setManualRecipients([]);
+      setSending(false);
+
+      // Poll every 2 seconds until the job is in a terminal state.
+      const poll = async () => {
+        try {
+          const sres = await fetch(`/api/admin/email-queue/status?jobId=${result.jobId}`);
+          if (!sres.ok) return;
+          const s = await sres.json();
+          const isTerminal = s.status === "sent" || s.status === "partial" || s.status === "failed";
+          setSendResult({
+            sent: s.sent ?? 0,
+            failed: s.failed ?? 0,
+            jobId: s.jobId,
+            total: s.total ?? initialTotal,
+            queued: s.queued ?? 0,
+            retrying: s.retrying ?? 0,
+            percent: s.percent ?? 0,
+            inProgress: !isTerminal,
+          });
+          if (isTerminal && sendPollRef.current) {
+            clearInterval(sendPollRef.current);
+            sendPollRef.current = null;
+          }
+        } catch {
+          // Transient polling error — leave the interval running, the next tick will retry
+        }
+      };
+      // Fire one poll immediately so the bar starts moving without a 2s wait,
+      // then settle into a 2-second cadence.
+      poll();
+      sendPollRef.current = setInterval(poll, 2000);
     } catch (err) {
       setSendResult({ sent: 0, failed: 0, error: `Network error: ${err instanceof Error ? err.message : String(err)}` });
+      setSending(false);
     }
-    setSending(false);
   }
 
   function buildBrandedHtml(bodyText: string) {
@@ -1794,12 +1865,54 @@ export default function AdminDashboard() {
 
                 <AnimatePresence>
                   {sendResult && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`p-4 rounded-lg border ${sendResult.error && sendResult.sent === 0 ? "bg-red-50 border-red-200" : sendResult.failed === 0 ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"}`}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className={`p-4 rounded-lg border ${
+                        sendResult.error && sendResult.sent === 0
+                          ? "bg-red-50 border-red-200"
+                          : sendResult.inProgress
+                          ? "bg-blue-50 border-blue-200"
+                          : sendResult.failed === 0
+                          ? "bg-emerald-50 border-emerald-200"
+                          : "bg-amber-50 border-amber-200"
+                      }`}
+                    >
                       {sendResult.error && sendResult.sent === 0 ? (
                         <p className="text-sm font-medium text-red-700">{sendResult.error}</p>
+                      ) : sendResult.inProgress ? (
+                        <>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm font-medium text-blue-800">
+                              Sending {sendResult.sent + sendResult.failed} of {sendResult.total ?? 0}
+                              {(sendResult.retrying ?? 0) > 0 && (
+                                <span className="text-amber-700 ml-2">· {sendResult.retrying} retrying</span>
+                              )}
+                              {sendResult.failed > 0 && (
+                                <span className="text-red-600 ml-2">· {sendResult.failed} failed</span>
+                              )}
+                            </p>
+                            <p className="text-xs text-blue-700 font-mono">{sendResult.percent ?? 0}%</p>
+                          </div>
+                          <div className="h-2 w-full bg-blue-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-blue-500 transition-all duration-500 ease-out"
+                              style={{ width: `${sendResult.percent ?? 0}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-blue-600 mt-2">
+                            Throttled to 5/sec to respect Resend rate limits. You can close this dialog — sending continues in the background.
+                          </p>
+                        </>
                       ) : (
                         <>
-                          <p className="text-sm font-medium text-slate-900">{sendResult.sent} email{sendResult.sent !== 1 ? "s" : ""} sent successfully{sendResult.failed > 0 && <span className="text-red-600 ml-2">{sendResult.failed} failed</span>}</p>
+                          <p className="text-sm font-medium text-slate-900">
+                            {sendResult.sent} email{sendResult.sent !== 1 ? "s" : ""} sent successfully
+                            {sendResult.failed > 0 && (
+                              <span className="text-red-600 ml-2">{sendResult.failed} failed</span>
+                            )}
+                          </p>
                           {sendResult.error && <p className="text-xs text-red-500 mt-1">{sendResult.error}</p>}
                         </>
                       )}
@@ -1828,7 +1941,7 @@ export default function AdminDashboard() {
                     {savingDraft ? "Saving..." : "Save to Outlook Drafts"}
                   </button>
                   <button onClick={handleSendEmail} disabled={sending || !hasEmailRecipients || !emailSubject || !emailBody} className="px-5 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                    {sending ? "Sending..." : "Send via Resend"}
+                    {sending ? "Queueing..." : "Send via Resend"}
                   </button>
                 </div>
               </div>
