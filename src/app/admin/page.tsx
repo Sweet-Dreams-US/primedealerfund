@@ -251,6 +251,15 @@ export default function AdminDashboard() {
   const [savingDraft, setSavingDraft] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
   const [draftWebLink, setDraftWebLink] = useState<string | null>(null);
+  // Per-recipient progress for the "Save N Individual Drafts" path. Null when
+  // not running, populated while the loop is in flight, kept until the next
+  // compose so Ralph can see the final tally.
+  const [draftProgress, setDraftProgress] = useState<{
+    current: number;
+    total: number;
+    failed: number;
+    mode: "individual";
+  } | null>(null);
   const [manualRecipients, setManualRecipients] = useState<{ name: string; address: string }[]>([]);
   const [manualEmailInput, setManualEmailInput] = useState("");
   // Test-send-to-me preview state. The address persists across the session so
@@ -727,38 +736,124 @@ export default function AdminDashboard() {
 </td></tr></table></td></tr></table></td></tr></table></body></html>`;
   }
 
-  async function handleSaveAsDraft() {
+  /**
+   * Save the composed message as Outlook draft(s).
+   *
+   * mode='single' — one combined draft with every recipient in the To field.
+   *   Subject and body go through verbatim; no per-recipient personalization.
+   *   This is the original behavior.
+   *
+   * mode='individual' — one draft per recipient, with subject and body
+   *   personalized using {{first_name}}, {{last_name}}, {{full_name}}.
+   *   Useful when each recipient should appear to be addressed personally.
+   *   Drafts are created sequentially so a partial failure leaves the rest
+   *   recoverable from the Outlook drafts folder.
+   */
+  async function handleSaveAsDraft(mode: "single" | "individual" = "single") {
     if (!emailSubject && !emailBody) return;
+
+    // Build the unified recipient list once, capturing the data we need for
+    // personalization. CRM contacts know their first/last names; manual
+    // recipients fall back to the local-part of the email so {{first_name}}
+    // still renders something reasonable.
+    const recipients: { name: string; address: string; first: string; last: string }[] = [
+      ...selectedInvestors
+        .filter((i) => i.email)
+        .map((i) => ({
+          name: `${i.first_name} ${i.last_name || ""}`.trim(),
+          address: i.email!,
+          first: i.first_name || "",
+          last: i.last_name || "",
+        })),
+      ...manualRecipients.map((r) => ({
+        name: r.name,
+        address: r.address,
+        first: r.name || r.address.split("@")[0],
+        last: "",
+      })),
+    ];
+
+    if (recipients.length === 0) return;
+
     setSavingDraft(true);
     setDraftSaved(false);
-    const toRecipients = [
-      ...selectedInvestors.filter((i) => i.email).map((i) => ({ name: `${i.first_name} ${i.last_name || ""}`.trim(), address: i.email! })),
-      ...manualRecipients,
-    ];
-    // Send the full branded HTML email as draft (same design as Resend sends)
-    const html = buildBrandedHtml(emailBody);
-    try {
-      const res = await fetch("/api/admin/outlook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "create-draft",
-          subject: emailSubject,
-          body: html,
-          bodyType: "HTML",
-          toRecipients,
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setDraftSaved(true);
-        setDraftWebLink(data.draft?.webLink || null);
-        // Clear recipients so the next compose starts fresh and we don't
-        // accidentally re-draft to the same group.
-        clearAllRecipients();
-        setTimeout(() => { setDraftSaved(false); setDraftWebLink(null); }, 10000);
+    setDraftWebLink(null);
+    setDraftProgress(null);
+
+    // Single combined draft — same as the original implementation.
+    if (mode === "single") {
+      const html = buildBrandedHtml(emailBody);
+      try {
+        const res = await fetch("/api/admin/outlook", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "create-draft",
+            subject: emailSubject,
+            body: html,
+            bodyType: "HTML",
+            toRecipients: recipients.map((r) => ({ name: r.name, address: r.address })),
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setDraftSaved(true);
+          setDraftWebLink(data.draft?.webLink || null);
+          clearAllRecipients();
+          setTimeout(() => { setDraftSaved(false); setDraftWebLink(null); }, 10000);
+        }
+      } catch { /* ignore */ }
+      setSavingDraft(false);
+      return;
+    }
+
+    // Individual drafts — loop and personalize per recipient.
+    const personalize = (text: string, first: string, last: string) =>
+      text
+        .replace(/{{first_name}}/g, first)
+        .replace(/{{last_name}}/g, last)
+        .replace(/{{full_name}}/g, `${first} ${last}`.trim());
+
+    let firstWebLink: string | null = null;
+    let failed = 0;
+    setDraftProgress({ current: 0, total: recipients.length, failed: 0, mode: "individual" });
+
+    for (let idx = 0; idx < recipients.length; idx++) {
+      const r = recipients[idx];
+      const subject = personalize(emailSubject, r.first, r.last);
+      const body = buildBrandedHtml(personalize(emailBody, r.first, r.last));
+      try {
+        const res = await fetch("/api/admin/outlook", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "create-draft",
+            subject,
+            body,
+            bodyType: "HTML",
+            toRecipients: [{ name: r.name, address: r.address }],
+          }),
+        });
+        if (res.ok) {
+          if (!firstWebLink) {
+            const data = await res.json();
+            firstWebLink = data.draft?.webLink || null;
+          }
+        } else {
+          failed++;
+        }
+      } catch {
+        failed++;
       }
-    } catch { /* ignore */ }
+      setDraftProgress({ current: idx + 1, total: recipients.length, failed, mode: "individual" });
+    }
+
+    setDraftSaved(true);
+    setDraftWebLink(firstWebLink);
+    clearAllRecipients();
+    // Keep the success panel up a bit longer than single-draft mode so Ralph
+    // has time to see how many drafts landed.
+    setTimeout(() => { setDraftSaved(false); setDraftWebLink(null); setDraftProgress(null); }, 15000);
     setSavingDraft(false);
   }
 
@@ -2012,11 +2107,15 @@ export default function AdminDashboard() {
                   {draftSaved && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-4 rounded-lg border bg-blue-50 border-blue-200">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-blue-800">Draft saved to Ralph&apos;s Outlook with full branding</p>
+                        <p className="text-sm font-medium text-blue-800">
+                          {draftProgress?.mode === "individual"
+                            ? `${(draftProgress.total - draftProgress.failed)} of ${draftProgress.total} individual drafts saved to Outlook${draftProgress.failed > 0 ? ` · ${draftProgress.failed} failed` : ""}`
+                            : "Draft saved to Ralph's Outlook with full branding"}
+                        </p>
                         {draftWebLink && (
                           <a href={draftWebLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors">
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
-                            Open in Outlook
+                            {draftProgress?.mode === "individual" ? "Open First Draft" : "Open in Outlook"}
                           </a>
                         )}
                       </div>
@@ -2052,10 +2151,32 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-slate-400">From: Ralph@PrimeDealerFund.com · {totalRecipientCount} recipient{totalRecipientCount !== 1 ? "s" : ""}</p>
-                  <div className="flex items-center gap-2">
-                    <button onClick={handleSaveAsDraft} disabled={savingDraft || (!emailSubject && !emailBody)} className="px-4 py-2.5 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                      {savingDraft ? "Saving..." : "Save to Outlook Drafts"}
+                  <div className="flex items-center gap-2 flex-wrap justify-end">
+                    <button
+                      onClick={() => handleSaveAsDraft("single")}
+                      disabled={savingDraft || (!emailSubject && !emailBody)}
+                      className="px-4 py-2.5 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {savingDraft && draftProgress?.mode !== "individual"
+                        ? "Saving..."
+                        : totalRecipientCount > 1
+                        ? "Save 1 Combined Draft"
+                        : "Save to Outlook Drafts"}
                     </button>
+                    {/* Individual drafts only makes sense for 2+ recipients —
+                        for a single recipient the result is identical to the
+                        combined-draft path. */}
+                    {totalRecipientCount > 1 && (
+                      <button
+                        onClick={() => handleSaveAsDraft("individual")}
+                        disabled={savingDraft || (!emailSubject && !emailBody) || !hasEmailRecipients}
+                        className="px-4 py-2.5 text-sm font-medium text-blue-700 border border-blue-200 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {savingDraft && draftProgress?.mode === "individual"
+                          ? `Saving ${draftProgress.current}/${draftProgress.total}...`
+                          : `Save ${totalRecipientCount} Individual Drafts`}
+                      </button>
+                    )}
                     <button onClick={handleSendEmail} disabled={sending || !hasEmailRecipients || !emailSubject || !emailBody} className="px-5 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                       {sending ? "Queueing..." : "Send via Resend"}
                     </button>
