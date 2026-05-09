@@ -2152,31 +2152,35 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-slate-400">From: Ralph@PrimeDealerFund.com · {totalRecipientCount} recipient{totalRecipientCount !== 1 ? "s" : ""}</p>
                   <div className="flex items-center gap-2 flex-wrap justify-end">
+                    {/* Combined draft — always visible. Disabled until there
+                        is at least one recipient and a subject or body. */}
                     <button
                       onClick={() => handleSaveAsDraft("single")}
-                      disabled={savingDraft || (!emailSubject && !emailBody)}
+                      disabled={savingDraft || (!emailSubject && !emailBody) || !hasEmailRecipients}
+                      title={!hasEmailRecipients ? "Add at least one recipient" : "Save one Outlook draft addressed to all recipients"}
                       className="px-4 py-2.5 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {savingDraft && draftProgress?.mode !== "individual"
                         ? "Saving..."
-                        : totalRecipientCount > 1
-                        ? "Save 1 Combined Draft"
-                        : "Save to Outlook Drafts"}
+                        : `Save Combined Draft${totalRecipientCount > 0 ? ` (${totalRecipientCount})` : ""}`}
                     </button>
-                    {/* Individual drafts only makes sense for 2+ recipients —
-                        for a single recipient the result is identical to the
-                        combined-draft path. */}
-                    {totalRecipientCount > 1 && (
-                      <button
-                        onClick={() => handleSaveAsDraft("individual")}
-                        disabled={savingDraft || (!emailSubject && !emailBody) || !hasEmailRecipients}
-                        className="px-4 py-2.5 text-sm font-medium text-blue-700 border border-blue-200 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                      >
-                        {savingDraft && draftProgress?.mode === "individual"
-                          ? `Saving ${draftProgress.current}/${draftProgress.total}...`
-                          : `Save ${totalRecipientCount} Individual Drafts`}
-                      </button>
-                    )}
+                    {/* Individual drafts — always visible too. Disabled until
+                        2+ recipients are selected, since with 1 recipient the
+                        result would be identical to the combined-draft path. */}
+                    <button
+                      onClick={() => handleSaveAsDraft("individual")}
+                      disabled={savingDraft || (!emailSubject && !emailBody) || totalRecipientCount < 2}
+                      title={
+                        totalRecipientCount < 2
+                          ? "Add 2 or more recipients to enable individual drafts"
+                          : `Create one personalized Outlook draft per recipient (${totalRecipientCount} total)`
+                      }
+                      className="px-4 py-2.5 text-sm font-medium text-blue-700 border border-blue-200 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {savingDraft && draftProgress?.mode === "individual"
+                        ? `Saving ${draftProgress.current}/${draftProgress.total}...`
+                        : `Save Individual Drafts${totalRecipientCount > 1 ? ` (${totalRecipientCount})` : ""}`}
+                    </button>
                     <button onClick={handleSendEmail} disabled={sending || !hasEmailRecipients || !emailSubject || !emailBody} className="px-5 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                       {sending ? "Queueing..." : "Send via Resend"}
                     </button>
