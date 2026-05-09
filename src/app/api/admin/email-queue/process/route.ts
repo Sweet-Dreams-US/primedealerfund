@@ -132,11 +132,40 @@ async function processOnce(jobId?: string): Promise<{
     await supabase.from("email_log").update({ status: "processing", last_processed_at: new Date().toISOString() }).eq("id", jid);
   }
 
+  // Defense-in-depth: an enqueued recipient may have bounced AFTER enqueue
+  // (e.g. a webhook fired between enqueue and worker run, or an Outlook NDR
+  // arrived). Skip any row whose email is now in email_bounces, marking it
+  // failed so the UI shows it instead of silently disappearing.
+  const queueEmails = Array.from(new Set(rows.map((r) => (r.email || "").toLowerCase()).filter(Boolean)));
+  let postEnqueueBounces = new Set<string>();
+  if (queueEmails.length > 0) {
+    const { data: hits } = await supabase
+      .from("email_bounces")
+      .select("email")
+      .in("email", queueEmails);
+    postEnqueueBounces = new Set((hits || []).map((b) => (b.email || "").toLowerCase()));
+  }
+
   for (const row of rows) {
     counters.drained++;
     const nextAttempt = (row.attempts ?? 0) + 1;
     const subject = row.subject_personalized || "";
     const html = buildEmailHtml(row.body_personalized || "");
+
+    // Bounce-skip path — fail the row immediately, don't attempt to send.
+    if (postEnqueueBounces.has((row.email || "").toLowerCase())) {
+      await supabase
+        .from("email_recipients")
+        .update({
+          status: "failed",
+          attempts: nextAttempt,
+          error_message: "Skipped: recipient in bounce list",
+          last_attempt_at: new Date().toISOString(),
+        })
+        .eq("id", row.id);
+      counters.failed++;
+      continue;
+    }
 
     try {
       const { data, error: sendErr } = await resend.emails.send({

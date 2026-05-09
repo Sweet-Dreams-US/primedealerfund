@@ -570,3 +570,110 @@ export async function getMailFolders(): Promise<{
     sentItems: { total: results[2].totalItemCount },
   };
 }
+
+/**
+ * Pull recent messages from Ralph's inbox that look like delivery-failure
+ * notifications (NDRs / bounces) — used by the bounce scanner to catch
+ * messages he sent directly from his own Outlook (i.e. not through Resend).
+ *
+ * Server-side filter narrows by date and well-known NDR sender prefixes
+ * before we apply the body-content heuristic. We keep the date window short
+ * (default 7d) and the page size capped to keep the scan cheap when the
+ * cron fires every hour.
+ */
+export async function getRecentBounceMessages(params: {
+  sinceIso: string;
+  top?: number;
+}): Promise<OutlookMessage[]> {
+  const token = await getGraphToken();
+  const top = Math.min(params.top ?? 50, 100);
+
+  // Match the senders Microsoft Exchange and most other MTAs use for NDRs.
+  // We include both the address-based and the subject-based heuristic so we
+  // don't miss an NDR that comes from an unusual postmaster alias.
+  const filterParts = [
+    `receivedDateTime ge ${params.sinceIso}`,
+    [
+      // Common NDR sender addresses
+      `startswith(from/emailAddress/address,'postmaster')`,
+      `startswith(from/emailAddress/address,'MAILER-DAEMON')`,
+      `startswith(from/emailAddress/address,'mailer-daemon')`,
+      `startswith(from/emailAddress/address,'Mail Delivery')`,
+      `from/emailAddress/address eq 'noreply@email.amazonses.com'`,
+      // Common NDR subject prefixes
+      `startswith(subject,'Undeliverable:')`,
+      `startswith(subject,'Undelivered Mail Returned to Sender')`,
+      `startswith(subject,'Delivery Status Notification')`,
+      `startswith(subject,'Mail delivery failed')`,
+      `startswith(subject,'Returned mail:')`,
+      `startswith(subject,'Failure Notice')`,
+    ].map((p) => `(${p})`).join(" or "),
+  ];
+
+  const filter = filterParts.map((p) => `(${p})`).join(" and ");
+  const url = `https://graph.microsoft.com/v1.0/users/${RALPH_EMAIL}/mailFolders/inbox/messages` +
+    `?$top=${top}` +
+    `&$orderby=receivedDateTime desc` +
+    `&$select=id,subject,bodyPreview,body,from,toRecipients,ccRecipients,receivedDateTime,sentDateTime,isRead,isDraft,hasAttachments,importance,flag,conversationId,webLink` +
+    `&$filter=${encodeURIComponent(filter)}`;
+
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Prefer: `outlook.timezone="${TIMEZONE}"`,
+    },
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Graph mail error (bounces): ${err}`);
+  }
+
+  const data: OutlookMailResponse = await res.json();
+  return data.value || [];
+}
+
+/**
+ * Heuristic email extraction from an NDR body. Returns deduplicated
+ * lower-cased addresses, with the NDR sender + Ralph's own address +
+ * common system addresses filtered out so they aren't misclassified as
+ * "the bounced recipient."
+ */
+const NDR_NOISE_ADDRESSES = new Set([
+  "ralph@primedealerfund.com",
+  "noreply@email.amazonses.com",
+]);
+
+export function extractBouncedRecipients(message: OutlookMessage): string[] {
+  // Strip HTML tags so the regex sees plain text + entity-decode the most
+  // common encodings (&lt; &gt; &amp;) that wrap addresses.
+  const html = message.body?.content || message.bodyPreview || "";
+  const text = html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/&nbsp;/g, " ");
+
+  // Pull every address out of the body — there will be Ralph's address,
+  // postmaster, system-info addresses, and the actual bounced recipient.
+  const emailRegex = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
+  const found = new Set<string>();
+  let match: RegExpExecArray | null;
+  while ((match = emailRegex.exec(text)) !== null) {
+    found.add(match[0].toLowerCase());
+  }
+
+  const noise = new Set<string>(NDR_NOISE_ADDRESSES);
+  noise.add(message.from?.emailAddress?.address?.toLowerCase() || "");
+
+  // Also exclude addresses on common system domains that produce NDRs.
+  const isNoise = (e: string) => {
+    if (noise.has(e)) return true;
+    const local = e.split("@")[0];
+    if (local === "postmaster" || local === "mailer-daemon" || local === "no-reply" || local === "noreply") return true;
+    return false;
+  };
+
+  return Array.from(found).filter((e) => !isNoise(e));
+}

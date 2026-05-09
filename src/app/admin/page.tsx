@@ -32,6 +32,10 @@ type Investor = {
   ball_changed_at: string | null;
   last_outbound_at: string | null;
   last_inbound_at: string | null;
+  email_bounced?: boolean;
+  email_bounced_at?: string | null;
+  email_bounce_reason?: string | null;
+  email_bounce_source?: string | null;
 };
 
 type CommLog = {
@@ -565,13 +569,21 @@ export default function AdminDashboard() {
     else setSelectedIds(new Set(investors.map((i) => i.id)));
   }
   function addRecipient(id: string) {
+    // Don't add bounced investors — they'd just be filtered out at send
+    // time, and silently surfacing them in the recipient list is more
+    // confusing than blocking the add outright.
+    const inv = allInvestors.find((i) => i.id === id);
+    if (inv?.email_bounced) return;
     setSelectedIds((prev) => new Set(prev).add(id));
     setRecipientSearch("");
     setRecipientDropdown(false);
     recipientInputRef.current?.focus();
   }
   function addAllByCategory(cat: string) {
-    const ids = allInvestors.filter((i) => i.category === cat && i.email).map((i) => i.id);
+    // Skip bounced contacts on bulk-add — same rule as the per-row add.
+    const ids = allInvestors
+      .filter((i) => i.category === cat && i.email && !i.email_bounced)
+      .map((i) => i.id);
     setSelectedIds((prev) => { const n = new Set(prev); ids.forEach((id) => n.add(id)); return n; });
   }
   function addManualRecipient() {
@@ -892,6 +904,69 @@ export default function AdminDashboard() {
     if (detailInvestor?.id === id) setDetailInvestor((prev) => prev ? { ...prev, ...updates } : prev);
   }
 
+  async function markBouncedManual(inv: Investor) {
+    const ok = window.confirm(
+      `Mark ${inv.first_name} ${inv.last_name || ""} as bounced?\n\n${inv.email}\n\nFuture sends will skip this contact until you unmark.`,
+    );
+    if (!ok) return;
+    await updateInvestor(inv.id, {
+      email_bounced: true,
+      email_bounced_at: new Date().toISOString(),
+      email_bounce_reason: "Manually marked",
+      email_bounce_source: "manual",
+    } as Partial<Investor>);
+  }
+
+  async function unmarkBounced(inv: Investor) {
+    await updateInvestor(inv.id, {
+      email_bounced: false,
+      email_bounced_at: null,
+      email_bounce_reason: null,
+      email_bounce_source: null,
+    } as Partial<Investor>);
+  }
+
+  // Manual trigger for the Outlook bounce scanner. Same endpoint the cron
+  // hits hourly — clicking the button just runs it immediately and surfaces
+  // the result.
+  const [scanningBounces, setScanningBounces] = useState(false);
+  const [scanBouncesResult, setScanBouncesResult] = useState<{
+    scanned: number;
+    newBounces: number;
+    investorsMarked: number;
+    errors?: string[];
+  } | null>(null);
+  async function handleScanBounces() {
+    setScanningBounces(true);
+    setScanBouncesResult(null);
+    try {
+      const res = await fetch("/api/admin/scan-bounces", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lookbackDays: 14 }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setScanBouncesResult({
+          scanned: data.scanned ?? 0,
+          newBounces: data.newBounces ?? 0,
+          investorsMarked: data.investorsMarked ?? 0,
+          errors: data.errors,
+        });
+        // Refresh both lists so newly bounced contacts get the visual
+        // indicator (recipient picker + grid) without a manual reload.
+        fetchInvestors();
+        fetchAllInvestors();
+      } else {
+        setScanBouncesResult({ scanned: 0, newBounces: 0, investorsMarked: 0, errors: [data.error || "Scan failed"] });
+      }
+    } catch (err) {
+      setScanBouncesResult({ scanned: 0, newBounces: 0, investorsMarked: 0, errors: [String(err)] });
+    }
+    setScanningBounces(false);
+    setTimeout(() => setScanBouncesResult(null), 12000);
+  }
+
   async function toggleBallInCourt(inv: Investor) {
     const next: "ours" | "theirs" | null = inv.ball_in_court === "ours" ? "theirs" : inv.ball_in_court === "theirs" ? null : "ours";
     await updateInvestor(inv.id, { ball_in_court: next, ball_changed_at: new Date().toISOString() } as Partial<Investor>);
@@ -1070,6 +1145,31 @@ export default function AdminDashboard() {
             {syncToast.message}
           </motion.div>
         )}
+        {scanBouncesResult && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-4 right-4 z-[60] px-4 py-3 rounded-lg shadow-lg border text-sm font-medium max-w-sm ${
+              scanBouncesResult.errors && scanBouncesResult.errors.length > 0
+                ? "bg-amber-50 border-amber-200 text-amber-900"
+                : scanBouncesResult.newBounces > 0
+                ? "bg-red-50 border-red-200 text-red-900"
+                : "bg-slate-50 border-slate-200 text-slate-700"
+            }`}
+          >
+            <p className="font-semibold mb-0.5">
+              Scanned {scanBouncesResult.scanned} NDR{scanBouncesResult.scanned === 1 ? "" : "s"}
+            </p>
+            <p className="text-xs">
+              {scanBouncesResult.newBounces} new bounce{scanBouncesResult.newBounces === 1 ? "" : "s"}
+              {scanBouncesResult.investorsMarked > 0 && ` · ${scanBouncesResult.investorsMarked} investor${scanBouncesResult.investorsMarked === 1 ? "" : "s"} flagged`}
+            </p>
+            {scanBouncesResult.errors && scanBouncesResult.errors.length > 0 && (
+              <p className="text-xs mt-1 opacity-80">{scanBouncesResult.errors[0]}{scanBouncesResult.errors.length > 1 ? ` (+${scanBouncesResult.errors.length - 1} more)` : ""}</p>
+            )}
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* Header */}
@@ -1100,6 +1200,15 @@ export default function AdminDashboard() {
             <button onClick={handleSyncOutlook} disabled={syncing} className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors disabled:opacity-40" title="Sync Outlook">
               <svg className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M21.015 4.356v4.992" /></svg>
               {syncing ? "Syncing..." : "Sync"}
+            </button>
+            <button
+              onClick={handleScanBounces}
+              disabled={scanningBounces}
+              title="Scan Outlook inbox for delivery-failure bounces (last 14 days). Cron also runs this hourly."
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors disabled:opacity-40"
+            >
+              <svg className={`w-4 h-4 ${scanningBounces ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3l1.664 1.664M21 21l-1.5-1.5m-5.485-1.242L12 17.25 4.5 21V8.742m.164-4.078a2.15 2.15 0 011.743-1.342 48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185V19.5M4.664 4.664L19.5 19.5" /></svg>
+              {scanningBounces ? "Scanning..." : "Scan Bounces"}
             </button>
             <button onClick={() => setAddContactOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.5v15m7.5-7.5h-15" /></svg>
@@ -1766,7 +1875,47 @@ export default function AdminDashboard() {
                   <span className={`px-2.5 py-1 text-xs font-medium rounded-full ring-1 ring-inset ${categoryBadge[detailInvestor.category] || "bg-slate-50 text-slate-600 ring-slate-200"}`}>{detailInvestor.category}</span>
                   {detailInvestor.friend_of_ralph && <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200">Friend of Ralph</span>}
                   {detailInvestor.invested && <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200">Invested</span>}
+                  {detailInvestor.email_bounced && <span className="px-2.5 py-1 text-xs font-bold tracking-wider uppercase rounded-full bg-red-100 text-red-700 ring-1 ring-inset ring-red-200">Bounced</span>}
                 </div>
+
+                {/* Bounce status block — surfaces reason / when / source so
+                    Ralph can decide whether to unmark, and gives him a
+                    one-click action either way. */}
+                {detailInvestor.email_bounced ? (
+                  <div className="border border-red-200 bg-red-50 rounded-lg p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-red-800 uppercase tracking-wider mb-1">Email Bounced</p>
+                        <p className="text-sm text-red-900 break-words">
+                          {detailInvestor.email_bounce_reason || "Marked as bounced"}
+                        </p>
+                        <p className="text-[11px] text-red-700 mt-1">
+                          {detailInvestor.email_bounced_at && `${formatShortDate(detailInvestor.email_bounced_at)} · `}
+                          {detailInvestor.email_bounce_source === "manual" && "Manually flagged"}
+                          {detailInvestor.email_bounce_source?.startsWith("resend-webhook") && "From Resend"}
+                          {detailInvestor.email_bounce_source === "outlook-scan" && "From Outlook NDR scan"}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => unmarkBounced(detailInvestor)}
+                        className="shrink-0 px-3 py-1.5 text-xs font-medium text-red-700 bg-white border border-red-300 rounded-md hover:bg-red-100 transition-colors"
+                      >
+                        Mark as Valid
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  detailInvestor.email && (
+                    <div className="flex items-center justify-end">
+                      <button
+                        onClick={() => markBouncedManual(detailInvestor)}
+                        className="text-[11px] text-slate-400 hover:text-red-600 underline transition-colors"
+                      >
+                        Mark email as bounced
+                      </button>
+                    </div>
+                  )
+                )}
                 {editingDetail ? (
                   <div className="space-y-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
                     <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Edit Contact Details</p>
@@ -1975,9 +2124,23 @@ export default function AdminDashboard() {
                           <div className="px-3 py-4 text-sm text-slate-400 text-center">No matches found — type a full email to add an external recipient</div>
                         )}
                         {recipientResults.map((inv) => (
-                          <button key={inv.id} onClick={() => addRecipient(inv.id)} className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-50 transition-colors text-left">
+                          <button
+                            key={inv.id}
+                            onClick={() => addRecipient(inv.id)}
+                            disabled={!!inv.email_bounced}
+                            title={inv.email_bounced ? "Email has bounced — unmark in their detail panel to send to them again" : undefined}
+                            className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors text-left ${inv.email_bounced ? "opacity-60 cursor-not-allowed" : "hover:bg-slate-50"}`}
+                          >
                             <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-600 shrink-0">{inv.first_name[0]}{(inv.last_name || "")[0] || ""}</div>
-                            <div className="flex-1 min-w-0"><p className="text-sm font-medium text-slate-900">{inv.first_name} {inv.last_name || ""}</p><p className="text-xs text-slate-400 truncate">{inv.email || "No email"} · {inv.category}</p></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-slate-900 flex items-center gap-1.5">
+                                {inv.first_name} {inv.last_name || ""}
+                                {inv.email_bounced && (
+                                  <span className="inline-block text-[9px] font-bold tracking-wider uppercase text-red-700 bg-red-100 border border-red-200 rounded px-1.5 py-0.5">Bounced</span>
+                                )}
+                              </p>
+                              <p className="text-xs text-slate-400 truncate">{inv.email || "No email"} · {inv.category}</p>
+                            </div>
                           </button>
                         ))}
                         {isValidEmail(recipientSearch.trim()) && !manualRecipients.some((r) => r.address.toLowerCase() === recipientSearch.trim().toLowerCase()) && !allInvestors.some((i) => i.email?.toLowerCase() === recipientSearch.trim().toLowerCase()) && (
@@ -1994,7 +2157,7 @@ export default function AdminDashboard() {
                     {CATEGORIES.filter((c) => c !== "all").map((cat) => (
                       <button key={cat} onClick={() => addAllByCategory(cat)} className="text-[11px] text-slate-500 hover:text-slate-700 px-2 py-0.5 rounded border border-slate-200 hover:border-slate-300 transition-colors">{cat}</button>
                     ))}
-                    <button onClick={() => { const all = allInvestors.filter(i => i.email).map(i => i.id); setSelectedIds(new Set(all)); }} className="text-[11px] text-slate-900 font-medium hover:text-slate-700 px-2 py-0.5 rounded border border-slate-300 hover:border-slate-400 transition-colors">All with email</button>
+                    <button onClick={() => { const all = allInvestors.filter(i => i.email && !i.email_bounced).map(i => i.id); setSelectedIds(new Set(all)); }} className="text-[11px] text-slate-900 font-medium hover:text-slate-700 px-2 py-0.5 rounded border border-slate-300 hover:border-slate-400 transition-colors">All with email</button>
                   </div>
                 </div>
 

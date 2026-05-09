@@ -27,24 +27,29 @@ export async function POST(request: Request) {
     const supabase = createServerClient();
 
     // Resolve database investors -> { id, first, last, email }
+    // Bounced investors are silently dropped here so they're never enqueued.
     let investorRecipients: { id: string; first: string; last: string; email: string }[] = [];
+    let droppedInvestorBounces = 0;
     if (recipientIds?.length) {
       const { data } = await supabase
         .from("investors")
-        .select("id, first_name, last_name, email")
+        .select("id, first_name, last_name, email, email_bounced")
         .in("id", recipientIds);
-      investorRecipients = (data || [])
-        .filter((r) => r.email)
+      const all = (data || []).filter((r) => r.email);
+      investorRecipients = all
+        .filter((r) => !r.email_bounced)
         .map((r) => ({
           id: r.id,
           first: r.first_name || "",
           last: r.last_name || "",
           email: r.email,
         }));
+      droppedInvestorBounces = all.length - investorRecipients.length;
     }
 
-    // Manual + adhoc: not in database, no investor_id
-    const externalRecipients = [
+    // Manual + adhoc: not in database, no investor_id. Block any email that
+    // appears in email_bounces so manual recipients respect bounce history.
+    const rawExternals = [
       ...((manualRecipients || []) as { name?: string; address: string }[]).map((r) => ({
         email: r.address,
         name: r.name || r.address.split("@")[0],
@@ -55,9 +60,45 @@ export async function POST(request: Request) {
       })),
     ];
 
+    let externalRecipients = rawExternals;
+    let droppedExternalBounces = 0;
+    if (rawExternals.length > 0) {
+      const lowered = rawExternals.map((r) => r.email.toLowerCase());
+
+      // Bounce audit hits for any of these external addresses…
+      const { data: bounceHits } = await supabase
+        .from("email_bounces")
+        .select("email")
+        .in("email", lowered);
+      const audited = new Set((bounceHits || []).map((b) => (b.email || "").toLowerCase()));
+
+      // …but if an investor has the same email and is currently NOT bounced
+      // (e.g. Ralph manually unmarked them), the unmark wins over the audit
+      // log so he can still reach them as a manual recipient.
+      const { data: clearedInvestors } = await supabase
+        .from("investors")
+        .select("email")
+        .in("email", lowered)
+        .eq("email_bounced", false);
+      const cleared = new Set((clearedInvestors || []).map((i) => (i.email || "").toLowerCase()));
+
+      const blocked = new Set([...audited].filter((e) => !cleared.has(e)));
+      externalRecipients = rawExternals.filter((r) => !blocked.has(r.email.toLowerCase()));
+      droppedExternalBounces = rawExternals.length - externalRecipients.length;
+    }
+
     const total = investorRecipients.length + externalRecipients.length;
     if (total === 0) {
-      return NextResponse.json({ error: "No valid recipients found" }, { status: 400 });
+      const droppedTotal = droppedInvestorBounces + droppedExternalBounces;
+      return NextResponse.json(
+        {
+          error:
+            droppedTotal > 0
+              ? `All ${droppedTotal} recipient${droppedTotal !== 1 ? "s" : ""} are flagged as bounced — nothing to send.`
+              : "No valid recipients found",
+        },
+        { status: 400 },
+      );
     }
 
     // Create the job row
@@ -134,7 +175,12 @@ export async function POST(request: Request) {
       // Worker trigger failed — cron will pick it up within 60 seconds
     });
 
-    return NextResponse.json({ jobId: jobRow.id, total, status: "queued" });
+    return NextResponse.json({
+      jobId: jobRow.id,
+      total,
+      status: "queued",
+      droppedBounces: droppedInvestorBounces + droppedExternalBounces,
+    });
   } catch (err) {
     return NextResponse.json(
       { error: `Enqueue failed: ${err instanceof Error ? err.message : String(err)}` },

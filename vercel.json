@@ -3,6 +3,11 @@
     {
       "path": "/api/admin/email-queue/process",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/admin/scan-bounces",
+      "schedule": "0 * * * *"
     }
   ]
 }
+
