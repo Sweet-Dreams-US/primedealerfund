@@ -6,11 +6,14 @@ export async function GET(request: Request) {
   const category = searchParams.get("category");
   const search = searchParams.get("search");
   const friendOfRalph = searchParams.get("friendOfRalph");
+  const channel = searchParams.get("channel");
+  const firmId = searchParams.get("firm_id");
+  const roleType = searchParams.get("role_type");
 
   const supabase = createServerClient();
   let query = supabase
     .from("investors")
-    .select("*")
+    .select("*, firm:firms(id,name,channel,firm_type,priority)")
     .order("created_at", { ascending: false });
 
   if (category && category !== "all") {
@@ -19,6 +22,18 @@ export async function GET(request: Request) {
 
   if (friendOfRalph === "true") {
     query = query.eq("friend_of_ralph", true);
+  }
+
+  if (channel && channel !== "all") {
+    query = query.eq("channel", channel);
+  }
+
+  if (firmId) {
+    query = query.eq("firm_id", firmId);
+  }
+
+  if (roleType && roleType !== "all") {
+    query = query.eq("role_type", roleType);
   }
 
   if (search) {
@@ -63,6 +78,15 @@ export async function POST(request: Request) {
       docs_sent: false,
       invested: false,
       email_sequence: 0,
+      // Outreach fields (Channel 2/3 support)
+      channel: body.channel || "channel_1_industry",
+      firm_id: body.firm_id || null,
+      title: body.title || null,
+      linkedin_url: body.linkedin_url || null,
+      role_type: body.role_type || "investor",
+      priority: body.priority || "medium",
+      regulatory_note: body.regulatory_note || null,
+      introduced_by_investor_id: body.introduced_by_investor_id || null,
     })
     .select()
     .single();

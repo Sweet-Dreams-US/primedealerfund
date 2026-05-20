@@ -4,6 +4,15 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import FirmsSection from "./_components/FirmsSection";
+import PipelineSection from "./_components/PipelineSection";
+import {
+  CHANNELS,
+  CHANNEL_LABELS,
+  ROLE_TYPE_LABELS,
+  type Channel,
+  type RoleType,
+} from "@/lib/outreach";
 
 type Investor = {
   id: string;
@@ -36,6 +45,15 @@ type Investor = {
   email_bounced_at?: string | null;
   email_bounce_reason?: string | null;
   email_bounce_source?: string | null;
+  // Outreach (Channel 2/3) fields
+  channel?: string | null;
+  firm_id?: string | null;
+  title?: string | null;
+  linkedin_url?: string | null;
+  role_type?: string | null;
+  priority?: string | null;
+  regulatory_note?: string | null;
+  firm?: { id: string; name: string; channel: string; firm_type: string; priority: string } | null;
 };
 
 type CommLog = {
@@ -121,7 +139,7 @@ type EmailTemplate = {
   sequence_group: string | null;
 };
 
-const SECTIONS = ["Inbox", "Overview", "Investors", "Communications", "Tasks", "Calendar"] as const;
+const SECTIONS = ["Inbox", "Overview", "Investors", "Pipeline", "Firms", "Communications", "Tasks", "Calendar"] as const;
 type Section = (typeof SECTIONS)[number];
 
 const CATEGORIES = ["all", "Never Responded", "Had Zoom - No Commitment", "Friend - Possible Investor", "Current Investor", "New Lead"];
@@ -227,6 +245,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [channelFilter, setChannelFilter] = useState("all");
   const [friendFilter, setFriendFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -383,11 +402,12 @@ export default function AdminDashboard() {
   const fetchInvestors = useCallback(async () => {
     const params = new URLSearchParams();
     if (categoryFilter !== "all") params.set("category", categoryFilter);
+    if (channelFilter !== "all") params.set("channel", channelFilter);
     if (search) params.set("search", search);
     if (friendFilter) params.set("friendOfRalph", "true");
     const res = await fetch(`/api/admin/investors?${params}`);
     if (res.ok) setInvestors(await res.json());
-  }, [categoryFilter, search, friendFilter]);
+  }, [categoryFilter, channelFilter, search, friendFilter]);
 
   const fetchAllInvestors = useCallback(async () => {
     const res = await fetch("/api/admin/investors");
@@ -1485,6 +1505,10 @@ export default function AdminDashboard() {
               <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
                 {CATEGORIES.map((c) => (<option key={c} value={c}>{c === "all" ? "All Categories" : c}</option>))}
               </select>
+              <select value={channelFilter} onChange={(e) => setChannelFilter(e.target.value)} className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                <option value="all">All Channels</option>
+                {CHANNELS.map((c) => (<option key={c} value={c}>{CHANNEL_LABELS[c]}</option>))}
+              </select>
               <label className="flex items-center gap-2 text-sm text-slate-500 cursor-pointer select-none">
                 <input type="checkbox" checked={friendFilter} onChange={(e) => setFriendFilter(e.target.checked)} className="rounded border-slate-300 text-slate-900 focus:ring-slate-400" />
                 Friends of Ralph
@@ -1815,6 +1839,12 @@ export default function AdminDashboard() {
             )}
           </div>
         )}
+
+        {/* ═══════════ PIPELINE ═══════════ */}
+        {section === "Pipeline" && <PipelineSection />}
+
+        {/* ═══════════ FIRMS ═══════════ */}
+        {section === "Firms" && <FirmsSection />}
       </main>
 
       {/* ═══════════ INVESTOR DETAIL SLIDE-OVER ═══════════ */}
@@ -1869,6 +1899,35 @@ export default function AdminDashboard() {
                     <div><p className="text-[10px] text-slate-400 uppercase">Last Sent</p><p className="text-xs text-slate-700">{formatShortDate(detailInvestor.last_outbound_at) || "-"}</p></div>
                     <div><p className="text-[10px] text-slate-400 uppercase">Last Received</p><p className="text-xs text-slate-700">{formatShortDate(detailInvestor.last_inbound_at) || "-"}</p></div>
                   </div>
+                </div>
+
+                {/* Outreach — channel / firm linkage (Channel 2/3) */}
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Outreach</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase">Channel</p>
+                      <p className="text-xs text-slate-700">{detailInvestor.channel ? (CHANNEL_LABELS[detailInvestor.channel as Channel] || detailInvestor.channel) : "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase">Firm</p>
+                      <p className="text-xs text-slate-700">{detailInvestor.firm?.name || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase">Title</p>
+                      <p className="text-xs text-slate-700">{detailInvestor.title || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase">Role</p>
+                      <p className="text-xs text-slate-700">{detailInvestor.role_type ? (ROLE_TYPE_LABELS[detailInvestor.role_type as RoleType] || detailInvestor.role_type) : "-"}</p>
+                    </div>
+                  </div>
+                  {detailInvestor.regulatory_note && (
+                    <div className="mt-3 border-t border-slate-200 pt-2">
+                      <p className="text-[10px] font-semibold text-amber-600 uppercase">Regulatory Note</p>
+                      <p className="text-xs text-slate-700 whitespace-pre-wrap leading-relaxed">{detailInvestor.regulatory_note}</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-2">
