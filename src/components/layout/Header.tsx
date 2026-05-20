@@ -83,8 +83,8 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-4">
             <Link
               href="/schedule"
-              className={`text-sm hover:text-gold-300 transition-colors duration-300 ${
-                darkNav ? "text-gold-400" : "text-gold-300"
+              className={`text-sm font-bold uppercase tracking-wide hover:text-gold-500 transition-colors duration-300 ${
+                darkNav ? "text-black" : "text-white"
               }`}
             >
               Schedule a Call
