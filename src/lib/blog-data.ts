@@ -358,11 +358,11 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "subheading",
-        text: "Proprietary Deal Flow: Why Relationships Beat Brokers",
+        text: "Off-Market Sourcing: Why Relationships Beat Brokers",
       },
       {
         type: "paragraph",
-        text: "The way a dealership is sourced determines the economics of the entire deal. And in this market, the difference between a brokered auction and a proprietary acquisition is the difference between overpaying and creating value.",
+        text: "The way a dealership is sourced determines the economics of the entire deal. And in this market, the difference between a brokered auction and a relationship-driven acquisition is the difference between overpaying and creating value.",
       },
       {
         type: "paragraph",
@@ -370,7 +370,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: 'Proprietary deal flow works differently. It starts with a relationship \u2014 often built over years \u2014 between the buyer and the seller, or between the buyer and a trusted intermediary in the seller\u2019s orbit: a long-time accountant, a local attorney, a peer in the industry who knows the owner is thinking about an exit but hasn\u2019t listed the store. These conversations happen before the broker is ever called. The owner is not yet in "auction mode." They are in "legacy mode" \u2014 thinking about who will take care of their employees, maintain their reputation in the community, and continue the business they spent a lifetime building.',
+        text: 'Off-market sourcing works differently. It starts with a relationship \u2014 often built over years \u2014 between the buyer and the seller, or between the buyer and a trusted intermediary in the seller\u2019s orbit: a long-time accountant, a local attorney, a peer in the industry who knows the owner is thinking about an exit but hasn\u2019t listed the store. These conversations happen before the broker is ever called. The owner is not yet in "auction mode." They are in "legacy mode" \u2014 thinking about who will take care of their employees, maintain their reputation in the community, and continue the business they spent a lifetime building.',
       },
       {
         type: "paragraph",
@@ -385,13 +385,13 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "This is why Coleman Automotive\u2019s acquisition pipeline operates primarily through direct relationships rather than broker listings. The deep industry network that Kyle Coleman has built over two decades of automotive retail \u2014 spanning manufacturer contacts, peer dealer groups, and finance relationships \u2014 creates a proprietary channel for evaluating and negotiating acquisitions before they hit the competitive market. For the fund\u2019s investors, this means capital is deployed into assets that were sourced at favorable terms, not bid up in an auction.",
+        text: "This is why Coleman Automotive\u2019s acquisition pipeline operates primarily through direct relationships rather than broker listings. The deep industry network that Kyle Coleman has built over two decades of automotive retail \u2014 spanning manufacturer contacts, peer dealer groups, and finance relationships \u2014 creates a direct channel for evaluating and negotiating acquisitions before they hit the competitive market. For the fund\u2019s investors, this means capital is deployed into assets that were sourced at favorable terms, not bid up in an auction.",
       },
       {
         type: "callout-prime",
         lines: [
           "Prime Dealer Equity Fund\u2019s co-investment model is designed specifically for this market environment.",
-          "By deploying capital alongside an operator with proprietary deal flow, the fund accesses acquisitions that never reach the broker market \u2014 where terms are more favorable and operational upside is highest.",
+          "By deploying capital alongside an operator with deep off-market sourcing relationships, the fund accesses acquisitions that never reach the broker market \u2014 where terms are more favorable and operational upside is highest.",
         ],
         link: {
           text: "Learn how the co-investment structure works",
@@ -1964,7 +1964,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Kyle sources deals through proprietary industry relationships. He evaluates the operational fundamentals of acquisition targets. He deploys the management team \u2014 Ryan Coleman (Director of Operations), Jay Xavier (Director of Variable Operations), Rich Ogilvie (Director of Fixed Operations), Andrea Shockey (CFO), and Jami Langham (COO) \u2014 to stabilize and optimize newly acquired stores. His focus is the physical business: the lots, the service bays, the people, the processes, and the performance metrics.",
+        text: "Kyle sources deals through direct industry relationships. He evaluates the operational fundamentals of acquisition targets. He deploys the management team \u2014 Ryan Coleman (Director of Operations), Jay Xavier (Director of Variable Operations), Rich Ogilvie (Director of Fixed Operations), Andrea Shockey (CFO), and Jami Langham (COO) \u2014 to stabilize and optimize newly acquired stores. His focus is the physical business: the lots, the service bays, the people, the processes, and the performance metrics.",
       },
       {
         type: "paragraph",
@@ -2133,7 +2133,7 @@ export const blogPosts: BlogPost[] = [
     content: [
       {
         type: "paragraph",
-        text: "This is the final post in the initial series we have published on the Prime Dealer Equity Fund investment thesis. Over the previous nine posts, we have explained why automotive dealerships represent a compelling asset class, how the generational transfer crisis creates proprietary deal flow, what happens in the first 90 days after an acquisition, why we hire leaders before the revenue justifies it, how fixed operations generate recession-resistant cash flow, why we walked away from a deal that cost us $35,000, how the co-investment model aligns our capital with yours, why rural markets outperform where it matters, and how the governance separation between fund management and dealership operations protects investor capital.",
+        text: "This is the final post in the initial series we have published on the Prime Dealer Equity Fund investment thesis. Over the previous nine posts, we have explained why automotive dealerships represent a compelling asset class, how the generational transfer crisis creates off-market acquisition opportunities, what happens in the first 90 days after an acquisition, why we hire leaders before the revenue justifies it, how fixed operations generate recession-resistant cash flow, why we walked away from a deal that cost us $35,000, how the co-investment model aligns our capital with yours, why rural markets outperform where it matters, and how the governance separation between fund management and dealership operations protects investor capital.",
       },
       {
         type: "paragraph",

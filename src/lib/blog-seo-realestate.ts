@@ -1118,11 +1118,11 @@ export const seoRealEstatePosts: BlogPost[] = [
   relatedSlugs: [],
 },
 {
-  slug: "proprietary-deal-flow-impact-fund-performance",
+  slug: "off-market-deal-sourcing-fund-performance",
   category: "Fund Mechanics",
-  title: "Proprietary Deal Flow and Its Impact on Fund Performance",
+  title: "Off-Market Deal Sourcing and Its Impact on Fund Performance",
   subtitle:
-    "Discover how proprietary deal flow impacts an automotive dealership acquisition fund. Prime Dealer Equity Fund provides unique insights for smart investors.",
+    "Discover how off-market deal sourcing impacts an automotive dealership acquisition fund. Prime Dealer Equity Fund provides unique insights for smart investors.",
   author: "Ralph Marcuccilli",
   authorRole: "Managing Partner — Prime Dealer Equity Fund",
   date: "May 7, 2026",
@@ -1131,14 +1131,14 @@ export const seoRealEstatePosts: BlogPost[] = [
     src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/NissanElgin/FrontofNissanElgin.jpg",
     alt: "Exterior storefront of a Nissan automotive dealership in Elgin",
     caption:
-      "A dealership storefront — the kind of off-market asset sourced through proprietary deal flow. Photo: Sweet Dreams US LLC",
+      "A dealership storefront — the kind of off-market asset sourced through deep industry relationships. Photo: Sweet Dreams US LLC",
   },
   excerpt:
-    "In sophisticated finance, the difference between average returns and exceptional growth often comes down to access. Proprietary deal flow — sourcing off-market dealership opportunities through deep industry relationships — is the engine behind durable fund performance.",
+    "In sophisticated finance, the difference between average returns and exceptional growth often comes down to access. Off-market deal sourcing — finding dealership opportunities through deep industry relationships before they reach the open market — is the engine behind durable fund performance.",
   content: [
     {
       type: "paragraph",
-      text: "In the world of sophisticated finance, the difference between average returns and exceptional growth often comes down to one critical factor: access. For anyone managing a commercial real estate investment fund, the ability to source unique opportunities before they reach the open market is a meaningful competitive advantage. This concept, known as proprietary deal flow, serves as an engine for performance in niche sectors.",
+      text: "In the world of sophisticated finance, the difference between average returns and exceptional growth often comes down to one critical factor: access. For anyone managing a commercial real estate investment fund, the ability to source opportunities before they reach the open market is a meaningful competitive advantage. This concept — off-market deal sourcing — serves as an engine for performance in niche sectors.",
     },
     {
       type: "paragraph",
@@ -1194,7 +1194,7 @@ export const seoRealEstatePosts: BlogPost[] = [
     },
     {
       type: "paragraph",
-      text: "Investment fund performance is not merely a reflection of market conditions. It is a direct result of the entry price and the inherent quality of the assets within the portfolio. Proprietary deal flow addresses both of these variables by creating an environment where the fund faces less competition. This acts as a protective shield for investor capital.",
+      text: "Investment fund performance is not merely a reflection of market conditions. It is a direct result of the entry price and the inherent quality of the assets within the portfolio. Off-market deal sourcing addresses both of these variables by creating an environment where the fund faces less competition. This acts as a protective shield for investor capital.",
     },
     {
       type: "paragraph",
@@ -1217,7 +1217,7 @@ export const seoRealEstatePosts: BlogPost[] = [
     },
     {
       type: "paragraph",
-      text: "Investors seeking stable and growing returns must look beyond the standard offerings found in traditional markets. A fund that masters the art of proprietary deal flow is uniquely positioned to perform well, regardless of broader market fluctuations. By focusing on niche sectors like automotive real estate, firms like Prime Dealer Equity Fund work to create a sustainable advantage for their partners.",
+      text: "Investors seeking stable and growing returns must look beyond the standard offerings found in traditional markets. A fund that masters the art of off-market deal sourcing is uniquely positioned to perform well, regardless of broader market fluctuations. By focusing on niche sectors like automotive real estate, firms like Prime Dealer Equity Fund work to create a sustainable advantage for their partners.",
     },
     {
       type: "paragraph",

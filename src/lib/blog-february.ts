@@ -376,7 +376,7 @@ export const februaryPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "These are not distressed businesses. The majority are profitable, well-maintained operations with loyal customer bases, established service departments, and franchise agreements that have been in good standing for decades. They are coming to market not because they are failing, but because the people who run them are ready to stop. The seller is motivated by retirement, estate planning, and quality of life \u2014 not by financial distress. For a buyer with the operational expertise to maintain and improve these businesses, the deal flow is proprietary, the valuations are rational, and the competition is surprisingly thin.",
+        text: "These are not distressed businesses. The majority are profitable, well-maintained operations with loyal customer bases, established service departments, and franchise agreements that have been in good standing for decades. They are coming to market not because they are failing, but because the people who run them are ready to stop. The seller is motivated by retirement, estate planning, and quality of life \u2014 not by financial distress. For a buyer with the operational expertise to maintain and improve these businesses, the deal flow is largely off-market, the valuations are rational, and the competition is surprisingly thin.",
       },
       {
         type: "subheading",
@@ -388,7 +388,7 @@ export const februaryPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "This creates a structural gap in the market \u2014 a segment of profitable, well-run dealerships that are too small for the public consolidators, too operationally complex for generalist private equity, and too capital-intensive for individual buyers. Coleman Automotive Group operates directly in that gap. The team has the operational expertise to evaluate and integrate acquisitions rapidly. The proprietary industry relationships to source deals that never reach the open market. And the Prime Dealer Equity Fund provides the capital structure to execute at a pace that matches the volume of opportunities coming to market.",
+        text: "This creates a structural gap in the market \u2014 a segment of profitable, well-run dealerships that are too small for the public consolidators, too operationally complex for generalist private equity, and too capital-intensive for individual buyers. Coleman Automotive Group operates directly in that gap. The team has the operational expertise to evaluate and integrate acquisitions rapidly. The direct industry relationships to source deals that never reach the open market. And the Prime Dealer Equity Fund provides the capital structure to execute at a pace that matches the volume of opportunities coming to market.",
       },
       {
         type: "subheading",
