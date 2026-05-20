@@ -18,13 +18,6 @@ const preQualSchema = z.object({
   lastName: z.string().min(1, "Required"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().min(1, "Required"),
-  investorType: z.string().min(1, "Please select one"),
-  accredited: z.enum(["yes", "no", "unsure"], {
-    message: "Please select one",
-  }),
-  capitalRange: z.string().min(1, "Please select a range"),
-  timeline: z.string().min(1, "Please select one"),
-  referralSource: z.string().min(1, "Please select one"),
 });
 
 type PreQualData = z.infer<typeof preQualSchema>;
@@ -68,7 +61,7 @@ const inputStyles =
    ========================================================================== */
 export default function SchedulePage() {
   const [step, setStep] = useState<
-    "prequal" | "disqualified" | "calendar" | "confirm" | "done"
+    "prequal" | "calendar" | "confirm" | "done"
   >("prequal");
   const [preQualData, setPreQualData] = useState<PreQualData | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -124,28 +117,7 @@ export default function SchedulePage() {
     }
     setSubmitError(null);
     setPreQualData(data);
-
-    if (data.accredited === "no") {
-      // Save to Google Sheets but don't allow scheduling
-      try {
-        await fetch("/api/calendar/book", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...data,
-            turnstileToken,
-            date: "",
-            time: "",
-            source: "disqualified",
-          }),
-        });
-      } catch {
-        // silent — best-effort save
-      }
-      setStep("disqualified");
-    } else {
-      setStep("calendar");
-    }
+    setStep("calendar");
   };
 
   /* ---- Fetch slots when date is selected ---- */
@@ -248,7 +220,7 @@ export default function SchedulePage() {
           <div className="flex items-center justify-center gap-3 mb-12">
             {["Qualify", "Select Time", "Confirm"].map((label, i) => {
               const stepIndex =
-                step === "prequal" || step === "disqualified"
+                step === "prequal"
                   ? 0
                   : step === "calendar"
                     ? 1
@@ -370,126 +342,6 @@ export default function SchedulePage() {
                   </div>
                 </div>
 
-                {/* Investor Type */}
-                <div>
-                  <label className="block text-sm text-navy-400 mb-2">
-                    I am a... *
-                  </label>
-                  <select {...register("investorType")} className={inputStyles}>
-                    <option value="">Select investor type</option>
-                    <option value="individual">Individual / Personal Investor</option>
-                    <option value="business">Business Entity</option>
-                    <option value="family-office">Family Office</option>
-                    <option value="institutional">Institutional Investor</option>
-                  </select>
-                  {errors.investorType && (
-                    <p className="text-red-400 text-xs mt-1">
-                      {errors.investorType.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Accredited */}
-                <div>
-                  <label className="block text-sm text-navy-400 mb-2">
-                    Are you an accredited investor? *
-                  </label>
-                  <div className="flex gap-4">
-                    {(["yes", "no", "unsure"] as const).map((option) => (
-                      <label
-                        key={option}
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        <input
-                          {...register("accredited")}
-                          type="radio"
-                          value={option}
-                          className="w-4 h-4 text-gold-400 bg-navy-900 border-navy-700 focus:ring-gold-400"
-                        />
-                        <span className="text-cream-200 text-sm capitalize">
-                          {option}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                  {errors.accredited && (
-                    <p className="text-red-400 text-xs mt-1">
-                      {errors.accredited.message}
-                    </p>
-                  )}
-                  <p className="text-navy-600 text-xs mt-2">
-                    An accredited investor has $1M+ net worth (excl. primary
-                    residence) or $200K+ annual income ($300K+ with spouse).
-                  </p>
-                </div>
-
-                {/* Capital Range */}
-                <div>
-                  <label className="block text-sm text-navy-400 mb-2">
-                    Investable capital for this opportunity? *
-                  </label>
-                  <select
-                    {...register("capitalRange")}
-                    className={inputStyles}
-                  >
-                    <option value="">Select a range</option>
-                    <option value="100k-249k">$100,000 - $249,999</option>
-                    <option value="250k-500k">$250,000 - $500,000</option>
-                    <option value="500k-1m">$500,000 - $1,000,000</option>
-                    <option value="1m-5m">$1,000,000 - $5,000,000</option>
-                    <option value="5m+">$5,000,000+</option>
-                  </select>
-                  {errors.capitalRange && (
-                    <p className="text-red-400 text-xs mt-1">
-                      {errors.capitalRange.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Timeline */}
-                <div>
-                  <label className="block text-sm text-navy-400 mb-2">
-                    Investment timeline? *
-                  </label>
-                  <select {...register("timeline")} className={inputStyles}>
-                    <option value="">Select timeline</option>
-                    <option value="immediate">Ready to invest now</option>
-                    <option value="30-days">Within 30 days</option>
-                    <option value="1-3-months">1 - 3 months</option>
-                    <option value="exploring">Just exploring</option>
-                  </select>
-                  {errors.timeline && (
-                    <p className="text-red-400 text-xs mt-1">
-                      {errors.timeline.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Referral */}
-                <div>
-                  <label className="block text-sm text-navy-400 mb-2">
-                    How did you hear about us? *
-                  </label>
-                  <select
-                    {...register("referralSource")}
-                    className={inputStyles}
-                  >
-                    <option value="">Select one</option>
-                    <option value="referral">Referral</option>
-                    <option value="podcast">Podcast</option>
-                    <option value="linkedin">LinkedIn</option>
-                    <option value="search">Google / Search</option>
-                    <option value="social">Social Media</option>
-                    <option value="event">Conference / Event</option>
-                    <option value="other">Other</option>
-                  </select>
-                  {errors.referralSource && (
-                    <p className="text-red-400 text-xs mt-1">
-                      {errors.referralSource.message}
-                    </p>
-                  )}
-                </div>
-
                 {/* Turnstile */}
                 <div ref={turnstileRef} />
 
@@ -504,51 +356,6 @@ export default function SchedulePage() {
                   Continue to Scheduling
                 </button>
               </motion.form>
-            )}
-
-            {/* ===================== DISQUALIFIED ===================== */}
-            {step === "disqualified" && (
-              <motion.div
-                key="disqualified"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4 }}
-                className="p-12 rounded-2xl bg-navy-900/50 border border-navy-800/50 text-center"
-              >
-                <div className="w-16 h-16 rounded-full bg-navy-800/50 flex items-center justify-center mx-auto mb-6">
-                  <svg
-                    className="w-8 h-8 text-navy-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={1.5}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-display text-2xl font-bold text-cream-50 mb-4">
-                  Thank You for Your Interest
-                </h3>
-                <p className="text-navy-300 max-w-lg mx-auto mb-6">
-                  This fund is currently limited to accredited investors under
-                  SEC Regulation D. We&apos;ve saved your information and will
-                  reach out if our eligibility criteria change.
-                </p>
-                <p className="text-navy-400 text-sm">
-                  Questions? Contact us at{" "}
-                  <a
-                    href="mailto:Ralph@PrimeDealerFund.com"
-                    className="text-gold-400 hover:underline"
-                  >
-                    Ralph@PrimeDealerFund.com
-                  </a>
-                </p>
-              </motion.div>
             )}
 
             {/* ===================== STEP 2: CALENDAR ===================== */}

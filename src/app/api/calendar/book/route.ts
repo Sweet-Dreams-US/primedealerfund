@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
             last_contact_date: new Date().toISOString().split("T")[0],
             next_action: `Zoom scheduled for ${date} at ${time}`,
             next_action_date: date,
-            notes: `Investor type: ${investorType}\nAccredited: ${accredited}\nCapital range: ${capitalRange}\nTimeline: ${timeline}${guestName ? `\nGuest: ${guestName} (${guestEmail})` : ""}`,
+            notes: `Booked via website schedule form.${guestName ? `\nGuest: ${guestName} (${guestEmail})` : ""}`,
           })
           .select("id")
           .single();

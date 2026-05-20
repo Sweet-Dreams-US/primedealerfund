@@ -6,10 +6,12 @@ import { marchAprilPosts } from "./blog-march-april";
 import { mayPosts } from "./blog-may";
 import { may2026Posts } from "./blog-may-2026";
 import { june2026Posts } from "./blog-june-2026";
+import { seoRealEstatePosts } from "./blog-seo-realestate";
 
 export const blogPosts: BlogPost[] = [
   ...june2026Posts,
   ...may2026Posts,
+  ...seoRealEstatePosts,
   ...mayPosts,
   ...januaryPosts,
   ...februaryPosts,
