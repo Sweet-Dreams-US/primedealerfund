@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase";
+import { createServerClient, getSessionEmail } from "@/lib/supabase";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -59,10 +59,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "First name is required" }, { status: 400 });
   }
 
+  const createdBy = await getSessionEmail();
   const supabase = createServerClient();
   const { data, error } = await supabase
     .from("investors")
     .insert({
+      created_by: createdBy,
       first_name,
       last_name: last_name || null,
       email: email || null,

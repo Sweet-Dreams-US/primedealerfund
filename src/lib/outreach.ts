@@ -46,6 +46,7 @@ export type Firm = {
   regulatory_note: string | null;
   intro_path: string | null;
   notes: string | null;
+  created_by: string | null;
   created_at: string;
   updated_at: string;
   // Embedded contact count from PostgREST: investors(count)
@@ -70,6 +71,7 @@ export type OutreachContact = {
   firm_id: string | null;
   regulatory_note: string | null;
   notes: string | null;
+  created_by: string | null;
   amount_of_interest: number;
   ball_in_court: "ours" | "theirs" | null;
   ball_changed_at: string | null;
@@ -214,4 +216,15 @@ export function daysSince(iso: string | null | undefined): number | null {
   if (!iso) return null;
   const diff = Date.now() - new Date(iso).getTime();
   return Math.floor(diff / 86_400_000);
+}
+
+/**
+ * Friendly display name for a created_by email — "Cowork" for the Cowork
+ * account, otherwise the capitalized local part (ralph@... -> "Ralph").
+ */
+export function creatorLabel(email: string | null | undefined): string | null {
+  if (!email) return null;
+  const local = (email.split("@")[0] || email).trim();
+  if (local.toLowerCase() === "cowork") return "Cowork";
+  return local.charAt(0).toUpperCase() + local.slice(1);
 }

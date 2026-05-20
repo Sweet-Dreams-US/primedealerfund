@@ -28,6 +28,18 @@ export async function createAuthClient() {
   });
 }
 
+// Returns the email of the currently authenticated admin (from the session
+// cookie), or null. Used to attribute created_by on new records.
+export async function getSessionEmail(): Promise<string | null> {
+  try {
+    const client = await createAuthClient();
+    const { data } = await client.auth.getUser();
+    return data.user?.email ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // Browser-side client config (exported for use in client components)
 export const supabaseBrowserConfig = {
   url: supabaseUrl,

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import FirmsSection from "./_components/FirmsSection";
 import PipelineSection from "./_components/PipelineSection";
+import AnalyticsSection from "./_components/AnalyticsSection";
 import {
   CHANNELS,
   CHANNEL_LABELS,
@@ -139,7 +140,7 @@ type EmailTemplate = {
   sequence_group: string | null;
 };
 
-const SECTIONS = ["Inbox", "Overview", "Investors", "Pipeline", "Firms", "Communications", "Tasks", "Calendar"] as const;
+const SECTIONS = ["Inbox", "Overview", "Analytics", "Investors", "Pipeline", "Firms", "Communications", "Tasks", "Calendar"] as const;
 type Section = (typeof SECTIONS)[number];
 
 const CATEGORIES = ["all", "Never Responded", "Had Zoom - No Commitment", "Friend - Possible Investor", "Current Investor", "New Lead"];
@@ -1870,6 +1871,9 @@ export default function AdminDashboard() {
 
         {/* ═══════════ FIRMS ═══════════ */}
         {section === "Firms" && <FirmsSection />}
+
+        {/* ═══════════ ANALYTICS ═══════════ */}
+        {section === "Analytics" && <AnalyticsSection />}
       </main>
 
       {/* ═══════════ INVESTOR DETAIL SLIDE-OVER ═══════════ */}

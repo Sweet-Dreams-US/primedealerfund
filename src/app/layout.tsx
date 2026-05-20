@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -92,6 +93,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-background text-foreground overflow-x-hidden">
         {children}
+        <Analytics />
 
         {/* LinkedIn Insight Tag */}
         <Script id="linkedin-partner" strategy="afterInteractive">

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase";
+import { createServerClient, getSessionEmail } from "@/lib/supabase";
 
 // mandate_areas is a Postgres text[] — accept either a real array or a
 // comma-separated string from the form and normalize to string[] | null.
@@ -60,10 +60,12 @@ export async function POST(request: Request) {
     );
   }
 
+  const createdBy = await getSessionEmail();
   const supabase = createServerClient();
   const { data, error } = await supabase
     .from("firms")
     .insert({
+      created_by: createdBy,
       name,
       firm_type,
       channel,

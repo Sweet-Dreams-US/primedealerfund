@@ -24,6 +24,7 @@ import {
   CHANNEL_STAGES,
   MANDATE_AREA_OPTIONS,
   fmtAum,
+  creatorLabel,
 } from "@/lib/outreach";
 
 // ── Firm form ──────────────────────────────────────────────────────────────
@@ -648,7 +649,14 @@ export default function FirmsSection() {
                     className="border-b border-slate-100 transition-colors cursor-pointer hover:bg-slate-50/50"
                   >
                     <td className="p-3">
-                      <p className="font-medium text-slate-900">{f.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-slate-900">{f.name}</p>
+                        {creatorLabel(f.created_by) === "Cowork" && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-200">
+                            Cowork
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-slate-400">
                         {FIRM_TYPE_LABELS[f.firm_type]}
                       </p>
@@ -802,6 +810,10 @@ export default function FirmsSection() {
                         {
                           label: "Source of Wealth",
                           value: detailFirm.source_of_wealth,
+                        },
+                        {
+                          label: "Added By",
+                          value: creatorLabel(detailFirm.created_by),
                         },
                       ].map((fact) => (
                         <div key={fact.label}>
@@ -1065,6 +1077,11 @@ export default function FirmsSection() {
                                 {c.email && (
                                   <p className="text-xs text-slate-400 truncate">
                                     {c.email}
+                                  </p>
+                                )}
+                                {creatorLabel(c.created_by) === "Cowork" && (
+                                  <p className="text-[10px] font-medium text-violet-600 mt-0.5">
+                                    Added by Cowork
                                   </p>
                                 )}
                               </div>
