@@ -5,6 +5,7 @@ import { fadeInUp } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import MagneticButton from "@/components/ui/MagneticButton";
 import SectionHeader from "@/components/ui/SectionHeader";
+import PodcastDisclaimer from "@/components/legal/PodcastDisclaimer";
 
 export default function VideoSpotlight() {
   const { ref, isInView } = useScrollAnimation();
@@ -35,7 +36,9 @@ export default function VideoSpotlight() {
           />
         </motion.div>
 
-        <div className="text-center">
+        <PodcastDisclaimer variant="compact" />
+
+        <div className="text-center mt-6">
           <MagneticButton href="/media" variant="outline">
             View All Media
           </MagneticButton>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import PodcastDisclaimer from "@/components/legal/PodcastDisclaimer";
 
 /**
  * Featured announcement block — surfaces the latest acquisition press release
@@ -24,15 +25,18 @@ export default function LatestNews() {
           className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 items-center"
         >
           {/* Video */}
-          <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-navy-800/50 shadow-2xl shadow-black/30">
-            <iframe
-              src="https://www.youtube.com/embed/mi7M95pYGNM?rel=0"
-              title="Coleman Prime Acquires Nissan of Elgin"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-              className="absolute inset-0 w-full h-full"
-            />
+          <div>
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-navy-800/50 shadow-2xl shadow-black/30">
+              <iframe
+                src="https://www.youtube.com/embed/mi7M95pYGNM?rel=0"
+                title="Coleman Prime Acquires Nissan of Elgin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
+              />
+            </div>
+            <PodcastDisclaimer variant="compact" />
           </div>
 
           {/* Press release card */}

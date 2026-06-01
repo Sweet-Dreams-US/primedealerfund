@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageLayout from "@/components/layout/PageLayout";
 import GoldDivider from "@/components/ui/GoldDivider";
+import PodcastDisclaimer from "@/components/legal/PodcastDisclaimer";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
@@ -136,6 +137,15 @@ export default function MediaPage() {
       </section>
 
       <GoldDivider />
+
+      {/* Page-level disclaimer — visible above all media so the SEC
+          "clear, conspicuous, and proximate" standard is met before any
+          video plays. Expandable to the full counsel-authored text. */}
+      <section className="pt-10 md:pt-12">
+        <div className="max-w-4xl mx-auto px-6">
+          <PodcastDisclaimer />
+        </div>
+      </section>
 
       {/* Featured player + sidebar selector */}
       <section className="py-16 md:py-24">
