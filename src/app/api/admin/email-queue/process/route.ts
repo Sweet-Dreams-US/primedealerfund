@@ -160,7 +160,7 @@ async function processOnce(jobId?: string): Promise<{
           status: "failed",
           attempts: nextAttempt,
           error_message: "Skipped: recipient in bounce list",
-          last_attempt_at: new Date().toISOString(),
+          processed_at: new Date().toISOString(),
         })
         .eq("id", row.id);
       counters.failed++;
