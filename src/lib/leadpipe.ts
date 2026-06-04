@@ -241,7 +241,9 @@ export async function syncVisitorsFromLeadPipe(
   let updated = 0;
 
   while (page <= maxPages) {
-    const url = `https://api.aws53.cloud/v1/data?timeframe=${encodeURIComponent(timeframe)}&page=${page}`;
+    // Scope to the Prime pixel's domain — the account also hosts other pixels
+    // (e.g. Sweet Dreams), and an unfiltered pull would mix their visitors in.
+    const url = `https://api.aws53.cloud/v1/data?timeframe=${encodeURIComponent(timeframe)}&page=${page}&domain=primedealerfund.com`;
     let json: { data?: RawBody[]; meta?: { hasMore?: boolean; totalPages?: number } };
     try {
       const res = await fetch(url, { headers: { "X-API-Key": apiKey } });
