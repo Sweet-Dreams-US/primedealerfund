@@ -65,6 +65,21 @@ export async function POST(request: Request) {
   const rawPayload = await request.text();
   const signature = request.headers.get("x-leadpipe-signature") || "";
 
+  // TEMP DEBUG: capture the full request to diagnose the exact signature
+  // construction (which headers carry a timestamp/id, the raw body bytes).
+  // Removed once the signed Test event verifies.
+  try {
+    const headers = Object.fromEntries(request.headers.entries());
+    await createServerClient().from("webhook_debug").insert({
+      source: "leadpipe",
+      signature,
+      headers,
+      body: rawPayload,
+    });
+  } catch {
+    /* non-fatal */
+  }
+
   const secret = process.env.LEADPIPE_WEBHOOK_SECRET || "";
   if (!secret) {
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
