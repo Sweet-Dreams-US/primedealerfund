@@ -43,7 +43,20 @@ export async function GET(request: Request) {
     companies: new Set((all || []).map((v) => v.company_domain).filter(Boolean)).size,
   };
 
-  return NextResponse.json({ visitors: data, summary });
+  // First-party traffic counter (last 30 days) for the identification-rate
+  // comparison: total site visits vs the subset LeadPipe identified.
+  const since30 = new Date(now - 30 * 86_400_000).toISOString().slice(0, 10);
+  const { data: traffic } = await supabase
+    .from("site_traffic")
+    .select("visitor_id, hits")
+    .gte("day", since30);
+  const trafficStats = {
+    uniqueVisitors: new Set((traffic || []).map((t) => t.visitor_id)).size,
+    pageViews: (traffic || []).reduce((s, t) => s + (t.hits ?? 0), 0),
+    days: 30,
+  };
+
+  return NextResponse.json({ visitors: data, summary, traffic: trafficStats });
 }
 
 // PATCH — update review fields (status, notes). Stamps reviewer + flips a

@@ -27,6 +27,7 @@ type Visitor = {
   visit_duration: number | null;
   enrichment_level: string | null;
   enrichment_score: number | null;
+  intent_score: string | null;
   visit_count: number;
   identified_at: string | null;
   last_seen_at: string | null;
@@ -45,7 +46,41 @@ function isBusinessGrade(v: Visitor): boolean {
   return !!v.company_name || (!!v.enrichment_level && v.enrichment_level !== "email_only");
 }
 
+type Traffic = { uniqueVisitors: number; pageViews: number; days: number };
+
 const STATUSES = ["all", "new", "reviewed", "contacted", "promoted", "dismissed"];
+
+const intentBadge: Record<string, string> = {
+  high: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  medium: "bg-amber-50 text-amber-700 ring-amber-200",
+  low: "bg-slate-100 text-slate-500 ring-slate-200",
+};
+
+// Referrer host, or "Direct" when none.
+function sourceLabel(v: Visitor): string {
+  if (!v.referrer) return "Direct";
+  try {
+    return new URL(v.referrer).hostname.replace(/^www\./, "");
+  } catch {
+    return v.referrer;
+  }
+}
+
+// Industry + employee count, à la LeadPipe's Firmographics column.
+function firmographics(v: Visitor): string {
+  const parts = [v.company_industry, v.company_size ? `${v.company_size} emp` : null].filter(Boolean);
+  return parts.join(" · ") || "—";
+}
+
+// Normalize a landing value (full URL or path) to a clean path.
+function shortPath(p: string | null): string {
+  if (!p) return "—";
+  try {
+    return new URL(p).pathname || "/";
+  } catch {
+    return p.startsWith("/") ? p : `/${p}`;
+  }
+}
 
 const statusBadge: Record<string, string> = {
   new: "bg-amber-50 text-amber-700 ring-amber-200",
@@ -77,6 +112,7 @@ function location(v: Visitor) {
 export default function VisitorsSection() {
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
+  const [traffic, setTraffic] = useState<Traffic | null>(null);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -97,6 +133,7 @@ export default function VisitorsSection() {
       const data = await res.json();
       setVisitors(data.visitors || []);
       setSummary(data.summary || null);
+      setTraffic(data.traffic || null);
     }
     setLoading(false);
   }, [statusFilter, search]);
@@ -200,6 +237,40 @@ export default function VisitorsSection() {
         ))}
       </div>
 
+      {/* Traffic Overview — total site traffic vs the identified subset */}
+      <div className="bg-white border border-slate-200 rounded-xl p-5">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <h3 className="text-sm font-semibold text-slate-900">
+            Traffic Overview <span className="font-normal text-slate-400">· last 30 days</span>
+          </h3>
+          <span className="text-[11px] text-slate-400">First-party counter · official totals live in Vercel Analytics</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "Total Visitors", value: traffic?.uniqueVisitors ?? "—", sub: "unique browsers" },
+            { label: "Page Views", value: traffic?.pageViews ?? "—", sub: "all loads" },
+            { label: "Identified", value: summary?.total ?? "—", sub: "named by LeadPipe" },
+            {
+              label: "Identification Rate",
+              value:
+                traffic && traffic.uniqueVisitors > 0 && summary
+                  ? `${Math.round((summary.total / traffic.uniqueVisitors) * 100)}%`
+                  : "—",
+              sub: "identified ÷ visitors",
+            },
+          ].map((m) => (
+            <div key={m.label}>
+              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{m.label}</p>
+              <p className="text-2xl font-semibold text-slate-900">{m.value}</p>
+              <p className="text-xs text-slate-400 mt-1">{m.sub}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-[11px] text-slate-400 mt-3 leading-relaxed">
+          Most visitors stay anonymous — LeadPipe only resolves a fraction, and best for business/corporate IPs. This compares everyone who visited against the subset we can put a name to.
+        </p>
+      </div>
+
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 max-w-sm">
@@ -242,12 +313,9 @@ export default function VisitorsSection() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
-                  <th className="p-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Visitor</th>
-                  <th className="p-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Title</th>
-                  <th className="p-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Location</th>
-                  <th className="p-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Pages</th>
-                  <th className="p-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Seen</th>
-                  <th className="p-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                  {["Name", "Job Title", "Email", "Source", "Landing", "Pages", "Phone", "Location", "Firmographics", "Intent", "Recency", "Status"].map((h) => (
+                    <th key={h} className={`p-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap ${h === "Pages" ? "text-center" : "text-left"}`}>{h}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -264,9 +332,15 @@ export default function VisitorsSection() {
                       </div>
                       <p className="text-xs text-slate-400">{v.company_name || v.email || "—"}</p>
                     </td>
-                    <td className="p-3 text-slate-500 text-xs max-w-[180px] truncate">{v.job_title || "—"}</td>
-                    <td className="p-3 text-slate-500 text-xs">{location(v)}</td>
+                    <td className="p-3 text-slate-500 text-xs max-w-[160px] truncate">{v.job_title || "—"}</td>
+                    <td className="p-3 text-slate-500 text-xs max-w-[180px] truncate">{v.email || "—"}</td>
+                    <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{sourceLabel(v)}</td>
+                    <td className="p-3 text-slate-500 text-xs whitespace-nowrap font-mono">{shortPath(v.first_page)}</td>
                     <td className="p-3 text-center font-mono text-xs text-slate-600">{Array.isArray(v.pages_viewed) ? v.pages_viewed.length : "—"}</td>
+                    <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{v.phone || "—"}</td>
+                    <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{location(v)}</td>
+                    <td className="p-3 text-slate-500 text-xs max-w-[180px] truncate">{firmographics(v)}</td>
+                    <td className="p-3">{v.intent_score ? (<span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ring-1 ring-inset ${intentBadge[v.intent_score.toLowerCase()] || "bg-slate-50 text-slate-600 ring-slate-200"}`}>{v.intent_score}</span>) : <span className="text-slate-300 text-xs">—</span>}</td>
                     <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{timeAgo(v.last_seen_at)}</td>
                     <td className="p-3"><span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ring-1 ring-inset ${statusBadge[v.status] || "bg-slate-50 text-slate-600 ring-slate-200"}`}>{v.status}</span></td>
                   </tr>
@@ -307,6 +381,8 @@ export default function VisitorsSection() {
                     { label: "Location", value: location(detail) },
                     { label: "Industry", value: detail.company_industry },
                     { label: "Company Size", value: detail.company_size },
+                    { label: "Intent", value: detail.intent_score },
+                    { label: "Source", value: sourceLabel(detail) },
                     { label: "Match Confidence", value: isBusinessGrade(detail) ? `Business${detail.enrichment_level ? ` (${detail.enrichment_level})` : ""}` : `Low — ${detail.enrichment_level || "email only"}` },
                   ].map((f) => (
                     <div key={f.label}><p className="text-xs text-slate-400 mb-0.5">{f.label}</p><p className="text-sm text-slate-900 break-words">{f.value || "—"}</p></div>

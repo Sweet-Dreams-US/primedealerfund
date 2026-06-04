@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bebas_Neue, Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
+import TrafficBeacon from "@/components/TrafficBeacon";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -94,6 +95,7 @@ export default function RootLayout({
       <body className="font-body antialiased bg-background text-foreground overflow-x-hidden">
         {children}
         <Analytics />
+        <TrafficBeacon />
 
         {/* LeadPipe visitor-identification pixel. Gated behind an env var so it
             only loads once NEXT_PUBLIC_LEADPIPE_PIXEL_ID is set — acts as a

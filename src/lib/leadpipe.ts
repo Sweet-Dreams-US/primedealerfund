@@ -101,6 +101,7 @@ export function normalizeVisitor(body: RawBody) {
     // business identification.
     enrichment_level: asString(d.enrichmentLevel) ?? asString(body.enrichment_level),
     enrichment_score: asInt(d.enrichmentScore) ?? asInt(body.enrichment_score),
+    intent_score: asString(d.intentScore) ?? asString(body.intent_score),
     timestamp:
       asString(body.timestamp) ?? asString(d.lastSeenAt) ?? asString(body.identifiedAt) ?? asString(body.lastSeenAt),
   };
@@ -143,6 +144,7 @@ export async function upsertVisitor(
     visit_duration: n.visit_duration,
     enrichment_level: n.enrichment_level,
     enrichment_score: n.enrichment_score,
+    intent_score: n.intent_score,
     raw_payload: body,
   };
 
