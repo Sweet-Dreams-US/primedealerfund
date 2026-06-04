@@ -38,12 +38,27 @@ function safeEq(a: string, b: string): boolean {
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
   if (!signature || !secret) return false;
   const sig = signature.startsWith("sha256=") ? signature.slice(7) : signature;
-  const candidates = [
-    secret, // HMAC off — plain shared secret
-    crypto.createHmac("sha256", secret).update(rawBody).digest("hex"),
-    crypto.createHmac("sha256", secret).update(rawBody).digest("base64"),
-  ];
-  return candidates.some((c) => safeEq(sig, c));
+
+  // HMAC off — header is the raw shared secret.
+  if (safeEq(sig, secret)) return true;
+
+  // HMAC on — try every plausible key derivation from a whsec_-style secret:
+  // the raw string, the de-prefixed string, and that part hex- or base64-
+  // decoded into bytes. Output compared as hex and base64.
+  const noPrefix = secret.startsWith("whsec_") ? secret.slice(6) : secret;
+  const keys: (string | Buffer)[] = [secret, noPrefix];
+  const hexKey = Buffer.from(noPrefix, "hex");
+  if (hexKey.length) keys.push(hexKey);
+  const b64Key = Buffer.from(noPrefix, "base64");
+  if (b64Key.length) keys.push(b64Key);
+
+  for (const key of keys) {
+    const h = crypto.createHmac("sha256", key).update(rawBody).digest("hex");
+    if (safeEq(sig, h)) return true;
+    const b = crypto.createHmac("sha256", key).update(rawBody).digest("base64");
+    if (safeEq(sig, b)) return true;
+  }
+  return false;
 }
 
 export async function POST(request: Request) {
@@ -55,6 +70,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
   if (!verifySignature(rawPayload, signature, secret)) {
+    // Temporary diagnostic — lets us read the exact signature format from
+    // Vercel logs if a real signed delivery is rejected. Remove once the
+    // signed Test event is confirmed working.
+    console.error("[leadpipe-webhook] signature mismatch", {
+      received: signature,
+      receivedLen: signature.length,
+      bodyLen: rawPayload.length,
+    });
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
