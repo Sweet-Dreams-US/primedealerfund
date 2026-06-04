@@ -26,11 +26,16 @@ export async function GET(request: Request) {
   // Lightweight summary for the metric cards.
   const { data: all } = await supabase
     .from("site_visitors")
-    .select("status, company_domain, last_seen_at");
+    .select("status, company_domain, company_name, enrichment_level, last_seen_at");
   const now = Date.now();
   const weekAgo = now - 7 * 86_400_000;
+  // Business-grade = a real company match or any enrichment beyond email-only.
+  // Email-only / no-company matches are the unreliable residential ones.
+  const isBiz = (v: { company_name: string | null; enrichment_level: string | null }) =>
+    !!v.company_name || (!!v.enrichment_level && v.enrichment_level !== "email_only");
   const summary = {
     total: all?.length ?? 0,
+    businessGrade: (all || []).filter(isBiz).length,
     new: (all || []).filter((v) => v.status === "new").length,
     thisWeek: (all || []).filter(
       (v) => v.last_seen_at && new Date(v.last_seen_at).getTime() >= weekAgo

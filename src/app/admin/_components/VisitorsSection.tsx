@@ -25,6 +25,8 @@ type Visitor = {
   pages_viewed: string[] | null;
   referrer: string | null;
   visit_duration: number | null;
+  enrichment_level: string | null;
+  enrichment_score: number | null;
   visit_count: number;
   identified_at: string | null;
   last_seen_at: string | null;
@@ -34,7 +36,14 @@ type Visitor = {
   notes: string | null;
 };
 
-type Summary = { total: number; new: number; thisWeek: number; companies: number };
+type Summary = { total: number; businessGrade: number; new: number; thisWeek: number; companies: number };
+
+// Business-grade = a real company match or any enrichment beyond email-only.
+// Email-only / no-company matches are the unreliable residential ones (e.g.
+// an IP that resolves to a neighbor) and are hidden by default.
+function isBusinessGrade(v: Visitor): boolean {
+  return !!v.company_name || (!!v.enrichment_level && v.enrichment_level !== "email_only");
+}
 
 const STATUSES = ["all", "new", "reviewed", "contacted", "promoted", "dismissed"];
 
@@ -71,6 +80,7 @@ export default function VisitorsSection() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [showLowConfidence, setShowLowConfidence] = useState(false);
   const [detail, setDetail] = useState<Visitor | null>(null);
   const [notesDraft, setNotesDraft] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
@@ -168,14 +178,18 @@ export default function VisitorsSection() {
     setSavingNotes(false);
   }
 
+  // Default view hides low-confidence (residential / email-only) matches.
+  const displayed = showLowConfidence ? visitors : visitors.filter(isBusinessGrade);
+  const hiddenCount = visitors.length - displayed.length;
+
   return (
     <div className="space-y-6">
       {/* Metric cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Identified Visitors", value: summary?.total ?? "—", sub: "all time" },
+          { label: "Business-Grade", value: summary?.businessGrade ?? "—", sub: "worth reviewing" },
+          { label: "Total Identified", value: summary?.total ?? "—", sub: "incl. low-confidence" },
           { label: "New / Unreviewed", value: summary?.new ?? "—", sub: "need triage" },
-          { label: "Active This Week", value: summary?.thisWeek ?? "—", sub: "last 7 days" },
           { label: "Companies", value: summary?.companies ?? "—", sub: "distinct orgs" },
         ].map((m) => (
           <div key={m.label} className="bg-white border border-slate-200 rounded-xl p-5">
@@ -195,22 +209,32 @@ export default function VisitorsSection() {
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
           {STATUSES.map((s) => (<option key={s} value={s}>{s === "all" ? "All Statuses" : s[0].toUpperCase() + s.slice(1)}</option>))}
         </select>
+        <label className="flex items-center gap-2 text-sm text-slate-500 cursor-pointer select-none" title="Show unreliable residential / email-only matches (like IP misfires) that are hidden by default">
+          <input type="checkbox" checked={showLowConfidence} onChange={(e) => setShowLowConfidence(e.target.checked)} className="rounded border-slate-300 text-slate-900 focus:ring-slate-400" />
+          Show low-confidence
+        </label>
         <div className="ml-auto flex items-center gap-3">
           {syncResult && <span className="text-xs text-slate-500">{syncResult}</span>}
           <button onClick={handleSync} disabled={syncing} className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40" title="Pull the latest identified visitors from LeadPipe">
             <svg className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M21.015 4.356v4.992" /></svg>
             {syncing ? "Syncing…" : "Sync from LeadPipe"}
           </button>
-          <span className="text-sm text-slate-500">{visitors.length} shown</span>
+          <span className="text-sm text-slate-500">
+            {displayed.length} shown{hiddenCount > 0 ? ` · ${hiddenCount} low-confidence hidden` : ""}
+          </span>
         </div>
       </div>
 
       {/* Table */}
       {loading ? (
         <div className="flex items-center justify-center py-16"><div className="w-6 h-6 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" /></div>
-      ) : visitors.length === 0 ? (
+      ) : displayed.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
-          <p className="text-sm text-slate-400">No identified visitors yet. Once the LeadPipe pixel is live and the webhook is connected, resolved visitors will appear here for review.</p>
+          <p className="text-sm text-slate-400">
+            {visitors.length === 0
+              ? "No identified visitors yet. As the LeadPipe pixel resolves business visitors, they'll appear here for review."
+              : `No business-grade visitors to show. ${hiddenCount} low-confidence ${hiddenCount === 1 ? "match is" : "matches are"} hidden — tick “Show low-confidence” to view them.`}
+          </p>
         </div>
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
@@ -227,10 +251,17 @@ export default function VisitorsSection() {
                 </tr>
               </thead>
               <tbody>
-                {visitors.map((v) => (
+                {displayed.map((v) => (
                   <tr key={v.id} onClick={() => openDetail(v)} className="border-b border-slate-100 cursor-pointer hover:bg-slate-50/50 transition-colors">
                     <td className="p-3">
-                      <p className="font-medium text-slate-900">{fullName(v)}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-slate-900">{fullName(v)}</p>
+                        {!isBusinessGrade(v) && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-slate-100 text-slate-400 ring-1 ring-inset ring-slate-200" title="Low-confidence residential / email-only match — verify before trusting">
+                            low-confidence
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-slate-400">{v.company_name || v.email || "—"}</p>
                     </td>
                     <td className="p-3 text-slate-500 text-xs max-w-[180px] truncate">{v.job_title || "—"}</td>
@@ -276,6 +307,7 @@ export default function VisitorsSection() {
                     { label: "Location", value: location(detail) },
                     { label: "Industry", value: detail.company_industry },
                     { label: "Company Size", value: detail.company_size },
+                    { label: "Match Confidence", value: isBusinessGrade(detail) ? `Business${detail.enrichment_level ? ` (${detail.enrichment_level})` : ""}` : `Low — ${detail.enrichment_level || "email only"}` },
                   ].map((f) => (
                     <div key={f.label}><p className="text-xs text-slate-400 mb-0.5">{f.label}</p><p className="text-sm text-slate-900 break-words">{f.value || "—"}</p></div>
                   ))}

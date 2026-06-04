@@ -96,6 +96,11 @@ export function normalizeVisitor(body: RawBody) {
     pages_viewed: pages,
     referrer: asString(d.referrer) ?? asString(visit.referrer) ?? asString(body.referrer),
     visit_duration: asInt(d.visit_duration) ?? asInt(visit.duration) ?? asInt(body.visit_duration),
+    // LeadPipe's own match-confidence signals. "email_only" / score 0 means a
+    // thin, often-wrong residential match; "full" with a score means a solid
+    // business identification.
+    enrichment_level: asString(d.enrichmentLevel) ?? asString(body.enrichment_level),
+    enrichment_score: asInt(d.enrichmentScore) ?? asInt(body.enrichment_score),
     timestamp:
       asString(body.timestamp) ?? asString(d.lastSeenAt) ?? asString(body.identifiedAt) ?? asString(body.lastSeenAt),
   };
@@ -136,6 +141,8 @@ export async function upsertVisitor(
     last_page: n.last_page,
     referrer: n.referrer,
     visit_duration: n.visit_duration,
+    enrichment_level: n.enrichment_level,
+    enrichment_score: n.enrichment_score,
     raw_payload: body,
   };
 
