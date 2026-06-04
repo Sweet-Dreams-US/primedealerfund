@@ -63,36 +63,18 @@ function verifySignature(rawBody: string, signature: string, secret: string): bo
 
 export async function POST(request: Request) {
   const rawPayload = await request.text();
-  const signature = request.headers.get("x-leadpipe-signature") || "";
-
-  // TEMP DEBUG: capture the full request to diagnose the exact signature
-  // construction (which headers carry a timestamp/id, the raw body bytes).
-  // Removed once the signed Test event verifies.
-  try {
-    const headers = Object.fromEntries(request.headers.entries());
-    await createServerClient().from("webhook_debug").insert({
-      source: "leadpipe",
-      signature,
-      headers,
-      body: rawPayload,
-    });
-  } catch {
-    /* non-fatal */
-  }
+  // LeadPipe sends the signature as `x-webhook-signature: sha256=<hex>`
+  // (HMAC-SHA256 of the raw body with the full whsec_ secret as the key).
+  const signature =
+    request.headers.get("x-webhook-signature") ||
+    request.headers.get("x-leadpipe-signature") ||
+    "";
 
   const secret = process.env.LEADPIPE_WEBHOOK_SECRET || "";
   if (!secret) {
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
   if (!verifySignature(rawPayload, signature, secret)) {
-    // Temporary diagnostic — lets us read the exact signature format from
-    // Vercel logs if a real signed delivery is rejected. Remove once the
-    // signed Test event is confirmed working.
-    console.error("[leadpipe-webhook] signature mismatch", {
-      received: signature,
-      receivedLen: signature.length,
-      bodyLen: rawPayload.length,
-    });
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
@@ -101,6 +83,12 @@ export async function POST(request: Request) {
     body = JSON.parse(rawPayload);
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  // Test deliveries carry a synthetic "John Smith" visitor — verify the pipe
+  // but don't store the fake record.
+  if (body.trigger === "test") {
+    return NextResponse.json({ ok: true, test: true });
   }
 
   try {

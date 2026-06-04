@@ -31,52 +31,73 @@ function asInt(v: unknown): number | null {
 /** Map either payload shape (nested person/company/visit OR flat snake_case)
  *  into our canonical column set. */
 export function normalizeVisitor(body: RawBody) {
-  const person = (body.person as RawBody) || {};
-  const company = (body.company as RawBody) || {};
-  const visit = (body.visit as RawBody) || {};
+  // Real LeadPipe shape nests the visitor under `data` (webhook) or IS the
+  // record itself (REST /v1/data array items). Fall back to the older
+  // documented nested/flat shapes defensively.
+  const d = ((body.data as RawBody) || body) as RawBody;
+  const person = (d.person as RawBody) || (body.person as RawBody) || {};
+  const company = (d.company as RawBody) || (body.company as RawBody) || {};
+  const visit = (d.visit as RawBody) || (body.visit as RawBody) || {};
 
-  const pagesRaw = (visit.pages as unknown) ?? (body.pages_viewed as unknown) ?? null;
+  const firstOf = (v: unknown): string | null =>
+    Array.isArray(v) && v.length ? asString(v[0]) : null;
+
+  const pagesRaw =
+    (d.visitedPages as unknown) ??
+    (visit.pages as unknown) ??
+    (d.pages_viewed as unknown) ??
+    (body.pages_viewed as unknown) ??
+    null;
   const pages = Array.isArray(pagesRaw) ? pagesRaw.map((p) => String(p)) : null;
 
   const email =
     (
+      asString(d.email) ||
+      firstOf(d.businessEmails) ||
       asString(person.email) ||
       asString(body.email) ||
+      firstOf(d.emails) ||
       asString(person.personalEmail) ||
       ""
     ).toLowerCase() || null;
 
+  const landing = asString(d.landingPage);
   const lastPage =
     (pages && pages.length ? pages[pages.length - 1] : null) ||
+    landing ||
+    asString(d.page_url) ||
     asString(body.page_url) ||
     asString(visit.url);
-  const firstPage = (pages && pages.length ? pages[0] : null) || asString(body.page_url);
+  const firstPage =
+    landing || (pages && pages.length ? pages[0] : null) || asString(d.page_url) || asString(body.page_url);
 
   return {
     email,
-    first_name: asString(person.firstName) ?? asString(body.first_name),
-    last_name: asString(person.lastName) ?? asString(body.last_name),
-    phone: asString(person.phone) ?? asString(body.phone),
-    job_title: asString(person.jobTitle) ?? asString(body.job_title),
-    seniority: asString(person.seniority) ?? asString(body.seniority),
+    first_name: asString(d.firstName) ?? asString(person.firstName) ?? asString(d.first_name) ?? asString(body.first_name),
+    last_name: asString(d.lastName) ?? asString(person.lastName) ?? asString(d.last_name) ?? asString(body.last_name),
+    phone: firstOf(d.phones) ?? asString(d.phone) ?? asString(person.phone) ?? asString(body.phone),
+    job_title: asString(d.jobTitle) ?? asString(person.jobTitle) ?? asString(d.job_title) ?? asString(body.job_title),
+    seniority: asString(d.seniority) ?? asString(person.seniority) ?? asString(body.seniority),
     linkedin_url:
-      asString(person.linkedIn) ?? asString(person.linkedin) ?? asString(body.linkedin_url),
-    company_name: asString(company.name) ?? asString(body.company_name),
+      asString(d.linkedinUrl) ?? asString(d.linkedIn) ?? asString(person.linkedIn) ?? asString(body.linkedin_url),
+    company_name: asString(d.companyName) ?? asString(company.name) ?? asString(body.company_name),
     company_domain:
-      asString(company.website) ?? asString(company.domain) ?? asString(body.company_domain),
-    company_industry: asString(company.industry) ?? asString(body.industry),
+      asString(d.companyDomain) ?? asString(company.website) ?? asString(company.domain) ?? asString(body.company_domain),
+    company_industry: asString(d.industry) ?? asString(company.industry) ?? asString(body.industry),
     company_size:
-      asString(company.employeeCount) ?? asString(body.employee_count) ?? asString(body.company_size),
-    company_revenue: asString(company.revenue) ?? asString(body.company_revenue),
-    city: asString(body.city) ?? asString(person.city),
-    state: asString(body.state) ?? asString(person.state),
-    country: asString(body.country) ?? asString(person.country),
+      asString(d.companySize) ?? asString(d.companyEmployeeCount) ?? asString(company.employeeCount) ?? asString(body.company_size),
+    company_revenue:
+      asString(d.companyTotalRevenue) ?? asString(company.revenue) ?? asString(body.company_revenue),
+    city: asString(d.city) ?? asString(body.city) ?? asString(person.city),
+    state: asString(d.state) ?? asString(body.state) ?? asString(person.state),
+    country: asString(d.country) ?? asString(d.countryCode) ?? asString(body.country) ?? asString(person.country),
     first_page: firstPage,
     last_page: lastPage,
     pages_viewed: pages,
-    referrer: asString(visit.referrer) ?? asString(body.referrer),
-    visit_duration: asInt(visit.duration) ?? asInt(body.visit_duration),
-    timestamp: asString(body.timestamp) ?? asString(body.identifiedAt) ?? asString(body.lastSeenAt),
+    referrer: asString(d.referrer) ?? asString(visit.referrer) ?? asString(body.referrer),
+    visit_duration: asInt(d.visit_duration) ?? asInt(visit.duration) ?? asInt(body.visit_duration),
+    timestamp:
+      asString(body.timestamp) ?? asString(d.lastSeenAt) ?? asString(body.identifiedAt) ?? asString(body.lastSeenAt),
   };
 }
 
