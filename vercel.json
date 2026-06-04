@@ -7,6 +7,10 @@
     {
       "path": "/api/admin/scan-bounces",
       "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/admin/leadpipe-sync",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

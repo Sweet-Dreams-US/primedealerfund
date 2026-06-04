@@ -75,6 +75,8 @@ export default function VisitorsSection() {
   const [notesDraft, setNotesDraft] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [addingLead, setAddingLead] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<string | null>(null);
 
   const fetchVisitors = useCallback(async () => {
     const params = new URLSearchParams();
@@ -131,6 +133,29 @@ export default function VisitorsSection() {
     setAddingLead(false);
   }
 
+  async function handleSync() {
+    setSyncing(true);
+    setSyncResult(null);
+    try {
+      const res = await fetch("/api/admin/leadpipe-sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ timeframe: "all" }),
+      });
+      const data = await res.json();
+      if (res.ok && !data.error) {
+        setSyncResult(`Synced ${data.fetched} — ${data.created} new, ${data.updated} updated`);
+        fetchVisitors();
+      } else {
+        setSyncResult(data.error || "Sync failed");
+      }
+    } catch {
+      setSyncResult("Network error during sync");
+    }
+    setSyncing(false);
+    setTimeout(() => setSyncResult(null), 10000);
+  }
+
   function openDetail(v: Visitor) {
     setDetail(v);
     setNotesDraft(v.notes || "");
@@ -170,7 +195,14 @@ export default function VisitorsSection() {
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
           {STATUSES.map((s) => (<option key={s} value={s}>{s === "all" ? "All Statuses" : s[0].toUpperCase() + s.slice(1)}</option>))}
         </select>
-        <span className="ml-auto text-sm text-slate-500">{visitors.length} shown</span>
+        <div className="ml-auto flex items-center gap-3">
+          {syncResult && <span className="text-xs text-slate-500">{syncResult}</span>}
+          <button onClick={handleSync} disabled={syncing} className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40" title="Pull the latest identified visitors from LeadPipe">
+            <svg className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M21.015 4.356v4.992" /></svg>
+            {syncing ? "Syncing…" : "Sync from LeadPipe"}
+          </button>
+          <span className="text-sm text-slate-500">{visitors.length} shown</span>
+        </div>
       </div>
 
       {/* Table */}
