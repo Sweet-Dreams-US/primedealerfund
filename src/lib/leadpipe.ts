@@ -75,26 +75,41 @@ export function normalizeVisitor(body: RawBody) {
     email,
     first_name: asString(d.firstName) ?? asString(person.firstName) ?? asString(d.first_name) ?? asString(body.first_name),
     last_name: asString(d.lastName) ?? asString(person.lastName) ?? asString(d.last_name) ?? asString(body.last_name),
-    phone: firstOf(d.phones) ?? asString(d.phone) ?? asString(person.phone) ?? asString(body.phone),
+    phone:
+      firstOf(d.phones) ??
+      asString(d.primaryPhone) ??
+      firstOf(d.allPhones) ??
+      asString(d.phone) ??
+      asString(person.phone) ??
+      asString(body.phone),
     job_title: asString(d.jobTitle) ?? asString(person.jobTitle) ?? asString(d.job_title) ?? asString(body.job_title),
     seniority: asString(d.seniority) ?? asString(person.seniority) ?? asString(body.seniority),
     linkedin_url:
       asString(d.linkedinUrl) ?? asString(d.linkedIn) ?? asString(person.linkedIn) ?? asString(body.linkedin_url),
-    company_name: asString(d.companyName) ?? asString(company.name) ?? asString(body.company_name),
+    // company name: webhook uses companyName; REST /v1/data uses `company`.
+    company_name: asString(d.companyName) ?? asString(d.company) ?? asString(company.name) ?? asString(body.company_name),
     company_domain:
       asString(d.companyDomain) ?? asString(company.website) ?? asString(company.domain) ?? asString(body.company_domain),
-    company_industry: asString(d.industry) ?? asString(company.industry) ?? asString(body.industry),
+    // industry: webhook uses `industry`; REST uses `companyIndustry`.
+    company_industry:
+      asString(d.industry) ?? asString(d.companyIndustry) ?? asString(company.industry) ?? asString(body.industry),
     company_size:
-      asString(d.companySize) ?? asString(d.companyEmployeeCount) ?? asString(company.employeeCount) ?? asString(body.company_size),
+      asString(d.companySize) ??
+      asString(d.companyEmployeeCount) ??
+      asString(d.companySizeRange) ??
+      asString(company.employeeCount) ??
+      asString(body.company_size),
+    // revenue: webhook uses companyTotalRevenue; REST uses companyRevenue.
     company_revenue:
-      asString(d.companyTotalRevenue) ?? asString(company.revenue) ?? asString(body.company_revenue),
+      asString(d.companyTotalRevenue) ?? asString(d.companyRevenue) ?? asString(company.revenue) ?? asString(body.company_revenue),
     city: asString(d.city) ?? asString(body.city) ?? asString(person.city),
     state: asString(d.state) ?? asString(body.state) ?? asString(person.state),
     country: asString(d.country) ?? asString(d.countryCode) ?? asString(body.country) ?? asString(person.country),
     first_page: firstPage,
     last_page: lastPage,
     pages_viewed: pages,
-    referrer: asString(d.referrer) ?? asString(visit.referrer) ?? asString(body.referrer),
+    // referrer: webhook uses `referrer`; REST uses `referrerDomain`.
+    referrer: asString(d.referrer) ?? asString(d.referrerDomain) ?? asString(visit.referrer) ?? asString(body.referrer),
     visit_duration: asInt(d.visit_duration) ?? asInt(visit.duration) ?? asInt(body.visit_duration),
     // LeadPipe's own match-confidence signals. "email_only" / score 0 means a
     // thin, often-wrong residential match; "full" with a score means a solid
@@ -117,8 +132,27 @@ export function normalizeVisitor(body: RawBody) {
 export async function upsertVisitor(
   supabase: SupabaseClient,
   body: RawBody,
-): Promise<"created" | "updated"> {
+): Promise<"created" | "updated" | "skipped"> {
   const n = normalizeVisitor(body);
+
+  // Skip the team's own admin-panel visits. The pixel now excludes /admin,
+  // but LeadPipe history may still surface earlier admin sessions on sync —
+  // these resolve to garbage identities and are never real prospects.
+  const toPath = (p: string | null): string => {
+    if (!p) return "";
+    try {
+      return new URL(p).pathname;
+    } catch {
+      return p.startsWith("/") ? p : `/${p}`;
+    }
+  };
+  const paths = [n.first_page, n.last_page, ...(n.pages_viewed || [])]
+    .map(toPath)
+    .filter(Boolean);
+  if (paths.length > 0 && paths.every((p) => p.startsWith("/admin"))) {
+    return "skipped";
+  }
+
   const ts =
     n.timestamp && !Number.isNaN(new Date(n.timestamp).getTime())
       ? new Date(n.timestamp).toISOString()
@@ -231,7 +265,7 @@ export async function syncVisitorsFromLeadPipe(
       try {
         const action = await upsertVisitor(supabase, rec);
         if (action === "created") created++;
-        else updated++;
+        else if (action === "updated") updated++;
       } catch {
         // Skip a bad record; raw_payload of good ones is still saved.
       }
