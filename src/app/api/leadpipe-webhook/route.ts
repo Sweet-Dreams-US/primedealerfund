@@ -19,11 +19,31 @@ import { upsertVisitor, type RawBody } from "@/lib/leadpipe";
  * both paths behave identically and store the full raw payload.
  */
 
-function timingSafeEqual(a: string, b: string): boolean {
+function safeEq(a: string, b: string): boolean {
   const ab = Buffer.from(a);
   const bb = Buffer.from(b);
   if (ab.length !== bb.length) return false;
   return crypto.timingSafeEqual(ab, bb);
+}
+
+/**
+ * Verify the x-leadpipe-signature header. Accepts either configuration so the
+ * webhook works whether HMAC signatures are toggled ON or OFF in the LeadPipe
+ * dashboard:
+ *   - HMAC OFF: header is the raw shared secret.
+ *   - HMAC ON:  header is HMAC-SHA256(rawBody, secret), hex or base64,
+ *               with an optional "sha256=" prefix.
+ * Every accepted form still requires knowledge of the secret.
+ */
+function verifySignature(rawBody: string, signature: string, secret: string): boolean {
+  if (!signature || !secret) return false;
+  const sig = signature.startsWith("sha256=") ? signature.slice(7) : signature;
+  const candidates = [
+    secret, // HMAC off — plain shared secret
+    crypto.createHmac("sha256", secret).update(rawBody).digest("hex"),
+    crypto.createHmac("sha256", secret).update(rawBody).digest("base64"),
+  ];
+  return candidates.some((c) => safeEq(sig, c));
 }
 
 export async function POST(request: Request) {
@@ -34,7 +54,7 @@ export async function POST(request: Request) {
   if (!secret) {
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
-  if (!timingSafeEqual(signature, secret)) {
+  if (!verifySignature(rawPayload, signature, secret)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
