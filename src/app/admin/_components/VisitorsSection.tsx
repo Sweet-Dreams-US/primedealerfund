@@ -116,7 +116,7 @@ export default function VisitorsSection() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
-  const [showLowConfidence, setShowLowConfidence] = useState(false);
+  const [hideLowConfidence, setHideLowConfidence] = useState(false);
   const [detail, setDetail] = useState<Visitor | null>(null);
   const [notesDraft, setNotesDraft] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
@@ -215,8 +215,9 @@ export default function VisitorsSection() {
     setSavingNotes(false);
   }
 
-  // Default view hides low-confidence (residential / email-only) matches.
-  const displayed = showLowConfidence ? visitors : visitors.filter(isBusinessGrade);
+  // Show everything by default (each row badged with its confidence); hiding
+  // the low-confidence residential / email-only matches is opt-in.
+  const displayed = hideLowConfidence ? visitors.filter(isBusinessGrade) : visitors;
   const hiddenCount = visitors.length - displayed.length;
 
   return (
@@ -280,9 +281,9 @@ export default function VisitorsSection() {
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
           {STATUSES.map((s) => (<option key={s} value={s}>{s === "all" ? "All Statuses" : s[0].toUpperCase() + s.slice(1)}</option>))}
         </select>
-        <label className="flex items-center gap-2 text-sm text-slate-500 cursor-pointer select-none" title="Show unreliable residential / email-only matches (like IP misfires) that are hidden by default">
-          <input type="checkbox" checked={showLowConfidence} onChange={(e) => setShowLowConfidence(e.target.checked)} className="rounded border-slate-300 text-slate-900 focus:ring-slate-400" />
-          Show low-confidence
+        <label className="flex items-center gap-2 text-sm text-slate-500 cursor-pointer select-none" title="Hide unreliable residential / email-only matches (no company data, often IP misfires) and show only business-grade visitors">
+          <input type="checkbox" checked={hideLowConfidence} onChange={(e) => setHideLowConfidence(e.target.checked)} className="rounded border-slate-300 text-slate-900 focus:ring-slate-400" />
+          Hide low-confidence
         </label>
         <div className="ml-auto flex items-center gap-3">
           {syncResult && <span className="text-xs text-slate-500">{syncResult}</span>}
@@ -303,8 +304,8 @@ export default function VisitorsSection() {
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
           <p className="text-sm text-slate-400">
             {visitors.length === 0
-              ? "No identified visitors yet. As the LeadPipe pixel resolves business visitors, they'll appear here for review."
-              : `No business-grade visitors to show. ${hiddenCount} low-confidence ${hiddenCount === 1 ? "match is" : "matches are"} hidden — tick “Show low-confidence” to view them.`}
+              ? "No identified visitors yet. As the LeadPipe pixel resolves visitors, they'll appear here for review."
+              : `All ${hiddenCount} ${hiddenCount === 1 ? "visitor is" : "visitors are"} low-confidence (residential / email-only) — untick “Hide low-confidence” to view them.`}
           </p>
         </div>
       ) : (
