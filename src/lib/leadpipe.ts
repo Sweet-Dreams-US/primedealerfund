@@ -61,6 +61,21 @@ export function normalizeVisitor(body: RawBody) {
       ""
     ).toLowerCase() || null;
 
+  // All known emails for this person (business + personal), deduped — mirrors
+  // LeadPipe's "Emails" column (primary + "+N more").
+  const emailSet = new Set<string>();
+  const addEmails = (v: unknown) => {
+    if (Array.isArray(v)) v.forEach((e) => { const s = asString(e); if (s) emailSet.add(s.toLowerCase()); });
+  };
+  addEmails(d.allEmails);
+  addEmails(d.businessEmails);
+  addEmails(d.personalEmails);
+  addEmails(d.emails);
+  if (email) emailSet.add(email);
+  const all_emails = emailSet.size ? Array.from(emailSet) : null;
+  // Distinct sites this person hit (LeadPipe's "Sites" column).
+  const domains = Array.isArray(d.domains) ? (d.domains as unknown[]).map(String) : null;
+
   const landing = asString(d.landingPage);
   const lastPage =
     (pages && pages.length ? pages[pages.length - 1] : null) ||
@@ -117,6 +132,8 @@ export function normalizeVisitor(body: RawBody) {
     enrichment_level: asString(d.enrichmentLevel) ?? asString(body.enrichment_level),
     enrichment_score: asInt(d.enrichmentScore) ?? asInt(body.enrichment_score),
     intent_score: asString(d.intentScore) ?? asString(body.intent_score),
+    all_emails,
+    domains,
     timestamp:
       asString(body.timestamp) ?? asString(d.lastSeenAt) ?? asString(body.identifiedAt) ?? asString(body.lastSeenAt),
   };
@@ -179,6 +196,8 @@ export async function upsertVisitor(
     enrichment_level: n.enrichment_level,
     enrichment_score: n.enrichment_score,
     intent_score: n.intent_score,
+    all_emails: n.all_emails,
+    domains: n.domains,
     raw_payload: body,
   };
 

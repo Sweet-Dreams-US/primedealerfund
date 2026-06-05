@@ -28,6 +28,8 @@ type Visitor = {
   enrichment_level: string | null;
   enrichment_score: number | null;
   intent_score: string | null;
+  all_emails: string[] | null;
+  domains: string[] | null;
   visit_count: number;
   identified_at: string | null;
   last_seen_at: string | null;
@@ -80,6 +82,17 @@ function shortPath(p: string | null): string {
   } catch {
     return p.startsWith("/") ? p : `/${p}`;
   }
+}
+
+// All emails (LeadPipe's "Emails" column shows primary + "+N more").
+function emailsOf(v: Visitor): string[] {
+  if (Array.isArray(v.all_emails) && v.all_emails.length) return v.all_emails;
+  return v.email ? [v.email] : [];
+}
+
+// Distinct sites this person hit (LeadPipe's "Sites" column).
+function sitesCount(v: Visitor): number {
+  return Array.isArray(v.domains) && v.domains.length ? v.domains.length : 1;
 }
 
 const statusBadge: Record<string, string> = {
@@ -314,8 +327,8 @@ export default function VisitorsSection() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
-                  {["Name", "Job Title", "Email", "Source", "Landing", "Pages", "Phone", "Location", "Firmographics", "Intent", "Recency", "Status"].map((h) => (
-                    <th key={h} className={`p-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap ${h === "Pages" ? "text-center" : "text-left"}`}>{h}</th>
+                  {["Name", "Job Title", "Emails", "Source", "Landing", "Sites", "Pages", "Phone", "Location", "Firmographics", "Intent", "Recency", "Status"].map((h) => (
+                    <th key={h} className={`p-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap ${h === "Pages" || h === "Sites" ? "text-center" : "text-left"}`}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -334,9 +347,17 @@ export default function VisitorsSection() {
                       <p className="text-xs text-slate-400">{v.company_name || v.email || "—"}</p>
                     </td>
                     <td className="p-3 text-slate-500 text-xs max-w-[160px] truncate">{v.job_title || "—"}</td>
-                    <td className="p-3 text-slate-500 text-xs max-w-[180px] truncate">{v.email || "—"}</td>
+                    <td className="p-3 text-slate-500 text-xs">
+                      {emailsOf(v).length ? (
+                        <>
+                          <div className="max-w-[200px] truncate">{emailsOf(v)[0]}</div>
+                          {emailsOf(v).length > 1 && <span className="text-[10px] text-slate-400">+{emailsOf(v).length - 1} more</span>}
+                        </>
+                      ) : "—"}
+                    </td>
                     <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{sourceLabel(v)}</td>
                     <td className="p-3 text-slate-500 text-xs whitespace-nowrap font-mono">{shortPath(v.first_page)}</td>
+                    <td className="p-3 text-center text-xs text-slate-600 whitespace-nowrap">{sitesCount(v)} {sitesCount(v) === 1 ? "site" : "sites"}</td>
                     <td className="p-3 text-center font-mono text-xs text-slate-600">{Array.isArray(v.pages_viewed) ? v.pages_viewed.length : "—"}</td>
                     <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{v.phone || "—"}</td>
                     <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{location(v)}</td>
@@ -376,7 +397,7 @@ export default function VisitorsSection() {
                 {/* Contact */}
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { label: "Email", value: detail.email },
+                    { label: "Emails", value: emailsOf(detail).join(", ") || detail.email },
                     { label: "Phone", value: detail.phone },
                     { label: "Seniority", value: detail.seniority },
                     { label: "Location", value: location(detail) },
