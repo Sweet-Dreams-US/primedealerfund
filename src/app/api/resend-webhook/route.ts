@@ -6,8 +6,11 @@ import { createServerClient } from "@/lib/supabase";
  * Resend webhook receiver.
  *
  * Configure in the Resend dashboard:
- *   URL:    https://primedealerfund.com/api/resend-webhook
- *   Events: email.bounced, email.complained
+ *   URL:    https://www.primedealerfund.com/api/resend-webhook   (MUST be www —
+ *           the apex primedealerfund.com 307-redirects to www, and Resend does
+ *           not follow redirects, so an apex URL fails every delivery.)
+ *   Events: email.bounced, email.complained   (bounce tracking only — do NOT
+ *           subscribe to email.delivered / contact.* ; this route ignores them.)
  *
  * Resend signs every payload with Svix, which ships three headers:
  *   svix-id          unique id for this delivery attempt
