@@ -6,6 +6,7 @@ export async function GET(request: Request) {
   const category = searchParams.get("category");
   const search = searchParams.get("search");
   const friendOfRalph = searchParams.get("friendOfRalph");
+  const websiteLeads = searchParams.get("websiteLeads");
   const channel = searchParams.get("channel");
   const firmId = searchParams.get("firm_id");
   const roleType = searchParams.get("role_type");
@@ -22,6 +23,12 @@ export async function GET(request: Request) {
 
   if (friendOfRalph === "true") {
     query = query.eq("friend_of_ralph", true);
+  }
+
+  // Leads that originated from the website: LeadPipe visitor promotions plus
+  // contact-form / calendar-booking signups.
+  if (websiteLeads === "true") {
+    query = query.in("source", ["LeadPipe", "Website", "website_contact", "calendar_booking"]);
   }
 
   if (channel && channel !== "all") {

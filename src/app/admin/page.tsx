@@ -249,6 +249,7 @@ export default function AdminDashboard() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [channelFilter, setChannelFilter] = useState("all");
   const [friendFilter, setFriendFilter] = useState(false);
+  const [websiteFilter, setWebsiteFilter] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [me, setMe] = useState<{ email: string; name: string | null; role: string } | null>(null);
@@ -408,9 +409,10 @@ export default function AdminDashboard() {
     if (channelFilter !== "all") params.set("channel", channelFilter);
     if (search) params.set("search", search);
     if (friendFilter) params.set("friendOfRalph", "true");
+    if (websiteFilter) params.set("websiteLeads", "true");
     const res = await fetch(`/api/admin/investors?${params}`);
     if (res.ok) setInvestors(await res.json());
-  }, [categoryFilter, channelFilter, search, friendFilter]);
+  }, [categoryFilter, channelFilter, search, friendFilter, websiteFilter]);
 
   const fetchAllInvestors = useCallback(async () => {
     const res = await fetch("/api/admin/investors");
@@ -1540,6 +1542,10 @@ export default function AdminDashboard() {
                 <input type="checkbox" checked={friendFilter} onChange={(e) => setFriendFilter(e.target.checked)} className="rounded border-slate-300 text-slate-900 focus:ring-slate-400" />
                 Friends of Ralph
               </label>
+              <label className="flex items-center gap-2 text-sm text-slate-500 cursor-pointer select-none">
+                <input type="checkbox" checked={websiteFilter} onChange={(e) => setWebsiteFilter(e.target.checked)} className="rounded border-slate-300 text-slate-900 focus:ring-slate-400" />
+                Website leads
+              </label>
               {/* Columns dropdown */}
               <div className="relative">
                 <button onClick={() => setColumnsDropdownOpen(!columnsDropdownOpen)} className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
@@ -2022,7 +2028,7 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-2 gap-3">
                       <div><label className="text-xs text-slate-400 mb-0.5 block">Source</label>
                         <select value={editDetail.source || ""} onChange={(e) => setEditDetail((p) => ({ ...p, source: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
-                          {["Admin Added", "Referral", "LinkedIn", "Apollo", "Website", "Podcast", "Event", "Other"].map((s) => <option key={s} value={s}>{s}</option>)}
+                          {["Admin Added", "Referral", "LinkedIn", "Apollo", "Website", "LeadPipe", "Podcast", "Event", "Other"].map((s) => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </div>
                       <div><label className="text-xs text-slate-400 mb-0.5 block">Preferred Tone</label><input type="text" value={editDetail.preferred_tone || ""} onChange={(e) => setEditDetail((p) => ({ ...p, preferred_tone: e.target.value }))} className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" /></div>
