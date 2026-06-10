@@ -45,6 +45,8 @@ export type Firm = {
   priority: Priority;
   regulatory_note: string | null;
   intro_path: string | null;
+  draft_email_subject: string | null;
+  draft_email_body: string | null;
   notes: string | null;
   created_by: string | null;
   created_at: string;

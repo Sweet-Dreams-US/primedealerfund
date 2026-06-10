@@ -83,6 +83,8 @@ export async function POST(request: Request) {
       priority: body.priority || "medium",
       regulatory_note: body.regulatory_note || null,
       intro_path: body.intro_path || null,
+      draft_email_subject: body.draft_email_subject || null,
+      draft_email_body: body.draft_email_body || null,
       notes: body.notes || null,
     })
     .select()

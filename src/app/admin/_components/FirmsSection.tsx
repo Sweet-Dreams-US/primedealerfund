@@ -44,6 +44,8 @@ type FirmForm = {
   mandate_areas: string;
   recent_activity: string;
   intro_path: string;
+  draft_email_subject: string;
+  draft_email_body: string;
   regulatory_note: string;
   notes: string;
 };
@@ -64,6 +66,8 @@ function emptyForm(): FirmForm {
     mandate_areas: "",
     recent_activity: "",
     intro_path: "",
+    draft_email_subject: "",
+    draft_email_body: "",
     regulatory_note: "",
     notes: "",
   };
@@ -85,6 +89,8 @@ function firmToForm(f: Firm): FirmForm {
     mandate_areas: (f.mandate_areas || []).join(", "),
     recent_activity: f.recent_activity || "",
     intro_path: f.intro_path || "",
+    draft_email_subject: f.draft_email_subject || "",
+    draft_email_body: f.draft_email_body || "",
     regulatory_note: f.regulatory_note || "",
     notes: f.notes || "",
   };
@@ -107,6 +113,8 @@ function formToPayload(form: FirmForm) {
     mandate_areas: form.mandate_areas.trim(),
     recent_activity: form.recent_activity.trim() || null,
     intro_path: form.intro_path.trim() || null,
+    draft_email_subject: form.draft_email_subject.trim() || null,
+    draft_email_body: form.draft_email_body.trim() || null,
     regulatory_note: form.regulatory_note.trim() || null,
     notes: form.notes.trim() || null,
   };
@@ -285,6 +293,26 @@ function FirmFields({
           value={form.intro_path}
           onChange={(e) => set("intro_path", e.target.value)}
           rows={2}
+          className={`${inputCls} resize-none`}
+        />
+      </div>
+      <div className="rounded-md border border-sky-200 bg-sky-50/50 p-3 space-y-2">
+        <label className="text-xs font-medium text-sky-700 block">
+          Drafted Outreach Email
+          <span className="font-normal text-slate-400"> — written from the intro path above; Ralph reviews &amp; sends</span>
+        </label>
+        <input
+          type="text"
+          value={form.draft_email_subject}
+          onChange={(e) => set("draft_email_subject", e.target.value)}
+          placeholder="Subject line"
+          className={inputCls}
+        />
+        <textarea
+          value={form.draft_email_body}
+          onChange={(e) => set("draft_email_body", e.target.value)}
+          rows={6}
+          placeholder="Draft the outreach email here, tailored to this firm's intro path. Ralph will personalize per contact and send."
           className={`${inputCls} resize-none`}
         />
       </div>
@@ -885,6 +913,33 @@ export default function FirmsSection() {
                         </p>
                         <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
                           {detailFirm.intro_path}
+                        </p>
+                      </div>
+                    )}
+                    {detailFirm.draft_email_body && (
+                      <div className="rounded-lg border border-sky-200 bg-sky-50/50 p-4">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <p className="text-xs font-semibold text-sky-700 uppercase tracking-wider">
+                            Drafted Outreach Email
+                          </p>
+                          <button
+                            onClick={() =>
+                              navigator.clipboard
+                                ?.writeText(`Subject: ${detailFirm.draft_email_subject || ""}\n\n${detailFirm.draft_email_body || ""}`)
+                                .catch(() => {})
+                            }
+                            className="text-[11px] text-sky-700 hover:text-sky-900 underline"
+                          >
+                            Copy
+                          </button>
+                        </div>
+                        {detailFirm.draft_email_subject && (
+                          <p className="text-sm font-medium text-slate-900 mb-1">
+                            {detailFirm.draft_email_subject}
+                          </p>
+                        )}
+                        <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+                          {detailFirm.draft_email_body}
                         </p>
                       </div>
                     )}
