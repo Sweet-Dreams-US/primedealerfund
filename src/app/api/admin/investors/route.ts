@@ -133,7 +133,7 @@ export async function PATCH(request: Request) {
       updates.category = "Current Investor";
     }
     // If zoom completed and not invested → "Had Zoom - No Commitment"
-    else if (merged.zoom_completed && !merged.invested && current.category === "New Lead") {
+    else if (merged.zoom_completed && !merged.invested && ["New Lead", "Website Visitor"].includes(current.category)) {
       updates.category = "Had Zoom - No Commitment";
     }
 

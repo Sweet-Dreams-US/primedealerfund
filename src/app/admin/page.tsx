@@ -144,7 +144,7 @@ type EmailTemplate = {
 const SECTIONS = ["Inbox", "Overview", "Analytics", "Visitors", "Investors", "Pipeline", "Firms", "Communications", "Tasks", "Calendar"] as const;
 type Section = (typeof SECTIONS)[number];
 
-const CATEGORIES = ["all", "Never Responded", "Had Zoom - No Commitment", "Friend - Possible Investor", "Current Investor", "New Lead"];
+const CATEGORIES = ["all", "Never Responded", "Had Zoom - No Commitment", "Friend - Possible Investor", "Current Investor", "New Lead", "Website Visitor"];
 
 const categoryBadge: Record<string, string> = {
   "Never Responded": "bg-slate-100 text-slate-600 ring-slate-200",

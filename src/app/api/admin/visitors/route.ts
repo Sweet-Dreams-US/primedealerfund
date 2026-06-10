@@ -145,7 +145,7 @@ export async function POST(request: Request) {
         phone: v.phone || null,
         title: v.job_title || null,
         linkedin_url: v.linkedin_url || null,
-        category: "New Lead",
+        category: "Website Visitor",
         channel: "channel_1_industry",
         role_type: "investor",
         priority: "medium",
