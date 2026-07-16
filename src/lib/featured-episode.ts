@@ -23,7 +23,7 @@ export const featuredEpisode = {
   /** YouTube video id — drives the inline embed. */
   embedId: "_-X9uj981mY",
   blurb:
-    "Kyle Coleman and Ralph Marcuccilli sit down with Brad Lea — himself a veteran of the car business — for a candid conversation about where dealerships are headed. Kyle traces his path from general manager to dealer group owner, and Ralph explains how the fund is structured around that playbook.",
+    "Kyle Coleman and Ralph Marcuccilli sit down with Brad Lea, himself a veteran of the car business, for a candid conversation about where dealerships are headed. Kyle traces his path from general manager to dealer group owner, and Ralph explains how the fund is structured around that playbook.",
   /**
    * What they actually covered, drawn from the episode itself. Deliberately
    * descriptive: the host's own framing of the business is his, not the
