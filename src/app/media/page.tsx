@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import PageLayout from "@/components/layout/PageLayout";
 import GoldDivider from "@/components/ui/GoldDivider";
 import PodcastDisclaimer from "@/components/legal/PodcastDisclaimer";
+import EpisodeSpotlight from "@/components/media/EpisodeSpotlight";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
@@ -146,6 +147,10 @@ export default function MediaPage() {
           <PodcastDisclaimer />
         </div>
       </section>
+
+      {/* Latest external appearance. The page-level disclaimer above already
+          sits between the hero and this embed, so it suppresses its own. */}
+      <EpisodeSpotlight showDisclaimer={false} />
 
       {/* Featured player + sidebar selector */}
       <section className="py-16 md:py-24">
