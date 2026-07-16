@@ -101,9 +101,21 @@ export default function EpisodeSpotlight({
               {ep.guests} &middot; {ep.dateLabel} &middot; {ep.duration}
             </p>
 
-            <p className="text-navy-300 text-base leading-relaxed mb-6">
+            <p className="text-navy-300 text-base leading-relaxed mb-5">
               {ep.blurb}
             </p>
+
+            {/* What they covered */}
+            <ul className="flex flex-wrap gap-2 mb-6">
+              {ep.topics.map((t) => (
+                <li
+                  key={t}
+                  className="px-2.5 py-1 rounded-md border border-navy-800/70 bg-navy-900/40 text-navy-400 text-[11px] font-mono tracking-wide"
+                >
+                  {t}
+                </li>
+              ))}
+            </ul>
 
             {/* Listen / watch links */}
             <div className="flex flex-wrap gap-2.5">

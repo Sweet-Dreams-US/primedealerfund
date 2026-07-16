@@ -23,7 +23,18 @@ export const featuredEpisode = {
   /** YouTube video id — drives the inline embed. */
   embedId: "_-X9uj981mY",
   blurb:
-    "Kyle Coleman and Ralph Marcuccilli sit down with Brad Lea to break down franchise dealerships — why they are one of the hardest businesses in America to get into, and how the Coleman Prime platform acquires and operates them.",
+    "Kyle Coleman and Ralph Marcuccilli sit down with Brad Lea — himself a veteran of the car business — for a candid conversation about where dealerships are headed. Kyle traces his path from general manager to dealer group owner, and Ralph explains how the fund is structured around that playbook.",
+  /**
+   * What they actually covered, drawn from the episode itself. Deliberately
+   * descriptive: the host's own framing of the business is his, not the
+   * Fund's, and is not repeated here. See PodcastDisclaimer.
+   */
+  topics: [
+    "Where the dealership business is heading",
+    "The generational sell-off of family stores",
+    "Turning around an underperforming dealership",
+    "Digital retail, culture, and hiring talent",
+  ],
   /** First entry is rendered as the primary button; the rest as outline links. */
   platforms: [
     {
