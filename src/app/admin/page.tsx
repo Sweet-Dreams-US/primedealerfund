@@ -8,6 +8,7 @@ import FirmsSection from "./_components/FirmsSection";
 import PipelineSection from "./_components/PipelineSection";
 import AnalyticsSection from "./_components/AnalyticsSection";
 import VisitorsSection from "./_components/VisitorsSection";
+import { mostLikelyEmail, properFirstName, LEADPIPE_OUTREACH_TEMPLATE } from "@/lib/visitor-contact";
 import {
   CHANNELS,
   CHANNEL_LABELS,
@@ -287,8 +288,11 @@ export default function AdminDashboard() {
     failed: number;
     mode: "individual";
   } | null>(null);
-  const [manualRecipients, setManualRecipients] = useState<{ name: string; address: string }[]>([]);
+  const [manualRecipients, setManualRecipients] = useState<{ name: string; address: string; first?: string; last?: string }[]>([]);
   const [manualEmailInput, setManualEmailInput] = useState("");
+  // "Add LeadPipe contacts" — bulk-loads identified visitors into the composer.
+  const [loadingLeadPipe, setLoadingLeadPipe] = useState(false);
+  const [leadPipeResult, setLeadPipeResult] = useState<string | null>(null);
   // Test-send-to-me preview state. The address persists across the session so
   // Ralph doesn't re-type it; the result toast clears after a few seconds.
   const [testEmail, setTestEmail] = useState("ralph@marcuccilli.com");
@@ -642,6 +646,66 @@ export default function AdminDashboard() {
     setManualRecipients((prev) => prev.filter((r) => r.address !== address));
   }
 
+  /**
+   * Load every LeadPipe-identified visitor that has (a) a most-likely email and
+   * (b) a real first name into the composer as individual-draft recipients.
+   * Visitors without a usable name are skipped so no draft goes out with a
+   * broken greeting; counts are surfaced so nothing is silently dropped.
+   */
+  async function addLeadPipeContacts() {
+    setLoadingLeadPipe(true);
+    setLeadPipeResult(null);
+    try {
+      const res = await fetch("/api/admin/visitors");
+      if (!res.ok) throw new Error("fetch failed");
+      const data = await res.json();
+      const visitors: Array<{
+        email: string | null; all_emails: string[] | null;
+        first_name: string | null; last_name: string | null; company_domain: string | null;
+      }> = data.visitors || [];
+
+      const existing = new Set<string>([
+        ...manualRecipients.map((r) => r.address.toLowerCase()),
+        ...selectedInvestors.map((i) => (i.email || "").toLowerCase()).filter(Boolean),
+      ]);
+
+      const additions: { name: string; address: string; first: string; last: string }[] = [];
+      let noEmail = 0, noName = 0, dup = 0;
+      for (const v of visitors) {
+        const email = mostLikelyEmail(v);
+        if (!email) { noEmail++; continue; }
+        const first = properFirstName(v);
+        if (!first) { noName++; continue; }
+        if (existing.has(email.toLowerCase())) { dup++; continue; }
+        existing.add(email.toLowerCase());
+        const last = (v.last_name || "").trim();
+        additions.push({ name: last ? `${first} ${last}` : first, address: email, first, last });
+      }
+
+      if (additions.length > 0) {
+        setManualRecipients((prev) => [...prev, ...additions]);
+        // Seed the starter template only when the composer is empty, so we
+        // never clobber something already written.
+        if (!emailSubject.trim() && !emailBody.trim()) {
+          setEmailSubject(LEADPIPE_OUTREACH_TEMPLATE.subject);
+          setEmailBody(LEADPIPE_OUTREACH_TEMPLATE.body);
+        }
+      }
+
+      const skips = [
+        noName ? `${noName} no name` : "",
+        noEmail ? `${noEmail} no email` : "",
+        dup ? `${dup} already added` : "",
+      ].filter(Boolean).join(", ");
+      setLeadPipeResult(
+        `Added ${additions.length} contact${additions.length !== 1 ? "s" : ""}${skips ? ` · skipped ${skips}` : ""}`
+      );
+    } catch {
+      setLeadPipeResult("Could not load LeadPipe contacts");
+    }
+    setLoadingLeadPipe(false);
+  }
+
   async function handleSendEmail() {
     if (!emailSubject || !emailBody) return;
     const hasInvestorRecipients = selectedInvestors.some((i) => i.email);
@@ -821,8 +885,8 @@ export default function AdminDashboard() {
       ...manualRecipients.map((r) => ({
         name: r.name,
         address: r.address,
-        first: r.name || r.address.split("@")[0],
-        last: "",
+        first: r.first ?? (r.name || r.address.split("@")[0]),
+        last: r.last ?? "",
       })),
     ];
 
@@ -2207,8 +2271,8 @@ export default function AdminDashboard() {
                       </span>
                     ))}
                     {manualRecipients.map((r) => (
-                      <span key={r.address} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md border bg-blue-50 text-blue-700 border-blue-200">
-                        {r.address}
+                      <span key={r.address} title={r.address} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md border bg-blue-50 text-blue-700 border-blue-200">
+                        {r.first ? r.name : r.address}
                         <button onClick={() => removeManualRecipient(r.address)} className="ml-0.5 text-blue-400 hover:text-blue-600">&times;</button>
                       </span>
                     ))}
@@ -2256,6 +2320,20 @@ export default function AdminDashboard() {
                       <button key={cat} onClick={() => addAllByCategory(cat)} className="text-[11px] text-slate-500 hover:text-slate-700 px-2 py-0.5 rounded border border-slate-200 hover:border-slate-300 transition-colors">{cat}</button>
                     ))}
                     <button onClick={() => { const all = allInvestors.filter(i => i.email && !i.email_bounced).map(i => i.id); setSelectedIds(new Set(all)); }} className="text-[11px] text-slate-900 font-medium hover:text-slate-700 px-2 py-0.5 rounded border border-slate-300 hover:border-slate-400 transition-colors">All with email</button>
+                  </div>
+                  {/* LeadPipe — bulk-load de-anonymized visitors as individual-draft recipients */}
+                  <div className="flex flex-wrap items-center gap-2 mt-2 pt-2 border-t border-slate-100">
+                    <button
+                      onClick={addLeadPipeContacts}
+                      disabled={loadingLeadPipe}
+                      title="Load every LeadPipe-identified visitor that has a likely email + a real first name as an individual-draft recipient"
+                      className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-2 py-1 hover:bg-emerald-100 transition-colors disabled:opacity-40"
+                    >
+                      <svg className={`w-3.5 h-3.5 ${loadingLeadPipe ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                      {loadingLeadPipe ? "Loading…" : "Add LeadPipe contacts"}
+                    </button>
+                    {leadPipeResult && <span className="text-[11px] text-slate-500">{leadPipeResult}</span>}
+                    <span className="text-[10px] text-slate-400">De-anonymized visitors with a likely email — review each draft before sending.</span>
                   </div>
                 </div>
 

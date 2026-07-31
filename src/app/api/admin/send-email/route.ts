@@ -49,10 +49,12 @@ export async function POST(request: Request) {
 
     // Manual + adhoc: not in database, no investor_id. Block any email that
     // appears in email_bounces so manual recipients respect bounce history.
-    const rawExternals = [
-      ...((manualRecipients || []) as { name?: string; address: string }[]).map((r) => ({
+    const rawExternals: { email: string; name: string; first?: string; last?: string }[] = [
+      ...((manualRecipients || []) as { name?: string; address: string; first?: string; last?: string }[]).map((r) => ({
         email: r.address,
         name: r.name || r.address.split("@")[0],
+        first: r.first,
+        last: r.last,
       })),
       ...((adhocEmails || []) as { email: string; name: string }[]).map((r) => ({
         email: r.email,
@@ -145,8 +147,8 @@ export async function POST(request: Request) {
         investor_id: null,
         email: r.email,
         recipient_name: r.name,
-        subject_personalized: personalize(subject, r.name, ""),
-        body_personalized: personalize(body, r.name, ""),
+        subject_personalized: personalize(subject, r.first ?? r.name, r.last ?? ""),
+        body_personalized: personalize(body, r.first ?? r.name, r.last ?? ""),
         status: "queued",
         attempts: 0,
       })),
