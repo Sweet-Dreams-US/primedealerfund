@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, type ReactNode, type MouseEvent as ReactMouseEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Visitor = {
@@ -122,6 +122,90 @@ function location(v: Visitor) {
   return [v.city, v.state, v.country].filter(Boolean).join(", ") || "—";
 }
 
+// ── Column model ────────────────────────────────────────────────────────────
+// One config drives the <colgroup> widths, the header, and each row cell, so
+// the three never drift out of sync. `width` is the default px width; the live
+// width lives in component state (resizable + persisted to localStorage).
+// `multiline` columns clip via overflow only (they render two stacked lines);
+// every other column truncates to a single line with an ellipsis.
+type ColumnDef = {
+  key: string;
+  label: string;
+  width: number;
+  align?: "center";
+  multiline?: boolean;
+  render: (v: Visitor) => ReactNode;
+};
+
+const COLUMNS: ColumnDef[] = [
+  {
+    key: "name",
+    label: "Name",
+    width: 210,
+    multiline: true,
+    render: (v) => (
+      <>
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="font-medium text-slate-900 truncate">{fullName(v)}</p>
+          {!isBusinessGrade(v) && (
+            <span
+              className="shrink-0 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-slate-100 text-slate-400 ring-1 ring-inset ring-slate-200"
+              title="Low-confidence residential / email-only match — verify before trusting"
+            >
+              low-confidence
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-slate-400 truncate">{v.company_name || v.email || "—"}</p>
+      </>
+    ),
+  },
+  { key: "title", label: "Job Title", width: 150, render: (v) => <span className="text-slate-500 text-xs">{v.job_title || "—"}</span> },
+  {
+    key: "emails",
+    label: "Emails",
+    width: 200,
+    multiline: true,
+    render: (v) =>
+      emailsOf(v).length ? (
+        <div className="text-slate-500 text-xs">
+          <div className="truncate">{emailsOf(v)[0]}</div>
+          {emailsOf(v).length > 1 && <span className="text-[10px] text-slate-400">+{emailsOf(v).length - 1} more</span>}
+        </div>
+      ) : (
+        <span className="text-slate-500 text-xs">—</span>
+      ),
+  },
+  { key: "source", label: "Source", width: 120, render: (v) => <span className="text-slate-500 text-xs">{sourceLabel(v)}</span> },
+  { key: "landing", label: "Landing", width: 120, render: (v) => <span className="text-slate-500 text-xs font-mono">{shortPath(v.first_page)}</span> },
+  { key: "sites", label: "Sites", width: 84, align: "center", render: (v) => <span className="text-xs text-slate-600">{sitesCount(v)} {sitesCount(v) === 1 ? "site" : "sites"}</span> },
+  { key: "pages", label: "Pages", width: 72, align: "center", render: (v) => <span className="font-mono text-xs text-slate-600">{Array.isArray(v.pages_viewed) ? v.pages_viewed.length : "—"}</span> },
+  { key: "phone", label: "Phone", width: 130, render: (v) => <span className="text-slate-500 text-xs">{v.phone || "—"}</span> },
+  { key: "location", label: "Location", width: 160, render: (v) => <span className="text-slate-500 text-xs">{location(v)}</span> },
+  { key: "firmographics", label: "Firmographics", width: 170, render: (v) => <span className="text-slate-500 text-xs">{firmographics(v)}</span> },
+  {
+    key: "intent",
+    label: "Intent",
+    width: 96,
+    render: (v) =>
+      v.intent_score ? (
+        <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ring-1 ring-inset ${intentBadge[v.intent_score.toLowerCase()] || "bg-slate-50 text-slate-600 ring-slate-200"}`}>{v.intent_score}</span>
+      ) : (
+        <span className="text-slate-300 text-xs">—</span>
+      ),
+  },
+  { key: "recency", label: "Recency", width: 104, render: (v) => <span className="text-slate-500 text-xs">{timeAgo(v.last_seen_at)}</span> },
+  {
+    key: "status",
+    label: "Status",
+    width: 110,
+    render: (v) => <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ring-1 ring-inset ${statusBadge[v.status] || "bg-slate-50 text-slate-600 ring-slate-200"}`}>{v.status}</span>,
+  },
+];
+
+const COL_MIN_WIDTH = 56;
+const COL_STORAGE_KEY = "pdf.visitorColWidths.v1";
+
 export default function VisitorsSection() {
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -136,6 +220,91 @@ export default function VisitorsSection() {
   const [addingLead, setAddingLead] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
+
+  // Per-column widths (px). Starts from the defaults so SSR + first client
+  // render match; localStorage is read after mount to avoid a hydration
+  // mismatch. Total table width = sum, which drives the horizontal scroll.
+  const [colWidths, setColWidths] = useState<number[]>(() => COLUMNS.map((c) => c.width));
+  const resizeRef = useRef<{ index: number; startX: number; startWidth: number } | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(COL_STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (Array.isArray(saved) && saved.length === COLUMNS.length && saved.every((n) => typeof n === "number" && n > 0)) {
+        setColWidths(saved);
+      }
+    } catch {
+      /* ignore malformed storage */
+    }
+  }, []);
+
+  const persistWidths = useCallback((widths: number[]) => {
+    try {
+      localStorage.setItem(COL_STORAGE_KEY, JSON.stringify(widths));
+    } catch {
+      /* storage may be unavailable — resizing still works for the session */
+    }
+  }, []);
+
+  // Drag-to-resize: capture the start position + width, then track the mouse on
+  // window so the drag continues even when the cursor leaves the thin handle.
+  const startResize = useCallback(
+    (index: number, e: ReactMouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      resizeRef.current = { index, startX: e.clientX, startWidth: colWidths[index] };
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+
+      const onMove = (ev: MouseEvent) => {
+        const st = resizeRef.current;
+        if (!st) return;
+        const delta = ev.clientX - st.startX;
+        setColWidths((prev) => {
+          const next = [...prev];
+          next[st.index] = Math.max(COL_MIN_WIDTH, st.startWidth + delta);
+          return next;
+        });
+      };
+      const onUp = () => {
+        resizeRef.current = null;
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+        setColWidths((prev) => {
+          persistWidths(prev);
+          return prev;
+        });
+      };
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+    },
+    [colWidths, persistWidths]
+  );
+
+  // Double-click a handle to reset just that column to its default width.
+  const resetColumn = useCallback(
+    (index: number) => {
+      setColWidths((prev) => {
+        const next = [...prev];
+        next[index] = COLUMNS[index].width;
+        persistWidths(next);
+        return next;
+      });
+    },
+    [persistWidths]
+  );
+
+  const resetAllColumns = useCallback(() => {
+    const defaults = COLUMNS.map((c) => c.width);
+    setColWidths(defaults);
+    persistWidths(defaults);
+  }, [persistWidths]);
+
+  const totalWidth = colWidths.reduce((a, b) => a + b, 0);
 
   const fetchVisitors = useCallback(async () => {
     const params = new URLSearchParams();
@@ -307,6 +476,13 @@ export default function VisitorsSection() {
           <span className="text-sm text-slate-500">
             {displayed.length} shown{hiddenCount > 0 ? ` · ${hiddenCount} low-confidence hidden` : ""}
           </span>
+          <button
+            onClick={resetAllColumns}
+            className="text-xs text-slate-400 hover:text-slate-600 underline underline-offset-2"
+            title="Reset all column widths to their defaults"
+          >
+            Reset columns
+          </button>
         </div>
       </div>
 
@@ -324,47 +500,44 @@ export default function VisitorsSection() {
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="text-sm border-collapse" style={{ tableLayout: "fixed", width: totalWidth }}>
+              <colgroup>
+                {COLUMNS.map((col, i) => (
+                  <col key={col.key} style={{ width: colWidths[i] }} />
+                ))}
+              </colgroup>
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
-                  {["Name", "Job Title", "Emails", "Source", "Landing", "Sites", "Pages", "Phone", "Location", "Firmographics", "Intent", "Recency", "Status"].map((h) => (
-                    <th key={h} className={`p-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap ${h === "Pages" || h === "Sites" ? "text-center" : "text-left"}`}>{h}</th>
+                  {COLUMNS.map((col, i) => (
+                    <th
+                      key={col.key}
+                      className={`relative px-3 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider select-none ${col.align === "center" ? "text-center" : "text-left"}`}
+                    >
+                      <span className="block truncate pr-1.5">{col.label}</span>
+                      {/* Drag handle on the right edge — resize; double-click resets */}
+                      <span
+                        onMouseDown={(e) => startResize(i, e)}
+                        onDoubleClick={() => resetColumn(i)}
+                        className="group absolute top-0 right-0 z-10 flex h-full w-2 cursor-col-resize items-center justify-center"
+                        title="Drag to resize · double-click to reset"
+                      >
+                        <span className="h-1/2 w-px bg-slate-200 transition-colors group-hover:w-0.5 group-hover:bg-slate-400" />
+                      </span>
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {displayed.map((v) => (
                   <tr key={v.id} onClick={() => openDetail(v)} className="border-b border-slate-100 cursor-pointer hover:bg-slate-50/50 transition-colors">
-                    <td className="p-3">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-slate-900">{fullName(v)}</p>
-                        {!isBusinessGrade(v) && (
-                          <span className="px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-slate-100 text-slate-400 ring-1 ring-inset ring-slate-200" title="Low-confidence residential / email-only match — verify before trusting">
-                            low-confidence
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-slate-400">{v.company_name || v.email || "—"}</p>
-                    </td>
-                    <td className="p-3 text-slate-500 text-xs max-w-[160px] truncate">{v.job_title || "—"}</td>
-                    <td className="p-3 text-slate-500 text-xs">
-                      {emailsOf(v).length ? (
-                        <>
-                          <div className="max-w-[200px] truncate">{emailsOf(v)[0]}</div>
-                          {emailsOf(v).length > 1 && <span className="text-[10px] text-slate-400">+{emailsOf(v).length - 1} more</span>}
-                        </>
-                      ) : "—"}
-                    </td>
-                    <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{sourceLabel(v)}</td>
-                    <td className="p-3 text-slate-500 text-xs whitespace-nowrap font-mono">{shortPath(v.first_page)}</td>
-                    <td className="p-3 text-center text-xs text-slate-600 whitespace-nowrap">{sitesCount(v)} {sitesCount(v) === 1 ? "site" : "sites"}</td>
-                    <td className="p-3 text-center font-mono text-xs text-slate-600">{Array.isArray(v.pages_viewed) ? v.pages_viewed.length : "—"}</td>
-                    <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{v.phone || "—"}</td>
-                    <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{location(v)}</td>
-                    <td className="p-3 text-slate-500 text-xs max-w-[180px] truncate">{firmographics(v)}</td>
-                    <td className="p-3">{v.intent_score ? (<span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ring-1 ring-inset ${intentBadge[v.intent_score.toLowerCase()] || "bg-slate-50 text-slate-600 ring-slate-200"}`}>{v.intent_score}</span>) : <span className="text-slate-300 text-xs">—</span>}</td>
-                    <td className="p-3 text-slate-500 text-xs whitespace-nowrap">{timeAgo(v.last_seen_at)}</td>
-                    <td className="p-3"><span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ring-1 ring-inset ${statusBadge[v.status] || "bg-slate-50 text-slate-600 ring-slate-200"}`}>{v.status}</span></td>
+                    {COLUMNS.map((col) => (
+                      <td
+                        key={col.key}
+                        className={`px-3 py-3 align-middle ${col.align === "center" ? "text-center" : "text-left"} ${col.multiline ? "overflow-hidden" : "truncate"}`}
+                      >
+                        {col.render(v)}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
