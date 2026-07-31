@@ -203,8 +203,16 @@ const COLUMNS: ColumnDef[] = [
   },
 ];
 
-const COL_MIN_WIDTH = 56;
-const COL_STORAGE_KEY = "pdf.visitorColWidths.v1";
+// Default column proportions (percent of table width) from the weights above,
+// normalized to sum to 100. The table always fills exactly 100% of the panel —
+// never wider — so there is no horizontal scroll. Resizing a column borrows
+// width from its right-hand neighbor, keeping the running total at 100%.
+const DEFAULT_COL_PCTS = (() => {
+  const sum = COLUMNS.reduce((a, c) => a + c.width, 0);
+  return COLUMNS.map((c) => (c.width / sum) * 100);
+})();
+const COL_MIN_PCT = 3;
+const COL_STORAGE_KEY = "pdf.visitorColPcts.v1";
 
 export default function VisitorsSection() {
   const [visitors, setVisitors] = useState<Visitor[]>([]);
@@ -221,11 +229,13 @@ export default function VisitorsSection() {
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
 
-  // Per-column widths (px). Starts from the defaults so SSR + first client
-  // render match; localStorage is read after mount to avoid a hydration
-  // mismatch. Total table width = sum, which drives the horizontal scroll.
-  const [colWidths, setColWidths] = useState<number[]>(() => COLUMNS.map((c) => c.width));
-  const resizeRef = useRef<{ index: number; startX: number; startWidth: number } | null>(null);
+  // Per-column widths as percentages of the table width (which is always 100%
+  // of the panel — no horizontal scroll). Starts from the defaults so SSR +
+  // first client render match; localStorage is read after mount to avoid a
+  // hydration mismatch.
+  const [colPcts, setColPcts] = useState<number[]>(() => DEFAULT_COL_PCTS);
+  const tableRef = useRef<HTMLTableElement | null>(null);
+  const resizeRef = useRef<{ index: number; startX: number; startPcts: number[]; containerW: number } | null>(null);
 
   useEffect(() => {
     try {
@@ -233,40 +243,48 @@ export default function VisitorsSection() {
       if (!raw) return;
       const saved = JSON.parse(raw);
       if (Array.isArray(saved) && saved.length === COLUMNS.length && saved.every((n) => typeof n === "number" && n > 0)) {
-        setColWidths(saved);
+        const sum = saved.reduce((a: number, b: number) => a + b, 0);
+        if (sum > 0) setColPcts(saved.map((n: number) => (n / sum) * 100)); // normalize to 100
       }
     } catch {
       /* ignore malformed storage */
     }
   }, []);
 
-  const persistWidths = useCallback((widths: number[]) => {
+  const persistPcts = useCallback((pcts: number[]) => {
     try {
-      localStorage.setItem(COL_STORAGE_KEY, JSON.stringify(widths));
+      localStorage.setItem(COL_STORAGE_KEY, JSON.stringify(pcts));
     } catch {
       /* storage may be unavailable — resizing still works for the session */
     }
   }, []);
 
-  // Drag-to-resize: capture the start position + width, then track the mouse on
-  // window so the drag continues even when the cursor leaves the thin handle.
+  // Drag-to-resize, constrained so the table never overflows: widening a column
+  // borrows the same amount from its right-hand neighbor, so the widths always
+  // sum to 100%. Deltas are measured against the live table width.
   const startResize = useCallback(
     (index: number, e: ReactMouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      resizeRef.current = { index, startX: e.clientX, startWidth: colWidths[index] };
+      const containerW = tableRef.current?.clientWidth ?? 0;
+      if (!containerW) return;
+      resizeRef.current = { index, startX: e.clientX, startPcts: [...colPcts], containerW };
       document.body.style.cursor = "col-resize";
       document.body.style.userSelect = "none";
 
       const onMove = (ev: MouseEvent) => {
         const st = resizeRef.current;
         if (!st) return;
-        const delta = ev.clientX - st.startX;
-        setColWidths((prev) => {
-          const next = [...prev];
-          next[st.index] = Math.max(COL_MIN_WIDTH, st.startWidth + delta);
-          return next;
-        });
+        const deltaPct = ((ev.clientX - st.startX) / st.containerW) * 100;
+        const next = [...st.startPcts];
+        const i = st.index;
+        let d = deltaPct;
+        // Clamp so neither the column nor its neighbor drops below the minimum.
+        if (next[i] + d < COL_MIN_PCT) d = COL_MIN_PCT - next[i];
+        if (next[i + 1] - d < COL_MIN_PCT) d = next[i + 1] - COL_MIN_PCT;
+        next[i] = next[i] + d;
+        next[i + 1] = next[i + 1] - d;
+        setColPcts(next);
       };
       const onUp = () => {
         resizeRef.current = null;
@@ -274,37 +292,21 @@ export default function VisitorsSection() {
         document.body.style.userSelect = "";
         window.removeEventListener("mousemove", onMove);
         window.removeEventListener("mouseup", onUp);
-        setColWidths((prev) => {
-          persistWidths(prev);
+        setColPcts((prev) => {
+          persistPcts(prev);
           return prev;
         });
       };
       window.addEventListener("mousemove", onMove);
       window.addEventListener("mouseup", onUp);
     },
-    [colWidths, persistWidths]
-  );
-
-  // Double-click a handle to reset just that column to its default width.
-  const resetColumn = useCallback(
-    (index: number) => {
-      setColWidths((prev) => {
-        const next = [...prev];
-        next[index] = COLUMNS[index].width;
-        persistWidths(next);
-        return next;
-      });
-    },
-    [persistWidths]
+    [colPcts, persistPcts]
   );
 
   const resetAllColumns = useCallback(() => {
-    const defaults = COLUMNS.map((c) => c.width);
-    setColWidths(defaults);
-    persistWidths(defaults);
-  }, [persistWidths]);
-
-  const totalWidth = colWidths.reduce((a, b) => a + b, 0);
+    setColPcts(DEFAULT_COL_PCTS);
+    persistPcts(DEFAULT_COL_PCTS);
+  }, [persistPcts]);
 
   const fetchVisitors = useCallback(async () => {
     const params = new URLSearchParams();
@@ -499,50 +501,50 @@ export default function VisitorsSection() {
         </div>
       ) : (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="text-sm border-collapse" style={{ tableLayout: "fixed", width: totalWidth }}>
-              <colgroup>
+          <table ref={tableRef} className="w-full text-sm border-collapse" style={{ tableLayout: "fixed" }}>
+            <colgroup>
+              {COLUMNS.map((col, i) => (
+                <col key={col.key} style={{ width: `${colPcts[i]}%` }} />
+              ))}
+            </colgroup>
+            <thead>
+              <tr className="border-b border-slate-100 bg-slate-50/50">
                 {COLUMNS.map((col, i) => (
-                  <col key={col.key} style={{ width: colWidths[i] }} />
-                ))}
-              </colgroup>
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50">
-                  {COLUMNS.map((col, i) => (
-                    <th
-                      key={col.key}
-                      className={`relative px-3 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider select-none ${col.align === "center" ? "text-center" : "text-left"}`}
-                    >
-                      <span className="block truncate pr-1.5">{col.label}</span>
-                      {/* Drag handle on the right edge — resize; double-click resets */}
+                  <th
+                    key={col.key}
+                    className={`relative px-2 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider select-none ${col.align === "center" ? "text-center" : "text-left"}`}
+                  >
+                    <span className="block truncate pr-1">{col.label}</span>
+                    {/* Drag the boundary to resize this column and its neighbor */}
+                    {i < COLUMNS.length - 1 && (
                       <span
                         onMouseDown={(e) => startResize(i, e)}
-                        onDoubleClick={() => resetColumn(i)}
-                        className="group absolute top-0 right-0 z-10 flex h-full w-2 cursor-col-resize items-center justify-center"
-                        title="Drag to resize · double-click to reset"
+                        onDoubleClick={resetAllColumns}
+                        className="group absolute top-0 right-0 z-10 flex h-full w-3 translate-x-1/2 cursor-col-resize items-center justify-center"
+                        title="Drag to resize · double-click to reset all"
                       >
                         <span className="h-1/2 w-px bg-slate-200 transition-colors group-hover:w-0.5 group-hover:bg-slate-400" />
                       </span>
-                    </th>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {displayed.map((v) => (
+                <tr key={v.id} onClick={() => openDetail(v)} className="border-b border-slate-100 cursor-pointer hover:bg-slate-50/50 transition-colors">
+                  {COLUMNS.map((col) => (
+                    <td
+                      key={col.key}
+                      className={`px-2 py-3 align-middle ${col.align === "center" ? "text-center" : "text-left"} ${col.multiline ? "overflow-hidden" : "truncate"}`}
+                    >
+                      {col.render(v)}
+                    </td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {displayed.map((v) => (
-                  <tr key={v.id} onClick={() => openDetail(v)} className="border-b border-slate-100 cursor-pointer hover:bg-slate-50/50 transition-colors">
-                    {COLUMNS.map((col) => (
-                      <td
-                        key={col.key}
-                        className={`px-3 py-3 align-middle ${col.align === "center" ? "text-center" : "text-left"} ${col.multiline ? "overflow-hidden" : "truncate"}`}
-                      >
-                        {col.render(v)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
