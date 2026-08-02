@@ -47,11 +47,11 @@ export default function FinalCTA() {
           variants={fadeInUp}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <MagneticButton href="/contact" variant="primary" size="lg">
-            Request Private Consultation
+          <MagneticButton href="/schedule" variant="primary" size="lg">
+            Schedule a Call
           </MagneticButton>
-          <MagneticButton href="/opportunity" variant="outline" size="lg">
-            View the Opportunity
+          <MagneticButton href="/contact" variant="outline" size="lg">
+            Request Info
           </MagneticButton>
         </motion.div>
 

@@ -18,7 +18,8 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main>
+      {/* pb on mobile clears the sticky "Schedule a Call" bar in FloatingCTA */}
+      <main className="pb-24 lg:pb-0">
         <Hero />
         <EpisodeSpotlight />
         <LatestNews />

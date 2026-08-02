@@ -97,11 +97,13 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 1.5 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <MagneticButton href="/opportunity" variant="primary" size="lg">
-            Explore the Opportunity
+          {/* Booking leads — the hero previously offered no conversion action
+              at all, sending its highest-intent traffic to reading pages. */}
+          <MagneticButton href="/schedule" variant="primary" size="lg">
+            Schedule a Call
           </MagneticButton>
-          <MagneticButton href="/story" variant="outline" size="lg">
-            Our Story
+          <MagneticButton href="/opportunity" variant="outline" size="lg">
+            Explore the Opportunity
           </MagneticButton>
         </motion.div>
 

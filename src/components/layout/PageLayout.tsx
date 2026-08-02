@@ -12,7 +12,8 @@ export default function PageLayout({ children }: PageLayoutProps) {
   return (
     <>
       <Header />
-      <main className="pt-24">{children}</main>
+      {/* pb on mobile clears the sticky "Schedule a Call" bar in FloatingCTA */}
+      <main className="pt-24 pb-24 lg:pb-0">{children}</main>
       <Footer />
       <FloatingCTA />
     </>
