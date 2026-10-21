@@ -1,11 +1,299 @@
 import type { BlogPost } from "./blog-types";
 
 /**
- * Modules 2–5 (Chapters 9–24) — Variable Operations, Service & Parts, F&I,
- * and PE Fund Mechanics. One chapter per Wednesday, Jul 1 -> Oct 14, 2026.
+ * Modules 2–5 (Chapters 9–26) — Variable Operations, Service & Parts, F&I,
+ * and PE Fund Mechanics. One chapter per Wednesday, Jul 1 -> Oct 28, 2026.
  * Ordered newest-first so the latest chapter is featured on /insights.
  */
 export const julOct2026Posts: BlogPost[] = [
+{
+    slug: "section-1202-qsbs-carry-holding-period-tax-efficiency",
+    category: "Fund Mechanics",
+    title:
+      "Section 1202 QSBS and the Carry Holding Period: The Tax Efficiency of Dealership Investing",
+    subtitle:
+      "Tax rules shape how private businesses are structured, how long investments are held, and what owners keep when they sell. Here is a plain-English look at Section 1202, the Section 1061 three-year rule, and the other tax concepts that come up in dealership investing — and why none of them apply automatically.",
+    author: "Ralph Marcuccilli",
+    authorRole: "Managing Partner — Prime Dealer Equity Fund",
+    date: "October 28, 2026",
+    readTime: "12 min read",
+    heroImage: {
+      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/Streetsboro/streetsborofrontofstore.webp",
+      alt: "Front of the Streetsboro dealership in Ohio",
+      caption:
+        "Front of the Streetsboro store in Ohio, a Coleman Automotive dealership. How a dealership is owned can matter as much to its tax profile as how it operates. Photo: Sweet Dreams US LLC",
+    },
+    excerpt:
+      "Section 1202 can exclude some or all of the gain on qualified small business stock, and the 2025 tax legislation expanded it. But it applies only to certain C corporation stock, and dealerships raise real questions under its rules. This chapter explains Section 1202, the Section 1061 three-year holding period, and the trade-offs between corporate and pass-through structures.",
+    content: [
+      {
+        type: "paragraph",
+        text: "Investors tend to evaluate a private investment on what it earns. Experienced investors also ask what they keep. Two businesses with identical operating results can produce very different after-tax outcomes for their owners depending on how they are organized, how long the investment is held, and how the eventual sale is structured. In private markets, those choices are made years before anyone sees the result.",
+      },
+      {
+        type: "paragraph",
+        text: "Two provisions of the Internal Revenue Code come up again and again in private equity conversations. Section 1202 allows certain investors to exclude some or all of the gain on \"qualified small business stock,\" and it was expanded meaningfully by legislation signed on July 4, 2025, commonly called the One Big Beautiful Bill Act. Section 1061, enacted in 2017, imposes a three-year holding period before certain profits interests held by fund managers can produce long-term capital gain. Both are frequently misunderstood.",
+      },
+      {
+        type: "paragraph",
+        text: "This chapter walks through how Section 1202 works, why dealerships present genuine questions under its rules, why it does not apply to interests in partnerships or most LLCs, what Section 1061 does, and a few other tax concepts that commonly arise in dealership ownership. It is general education about how these rules typically work, not tax, legal, or investment advice. Nothing here describes or implies the tax treatment of an investment in the Fund. Whether any of these rules applies depends on the specific structure of an investment and on each investor's individual circumstances. The Fund's tax considerations are described only in its offering documents, and every investor should consult their own tax advisor.",
+      },
+      { type: "subheading", text: "Section 1202 in Brief" },
+      {
+        type: "paragraph",
+        text: "Section 1202 allows a taxpayer other than a corporation, typically an individual, to exclude gain on the sale of qualified small business stock, or QSBS, held for the required period. The stock must meet a series of tests. It must be stock of a domestic C corporation. It must be acquired at original issuance, meaning directly from the corporation in exchange for money, property other than stock, or services, rather than purchased from another shareholder. The corporation's aggregate gross assets must not exceed a statutory ceiling at any time before and immediately after the stock is issued. And during substantially all of the investor's holding period, at least 80% of the corporation's assets by value must be used in the active conduct of one or more qualified trades or businesses.",
+      },
+      {
+        type: "paragraph",
+        text: "The amount that can be excluded is capped per issuer. For each corporation, a taxpayer's eligible gain is limited to the greater of a fixed dollar amount or ten times the taxpayer's adjusted basis in the stock sold. Redemptions, entity conversions, and transfers can all affect eligibility, which is why practitioners treat QSBS as something to get right at formation rather than fix at exit.",
+      },
+      { type: "subheading", text: "What Changed in 2025" },
+      {
+        type: "paragraph",
+        text: "The 2025 legislation made three principal changes for stock issued or acquired after its July 4, 2025 enactment date. First, it added a tiered exclusion: previously, stock acquired after September 2010 needed to be held more than five years for a 100% exclusion, and shorter holds received none; newly issued stock can now qualify for 50% after three years and 75% after four. Second, it raised the per-issuer dollar cap from $10 million to $15 million, with the ten-times-basis alternative unchanged. Third, it raised the gross-asset ceiling from $50 million to $75 million. Both new dollar figures are indexed for inflation after 2026. Stock acquired on or before the enactment date generally remains subject to the prior rules.",
+      },
+      {
+        type: "callout-numbers",
+        title: "Section 1202 for Stock Issued After July 4, 2025",
+        lines: [
+          "Held at least 3 years — 50% of eligible gain excluded",
+          "Held at least 4 years — 75% of eligible gain excluded",
+          "Held 5 years or more — 100% of eligible gain excluded",
+          "Per-issuer cap — greater of $15 million (inflation-indexed after 2026) or 10x adjusted basis",
+          "Gross-asset ceiling — $75 million at and before issuance (inflation-indexed after 2026)",
+          "Threshold requirements — domestic C corporation stock, original issuance, 80% active qualified business",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "A simple illustration shows how the tiers work. Suppose, purely for example, an individual acquires newly issued QSBS for $2 million and sells it four and a half years later for $10 million, a gain of $8 million that falls within the per-issuer cap. At the four-year tier, 75% of the gain — $6 million — would be excluded. The remaining $2 million would generally be taxed under the special rate that applies to the taxable portion of Section 1202 gain, with a maximum federal rate of 28%, and other federal or state taxes may apply. Had the same stock been held five years, the full $8 million could potentially be excluded. Had it been held two years, none of it would be. These numbers are hypothetical and assume every requirement is met throughout — which is precisely the hard part.",
+      },
+      { type: "subheading", text: "The Qualified Trade or Business Question" },
+      {
+        type: "paragraph",
+        text: "Section 1202 defines a qualified trade or business by listing what it is not. The excluded categories include services in fields such as health, law, accounting, consulting, financial services, and brokerage; any banking, insurance, financing, leasing, investing, or similar business; farming; certain extraction businesses; and operating a hotel, motel, restaurant, or similar business. Retailing and manufacturing are not on the list, and retail sales are generally treated as a qualified activity.",
+      },
+      {
+        type: "paragraph",
+        text: "A franchised dealership is mostly a retailer and a service business, but readers of this series know it is not only that. As we covered in our chapters on the F&I menu and on reinsurance, a meaningful share of a typical store's gross profit comes from arranging financing, selling service contracts and other protection products, and in some cases participating in insurance-related arrangements. Many also arrange leases, and some carry their own receivables. Each sits close to an excluded category — financing, leasing, insurance — and the statute offers no bright-line rule for a business that combines a qualified activity with income from activities that resemble excluded ones. How the business is characterized as a whole, and which entity conducts which activities, bear on the analysis. Reasonable advisors can reach different conclusions on similar facts.",
+      },
+      {
+        type: "paragraph",
+        text: "Real estate raises a separate issue. Section 1202 treats a corporation as failing the active business requirement if more than 10% of its total assets by value consists of real property not used in the active conduct of a qualified business, and owning, dealing in, or renting real property is not itself treated as active conduct. Many dealership properties are held in a separate entity and leased to the operating company, as we discussed in our quality of earnings chapter. Where a corporation does hold real estate, how that property is used — and which entity uses it — becomes part of the analysis.",
+      },
+      {
+        type: "image",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/LEmars/frontofstore.webp",
+        alt: "Front of the Le Mars dealership in Iowa",
+        caption:
+          "Front of the Le Mars store in Iowa, a Coleman Automotive dealership. Inventory, equipment, and real estate all count toward a corporation's gross assets under Section 1202. Photo: Sweet Dreams US LLC",
+      },
+      { type: "subheading", text: "Why the Gross-Asset Test Bites for Dealerships" },
+      {
+        type: "paragraph",
+        text: "The gross-asset test is where many dealerships run into a hard constraint. The test looks at aggregate gross assets — cash plus the adjusted tax basis of other property — measured at and before the time stock is issued, and it aggregates corporations in the same controlled group. It is a gross measure, so liabilities do not reduce it. For an asset-light software company, $75 million is a high ceiling. For a dealership, it can be reached quickly.",
+      },
+      {
+        type: "paragraph",
+        text: "Consider an illustrative single-point store carrying $20 million of new and used vehicle inventory at cost, $5 million of parts, receivables, and equipment, and a $15 million facility. That is roughly $40 million of gross assets before counting cash. The floor plan line financing most of that inventory, which we covered in our chapter on floor plan financing, does not reduce the figure. A two- or three-store group under common corporate ownership could exceed the $75 million ceiling even if its equity value is far smaller. Because the test is applied when stock is issued, later growth does not retroactively disqualify stock already issued, but it can close the door on new QSBS from the same corporation. Acquisitions add one more wrinkle: buying the existing shares of a retiring dealer's corporation is a purchase from a shareholder, not an original issuance, so that stock would not qualify in the buyer's hands.",
+      },
+      { type: "subheading", text: "QSBS Requires C Corporation Stock" },
+      {
+        type: "paragraph",
+        text: "The most basic limitation is also the one most often overlooked: Section 1202 applies only to stock of a C corporation. An interest in a partnership, or in an LLC taxed as a partnership, is not stock and cannot be QSBS. Neither is stock of an S corporation. Much dealership ownership, and many private funds, are organized as pass-through entities. When a pass-through entity itself holds QSBS in a C corporation, Section 1202 has rules that can allow the benefit to flow to the entity's owners, but only within strict limits — generally, an owner must have held their interest when the entity acquired the stock and continuously afterward, and their share is measured by that original interest. Whether those rules apply to any particular investment depends entirely on how it is structured.",
+      },
+      {
+        type: "paragraph",
+        text: "None of this means a C corporation is the better choice. Pass-through structures have their own attributes. Income is generally taxed once, at the owner level, rather than first at the 21% corporate rate and again when distributed as a dividend. As a simple illustration using top federal rates, $1 million of corporate profit taxed at 21% and then distributed as a qualified dividend taxed at 20%, plus the 3.8% net investment income tax, bears combined federal tax of roughly 40% — before state taxes. Pass-through owners may also be eligible for the qualified business income deduction under Section 199A, which the 2025 legislation made permanent, subject to its limits. Depreciation and other deductions, including on real estate, flow through to owners, and an asset purchase can give a buyer a stepped-up basis in the acquired assets. The trade-off runs both ways: a C corporation may make Section 1202 available if every requirement is met, while a pass-through avoids the second layer of tax. The right answer depends on the business, the holding period, the likely exit, and the owners, which is why structure is decided with tax counsel, not by rule of thumb.",
+      },
+      { type: "subheading", text: "Section 1061 and the Three-Year Holding Period" },
+      {
+        type: "paragraph",
+        text: "Section 1061 addresses a different question. Fund sponsors are often compensated in part through a profits interest — commonly called carried interest — that entitles them to a share of profits without a corresponding capital contribution. Ordinarily, a partner's share of gain from assets held more than one year is long-term capital gain. Section 1061 changes that threshold for an \"applicable partnership interest,\" generally an interest transferred to or held by a taxpayer in connection with performing substantial services in an \"applicable trade or business,\" which covers raising or returning capital and investing in or developing specified assets such as securities and real estate held for investment. For those interests, gain from assets held three years or less is recharacterized as short-term capital gain, which is taxed at ordinary income rates.",
+      },
+      {
+        type: "paragraph",
+        text: "The rule has important boundaries. It does not apply to capital interests — interests that give a partner a share of capital commensurate with what they contributed — so a limited partner who invests cash is generally outside its scope with respect to that investment. Interests held by certain corporations are excluded, and the final Treasury regulations issued in 2021 carve out certain categories of income, such as Section 1231 gain on business property and qualified dividends. For investors, the practical significance is less about their own tax bill than about alignment: holding-period rules can influence how sponsors generally think about exit timing, one more reason to read the compensation and exit provisions of any fund's governing documents.",
+      },
+      { type: "subheading", text: "Other Tax Concepts in Dealership Ownership" },
+      {
+        type: "paragraph",
+        text: "A few more concepts come up in nearly every dealership tax conversation. Gain on a capital asset held more than one year is generally long-term capital gain, taxed at preferential rates, though on a business sale the character of gain depends on what is sold — inventory, depreciation recapture, and goodwill are each treated differently. Depreciation on dealership real estate is another. Commercial buildings are generally depreciated over 39 years, but a cost segregation study can identify components — certain electrical and plumbing systems, site improvements such as parking lots and lighting, and specialized fixtures — that qualify for shorter recovery periods. Those shorter-lived components can be eligible for bonus depreciation, which the 2025 legislation restored to 100% on a permanent basis for qualifying property acquired after January 19, 2025. Accelerated deductions change the timing of taxable income rather than eliminating it, and depreciation is generally recaptured on sale.",
+      },
+      {
+        type: "paragraph",
+        text: "Inventory accounting is the last. Many dealerships use the LIFO method, and the IRS has provided simplified LIFO methods for vehicle dealers; as we covered in our quality of earnings chapter, the resulting reserve becomes a tax consideration in an acquisition, a change of entity type, or an inventory liquidation. The common thread is that each of these attributes belongs to a particular entity and structure, and none travels automatically to every investor in every vehicle that touches a dealership. That is why the right questions for any private investment are specific: what entity will I own, how is it taxed, what tax reporting will I receive, and what do the offering documents say about the expected tax treatment and its risks? Bring those questions to your own tax advisor, who can weigh them against your circumstances, including whether you invest through a taxable or retirement account.",
+      },
+      {
+        type: "callout-prime",
+        lines: [
+          "Coleman Prime evaluates entity structure, real estate ownership, and inventory accounting on each acquisition with outside tax counsel as part of diligence. We treat tax attributes as one input among many, never as the reason to do a deal.",
+          "We do not market tax outcomes, and nothing in this chapter describes the tax treatment of an investment in the Fund. The Fund's tax considerations and related risks are described only in its offering documents.",
+          "We encourage every prospective investor to review the offering documents with their own tax advisor before investing.",
+        ],
+        link: {
+          text: "Request the Fund's offering documents",
+          href: "/opportunity",
+        },
+      },
+    ],
+    relatedSlugs: [
+      "inside-the-private-placement-memorandum-ppm",
+      "self-directed-ira-automotive-fund-growth",
+    ],
+  },
+
+{
+    slug: "senior-debt-mezzanine-floor-plan-acquisition-capital-stack",
+    category: "Fund Mechanics",
+    title:
+      "Senior Debt, Mezzanine, and Floor Plan: How a Dealership Acquisition Is Capitalized",
+    subtitle:
+      "A dealership acquisition is rarely paid for with one check. It is assembled from layers of capital — floor plan, senior debt, subordinated notes, and equity — and where an investor sits in that stack determines what it is exposed to.",
+    author: "Ralph Marcuccilli",
+    authorRole: "Managing Partner — Prime Dealer Equity Fund",
+    date: "October 21, 2026",
+    readTime: "11 min read",
+    heroImage: {
+      src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/MtPleasent/mtpleasantdrone.png",
+      alt: "Aerial view of the Mt. Pleasant dealership campus in Iowa",
+      caption:
+        "Aerial view of Mt. Pleasant Chevy GMC CDJR in Iowa, a Coleman Automotive dealership. The land, the building, the inventory on the lot, and the franchise itself are often financed by different sources of capital. Photo: Sweet Dreams US LLC",
+    },
+    excerpt:
+      "Buying a franchised dealership means financing several very different assets at once: vehicle inventory, real estate, tangible operating assets, and the goodwill known as blue sky. This chapter explains how floor plan, senior debt, mezzanine, seller notes, preferred equity, and common equity fit together, who gets paid first, and what lenders and manufacturers require along the way.",
+    content: [
+      {
+        type: "paragraph",
+        text: "In the previous chapter, we described how a quality of earnings analysis establishes what a target dealership actually earns. That figure drives the purchase price. The next question is how the purchase price gets paid — and the answer is almost never a single source of money. A typical franchised dealership acquisition is financed in layers: an inventory line from a floor plan lender, mortgage debt on the real estate, a term loan against the business, sometimes subordinated debt from a mezzanine lender or the seller, and finally equity from the buyer and its investors.",
+      },
+      {
+        type: "paragraph",
+        text: "For an investor, the layering matters as much as the asset. Two investors in the same dealership can have very different risk profiles depending on whether they hold a mortgage, a subordinated note, or an equity interest. Each layer has a different claim on cash flow, a different claim on value in a sale or a downturn, and a different set of contractual rights. Understanding the stack is how an investor understands what it actually owns.",
+      },
+      {
+        type: "paragraph",
+        text: "This chapter walks through each layer of a dealership acquisition capital stack, how the layers rank against each other, the covenants and intercreditor agreements that connect them, and the capital requirements manufacturers impose on new owners. The figures throughout are hypothetical examples, not data from any Fund investment. It is general education, not legal, tax, or investment advice; the Fund's actual terms are governed solely by its offering documents.",
+      },
+      {
+        type: "paragraph",
+        text: "Capital structure starts with uses of funds. A dealership purchase typically includes four categories of assets, and lenders view each one differently. The first is vehicle inventory, which is usually purchased at closing at an agreed cost and financed separately. The second is real estate — land and a purpose-built facility that often carries manufacturer image requirements. The third is tangible operating assets: parts inventory, service equipment, furniture, and the working capital the store needs to operate. The fourth is goodwill, or blue sky — the price paid for the franchise, the customer base, and the store's earning power above the value of its tangible assets. Because each category has a different collateral profile, each tends to attract a different kind of capital.",
+      },
+      { type: "subheading", text: "Floor Plan: The Layer Beside the Stack" },
+      {
+        type: "paragraph",
+        text: "As we covered in our chapter on floor plan financing, new-vehicle inventory is financed through a revolving line secured by the vehicles themselves, provided most often by a manufacturer's captive finance company or a bank with a dedicated dealer lending group. That chapter covers the daily mechanics — draws, payoffs, curtailments, and manufacturer floor plan assistance — so we won't repeat them here. What matters for capital structure is that floor plan is generally separate from acquisition financing. At closing, the buyer's floor plan lender typically funds the purchase of the seller's new-vehicle inventory, and the seller's existing line is paid off. Used vehicles may be financed on the same line or a separate one, often at lower advance rates.",
+      },
+      {
+        type: "paragraph",
+        text: "Floor plan is best thought of as sitting beside the acquisition stack rather than inside it. It is self-liquidating — each advance is repaid when a specific vehicle sells — and it is secured by a first-priority interest in the inventory and its sale proceeds. But it is not a side detail. Floor plan lenders frequently provide other credit to the same dealer, take security interests that extend beyond vehicles, and include financial covenants and cross-default provisions that tie the line to the rest of the dealer's obligations. Selling a vehicle and failing to repay its advance promptly — known as selling \"out of trust\" — is among the most serious defaults in dealer finance.",
+      },
+      { type: "subheading", text: "Senior Debt: Real Estate and the Operating Company" },
+      {
+        type: "paragraph",
+        text: "Real estate is commonly financed with a commercial mortgage, and in many dealership groups it is held in a property entity separate from the operating company, which leases the facility from it. That separation keeps the real estate's financing, ownership, and liabilities apart from the dealership's operations. A mortgage lender looks primarily to the property's value and to the rent the operating company pays, and it typically lends a portion of appraised value — for example, 70% to 75% — with the balance funded by equity. Dealership real estate is special-purpose property, so lenders also consider whether the facility could be re-leased to another franchise if the current tenant left.",
+      },
+      {
+        type: "paragraph",
+        text: "Some buyers choose not to own the real estate at all. In a sale-leaseback, the property is sold to a real estate investor — often a net-lease buyer — and leased back to the dealership on a long-term basis, frequently with the tenant responsible for taxes, insurance, and maintenance. The proceeds reduce the amount of capital the acquisition requires. The trade-off is a fixed rent obligation that must be paid before any return to the operating company's investors, a lease term and renewal structure that has to fit the franchise, and a landlord whose consent may be needed for the facility upgrades manufacturers periodically require.",
+      },
+      {
+        type: "paragraph",
+        text: "The operating company's senior debt is usually a term loan secured by the business's assets other than inventory and real estate — equipment, receivables, parts, and the value of the enterprise. This is where blue sky financing lives. Goodwill is harder to lend against than a building, because its value depends on the franchise continuing to operate profitably and on the manufacturer's approval of any future owner. Lenders that finance blue sky therefore underwrite cash flow rather than liquidation value, generally advance a portion of the goodwill rather than all of it, and require amortization over a defined period. Captive finance companies and banks with dealer lending groups commonly offer acquisition, real estate, and capital loans alongside floor plan, which is one reason many dealers consolidate their borrowing with a single lender.",
+      },
+      { type: "subheading", text: "Subordinated Capital: Mezzanine and Seller Notes" },
+      {
+        type: "paragraph",
+        text: "When senior lenders will not finance the full gap between the purchase price and the buyer's equity, the difference can be filled with subordinated debt. Mezzanine debt ranks behind senior loans in payment and collateral, so it carries a higher interest rate, may include a portion of interest paid in kind (added to principal rather than paid in cash), and sometimes includes warrants or other equity participation. It is typically governed by a subordination agreement that limits the mezzanine lender's ability to receive payments or enforce remedies while senior debt is in default.",
+      },
+      {
+        type: "paragraph",
+        text: "A seller note is subordinated debt provided by the seller, who accepts part of the purchase price over time. Seller financing is common in dealership transfers, particularly in family-owned stores where the seller wants an orderly transition. It can bridge a valuation gap and signals the seller's confidence in the store's continued performance. Senior lenders generally require seller notes to be fully subordinated, with payments permitted only while the borrower is in compliance with its senior covenants. Earn-outs — additional price contingent on future results — are a related tool, though they function more like a contingent obligation than a loan.",
+      },
+      {
+        type: "callout-numbers",
+        title: "Illustrative Capital Stack: A Hypothetical Single-Store Acquisition",
+        lines: [
+          "Uses: $10.0M blue sky + $12.0M real estate + $3.0M parts, equipment, and other tangible assets + $3.0M working capital and closing costs = $28.0M",
+          "Senior real estate mortgage (75% of the $12.0M property value): $9.0M",
+          "Senior acquisition term loan against the business: $6.0M",
+          "Subordinated capital: $2.0M mezzanine loan + $2.0M seller note = $4.0M",
+          "Equity: $4.5M preferred + $4.5M common = $9.0M — total sources $28.0M",
+          "Separately, roughly $12M of new-vehicle inventory financed on the floor plan line. All figures hypothetical.",
+        ],
+        link: {
+          text: "See how Coleman Prime structures acquisitions",
+          href: "/opportunity",
+        },
+      },
+      {
+        type: "image",
+        src: "https://pahjlnuryegfxuixwdtv.supabase.co/storage/v1/object/public/images/assets/NissanWarsaw/NissanWarsawCarsinShowroom.webp",
+        alt: "New vehicles on display in the showroom at Nissan of Warsaw",
+        caption:
+          "Showroom at Nissan of Warsaw, a Coleman Automotive dealership. New-vehicle inventory is typically financed on a floor plan line that sits alongside, not inside, the acquisition capital stack. Photo: Sweet Dreams US LLC",
+      },
+      { type: "subheading", text: "Preferred and Common Equity" },
+      {
+        type: "paragraph",
+        text: "Everything below the debt is equity. Equity has no lien on assets and no fixed repayment date; it is paid from whatever remains after every lender, landlord, and creditor has been satisfied. Within equity, a structure can create classes with different priorities. Preferred equity ranks ahead of common equity — typically with a priority right to distributions, to the return of invested capital, or both, as defined in the entity's governing documents. Common equity ranks last. It absorbs losses first and, in exchange, holds the residual upside once senior claims are met.",
+      },
+      {
+        type: "paragraph",
+        text: "This is where the Fund sits. Prime Dealer Equity Fund holds preferred equity as a minority interest in acquisition entities alongside Coleman Automotive, the majority owner and operator, with priority capital return before distributions to the majority owner. That priority is relative to Coleman Automotive's common equity. It is not priority over lenders: preferred equity is subordinate to all of an entity's debt — including floor plan, senior loans, and any subordinated notes — and an equity investor's claim reaches only the entity in which it invests. Preferred equity carries real risk of loss, as the next example shows.",
+      },
+      { type: "subheading", text: "Priority of Claims: The Waterfall Under Stress" },
+      {
+        type: "paragraph",
+        text: "The order in which claims are paid matters most when the outcome is disappointing. Using the hypothetical stack above, suppose the store underperforms and is later sold, and after the floor plan lender is repaid from the inventory, $20.0 million of proceeds remain. For simplicity, assume all layers sit in one structure and ignore accrued interest, prepayment costs, and transaction fees, all of which would be paid ahead of equity in practice.",
+      },
+      {
+        type: "callout-numbers",
+        title: "Illustrative Waterfall: Hypothetical Sale Proceeds of $20.0M",
+        lines: [
+          "1. Senior mortgage and acquisition loan: $15.0M owed, $15.0M paid — $5.0M remains",
+          "2. Mezzanine loan and seller note: $4.0M owed, $4.0M paid — $1.0M remains",
+          "3. Preferred equity: $4.5M invested, $1.0M returned — a $3.5M loss",
+          "4. Common equity: $4.5M invested, nothing returned",
+          "Illustrative only; actual results depend on intercreditor terms, entity structure, and governing documents",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "The example cuts both ways. Preferred equity recovered something because common equity sat beneath it, but it still lost most of its capital because $19.0 million of debt ranked ahead. In a stronger outcome — say, $40.0 million of proceeds — every lender is repaid, preferred equity receives its capital and whatever priority return its documents provide, and common equity keeps the remainder. Leverage magnifies results in both directions, which is why the amount of debt beneath an equity investment is one of the first questions an equity investor should ask.",
+      },
+      { type: "subheading", text: "Covenants, Intercreditor Agreements, and the Manufacturer" },
+      {
+        type: "paragraph",
+        text: "Debt comes with covenants. Dealer credit agreements commonly include minimum tangible net worth, maximum leverage measured as debt to tangible net worth or to earnings, minimum fixed charge or debt service coverage, limits on capital expenditures and additional borrowing, and reporting obligations — often monthly, using the manufacturer financial statement. For equity investors, the most important covenants are the ones that restrict distributions. Lenders routinely limit or suspend payments to equity holders while a covenant is breached or a payment is past due, which means distributions to equity, preferred or common, depend on the entity's compliance with its loans as well as on its earnings.",
+      },
+      {
+        type: "paragraph",
+        text: "When several lenders share one borrower, an intercreditor agreement defines who holds which collateral and in what order. In a dealership, the typical division gives the floor plan lender first priority on vehicles and their proceeds, the mortgage lender the real property, and the acquisition lender the remaining business assets. The agreement also addresses what happens in default: standstill periods for junior lenders, rights to cure, and practical questions such as the floor plan lender's access to the premises to recover vehicles. Where one lender provides floor plan, real estate, and acquisition debt together, those issues are simpler — but the borrower's dependence on a single relationship is greater.",
+      },
+      {
+        type: "paragraph",
+        text: "The manufacturer adds a final layer of requirements. As we covered in our chapter on what OEM franchise agreements control, a change of ownership generally requires manufacturer approval, and that review typically includes the buyer's proposed capitalization and source of funds. Manufacturers also set ongoing capital standards — commonly a net working capital requirement, or working capital guide, scaled to the store's expected volume and measured on the monthly financial statement. Financing structure affects that test directly: borrowing that shows up as a current liability reduces working capital, while equity and properly structured long-term debt generally do not. The specific rules vary by brand, so a buyer has to design its capital structure to satisfy each manufacturer's standards at closing and through the life of the investment.",
+      },
+      {
+        type: "callout-prime",
+        lines: [
+          "Coleman Prime evaluates the capital stack as part of diligence on every acquisition, alongside earnings, real estate, and operations.",
+          "We model each layer's claim on cash flow and on value, test lender covenants and distribution restrictions against downside scenarios, and confirm the structure meets the manufacturer's capital standards for the brand.",
+          "For Fund investors, the relevant question is what sits ahead of the Fund's preferred equity in each acquisition entity — and the Fund's offering documents describe how its position is structured.",
+        ],
+        link: {
+          text: "Learn how Coleman Prime evaluates acquisitions",
+          href: "/opportunity",
+        },
+      },
+    ],
+    relatedSlugs: [
+      "floor-plan-financing-hidden-cost-holding-inventory",
+      "how-prime-dealer-equity-fund-structures-co-investments",
+    ],
+  },
+
   {
     slug: "quality-of-earnings-dealership-acquisition-diligence",
     category: "Fund Mechanics",
