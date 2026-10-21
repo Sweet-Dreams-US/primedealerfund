@@ -2368,10 +2368,31 @@ function isPublished(post: BlogPost): boolean {
     // matches existing behavior where every legacy post was always shown.
     return true;
   }
-  // Compare at day granularity (end-of-day on the post's date) so a post
-  // dated "May 6, 2026" goes live anywhere in the world during May 6.
-  postDate.setUTCHours(23, 59, 59, 999);
-  return postDate.getTime() <= Date.now();
+  // A post dated "May 6, 2026" goes live at midnight Eastern on May 6.
+  // `new Date("May 6, 2026")` parses as local midnight on both server and
+  // browser, so the local Y/M/D fields are the date as written.
+  const utcMidnight = Date.UTC(
+    postDate.getFullYear(),
+    postDate.getMonth(),
+    postDate.getDate()
+  );
+  return utcMidnight + easternOffsetMs(utcMidnight) <= Date.now();
+}
+
+/**
+ * Milliseconds Eastern time is behind UTC on the given UTC day: 4h during
+ * EDT, 5h during EST. Sampled at 05:00 UTC (midnight/1am Eastern), which is
+ * before the 2am DST switch, so it reflects the offset in effect at midnight.
+ */
+function easternOffsetMs(utcMidnight: number): number {
+  const offset = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    timeZoneName: "shortOffset",
+  })
+    .formatToParts(new Date(utcMidnight + 5 * 3600 * 1000))
+    .find((p) => p.type === "timeZoneName")?.value; // e.g. "GMT-4"
+  const hours = Number(offset?.replace("GMT", "") || -5);
+  return -hours * 3600 * 1000;
 }
 
 /**
