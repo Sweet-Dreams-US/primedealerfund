@@ -97,18 +97,6 @@ export default function RootLayout({
         <Analytics />
         <TrafficBeacon />
 
-        {/* LeadPipe visitor-identification pixel. Gated behind an env var so it
-            only loads once NEXT_PUBLIC_LEADPIPE_PIXEL_ID is set — acts as a
-            kill switch and keeps the pixel off until privacy disclosures are
-            live. Disclosed in /privacy (Website Visitor Identification). */}
-        {process.env.NEXT_PUBLIC_LEADPIPE_PIXEL_ID && (
-          <Script
-            id="leadpipe-pixel"
-            src={`https://leadpipe.aws53.cloud/p/${process.env.NEXT_PUBLIC_LEADPIPE_PIXEL_ID}.js`}
-            strategy="afterInteractive"
-          />
-        )}
-
         {/* LinkedIn Insight Tag */}
         <Script id="linkedin-partner" strategy="afterInteractive">
           {`
