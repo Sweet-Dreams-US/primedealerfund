@@ -5,22 +5,29 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useBlogReleased } from "@/hooks/useBlogReleased";
 
 const navLinks = [
   { label: "Opportunity", href: "/opportunity" },
   { label: "Our Story", href: "/story" },
   { label: "Team", href: "/team" },
   { label: "Portfolio", href: "/portfolio" },
-  { label: "Insights", href: "/insights" },
   { label: "Media", href: "/media" },
   { label: "FAQ", href: "/faq" },
 ];
+
+// The Blog link only exists once at least one post has been released.
+const blogLink = { label: "Blog", href: "/blog" };
 
 export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const blogReleased = useBlogReleased();
+  const links = blogReleased
+    ? [...navLinks.slice(0, 4), blogLink, ...navLinks.slice(4)]
+    : navLinks;
 
   // On non-homepage, nav text is always dark
   const darkNav = !isHome || scrolled;
@@ -67,7 +74,7 @@ export default function Header() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
+            {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -138,7 +145,7 @@ export default function Header() {
             className="fixed inset-0 z-[45] bg-white/98 backdrop-blur-xl lg:hidden"
           >
             <div className="flex flex-col items-center justify-center h-full gap-8">
-              {navLinks.map((link, i) => (
+              {links.map((link, i) => (
                 <motion.div
                   key={link.href}
                   initial={{ opacity: 0, y: 30 }}
@@ -161,7 +168,7 @@ export default function Header() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 30 }}
-                transition={{ delay: navLinks.length * 0.08, duration: 0.5 }}
+                transition={{ delay: links.length * 0.08, duration: 0.5 }}
                 className="mt-4 flex flex-col items-center gap-3 w-full px-10"
               >
                 <Link

@@ -74,6 +74,7 @@ export default function FloatingCTA() {
       <AnimatePresence>
         {showMobile && (
           <motion.div
+            id="mobile-call-bar"
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 60 }}

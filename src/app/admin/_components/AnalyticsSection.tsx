@@ -5,38 +5,13 @@ import { useState, useEffect, useMemo } from "react";
 type Post = {
   slug: string;
   title: string;
-  category: string;
-  author: string;
   date: string;
   iso: string | null;
-  published: boolean;
-};
-
-type PlanItem = {
-  number: number;
-  module: number;
-  date: string;
-  title: string;
-  status: "published" | "scheduled" | "planned";
-  slug: string | null;
-};
-
-type ModuleInfo = { number: number; name: string; range: string };
-
-type Summary = {
-  totalPosts: number;
-  published: number;
-  scheduled: number;
-  planned: number;
-  nextRelease: { title: string; date: string; slug: string | null } | null;
-  nextToWrite: { number: number; title: string; date: string } | null;
 };
 
 type BlogStats = {
   posts: Post[];
-  plan: PlanItem[];
-  modules: ModuleInfo[];
-  summary: Summary;
+  summary: { published: number };
 };
 
 const MONTH_NAMES = [
@@ -60,17 +35,6 @@ function dayLabel(iso: string | null) {
   });
 }
 
-const STATUS_PILL: Record<string, string> = {
-  published: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  scheduled: "bg-amber-50 text-amber-700 ring-amber-200",
-  planned: "bg-slate-100 text-slate-500 ring-slate-200",
-};
-const STATUS_LABEL: Record<string, string> = {
-  published: "Published",
-  scheduled: "Scheduled",
-  planned: "Not written",
-};
-
 function Chevron({ open }: { open: boolean }) {
   return (
     <svg
@@ -88,7 +52,6 @@ export default function AnalyticsSection() {
   const [data, setData] = useState<BlogStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedYears, setExpandedYears] = useState<Set<string>>(new Set());
-  const [expandedModules, setExpandedModules] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     fetch("/api/admin/blog-stats")
@@ -102,12 +65,6 @@ export default function AnalyticsSection() {
             .sort()
             .reverse();
           setExpandedYears(new Set(years.slice(0, 2)));
-          // Open modules that still have unwritten chapters by default.
-          const open = new Set<number>();
-          d.plan.forEach((c) => {
-            if (c.status === "planned") open.add(c.module);
-          });
-          setExpandedModules(open);
         }
         setLoading(false);
       })
@@ -137,17 +94,6 @@ export default function AnalyticsSection() {
       }));
   }, [data]);
 
-  const planByModule = useMemo(() => {
-    if (!data) return [];
-    return data.modules.map((mod) => {
-      const chapters = data.plan
-        .filter((c) => c.module === mod.number)
-        .sort((a, b) => a.number - b.number);
-      const done = chapters.filter((c) => c.status !== "planned").length;
-      return { mod, chapters, done, total: chapters.length };
-    });
-  }, [data]);
-
   function toggleYear(year: string) {
     setExpandedYears((prev) => {
       const next = new Set(prev);
@@ -156,15 +102,6 @@ export default function AnalyticsSection() {
       return next;
     });
   }
-  function toggleModule(n: number) {
-    setExpandedModules((prev) => {
-      const next = new Set(prev);
-      if (next.has(n)) next.delete(n);
-      else next.add(n);
-      return next;
-    });
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -187,12 +124,7 @@ export default function AnalyticsSection() {
     <div className="space-y-6">
       {/* Metric cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: "Published Posts", value: summary.published, sub: "live on /insights" },
-          { label: "Scheduled", value: summary.scheduled, sub: "written, future-dated" },
-          { label: "Curriculum Left", value: summary.planned, sub: "chapters not yet written" },
-          { label: "Total Articles", value: summary.totalPosts, sub: "in the blog system" },
-        ].map((m) => (
+        {[{ label: "Published Posts", value: summary.published, sub: "live on /blog" }].map((m) => (
           <div
             key={m.label}
             className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow"
@@ -206,61 +138,13 @@ export default function AnalyticsSection() {
         ))}
       </div>
 
-      {/* Next up */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400" />
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Next Release
-            </p>
-          </div>
-          {summary.nextRelease ? (
-            <>
-              <p className="text-sm font-medium text-slate-900 leading-snug">
-                {summary.nextRelease.title}
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                Auto-publishes {summary.nextRelease.date}
-              </p>
-            </>
-          ) : (
-            <p className="text-sm text-slate-400">
-              No scheduled posts — everything written is already live.
-            </p>
-          )}
-        </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-slate-400" />
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Next Chapter to Write
-            </p>
-          </div>
-          {summary.nextToWrite ? (
-            <>
-              <p className="text-sm font-medium text-slate-900 leading-snug">
-                Ch. {summary.nextToWrite.number} — {summary.nextToWrite.title}
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                Scheduled slot: {summary.nextToWrite.date}
-              </p>
-            </>
-          ) : (
-            <p className="text-sm text-slate-400">
-              The full 2026 curriculum has been written.
-            </p>
-          )}
-        </div>
-      </div>
-
       {/* Blog release schedule */}
       <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
         <div className="px-5 py-4 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-900">Blog Release Schedule</h3>
+          <h3 className="text-sm font-semibold text-slate-900">Blog Releases</h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            Every article in the system — past releases and future-dated posts
-            that auto-publish on their date.
+            Every article that has been released on /blog. Later posts appear
+            here on their release dates.
           </p>
         </div>
         <div className="divide-y divide-slate-100">
@@ -297,104 +181,16 @@ export default function AnalyticsSection() {
                                 {dayLabel(p.iso)}
                               </span>
                               <a
-                                href={`/insights/${p.slug}`}
+                                href={`/blog/${p.slug}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-sm text-slate-700 hover:text-slate-900 hover:underline flex-1 min-w-0 truncate"
                               >
                                 {p.title}
                               </a>
-                              <span className="hidden lg:inline text-[10px] text-slate-400 uppercase tracking-wide shrink-0">
-                                {p.category}
-                              </span>
-                              <span
-                                className={`px-2 py-0.5 text-[10px] font-medium rounded-full ring-1 ring-inset shrink-0 ${
-                                  p.published
-                                    ? STATUS_PILL.published
-                                    : STATUS_PILL.scheduled
-                                }`}
-                              >
-                                {p.published ? "Published" : "Scheduled"}
-                              </span>
                             </div>
                           ))}
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Curriculum backlog */}
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-900">
-            2026 Curriculum — Planned Chapters
-          </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            The 35-chapter Prime Dealer University plan. &ldquo;Not written&rdquo;
-            chapters are the backlog — pick the next one to draft.
-          </p>
-        </div>
-        <div className="divide-y divide-slate-100">
-          {planByModule.map(({ mod, chapters, done, total }) => {
-            const open = expandedModules.has(mod.number);
-            return (
-              <div key={mod.number}>
-                <button
-                  onClick={() => toggleModule(mod.number)}
-                  className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50/50 transition-colors"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Chevron open={open} />
-                    <span className="text-sm font-semibold text-slate-900">
-                      Module {mod.number} — {mod.name}
-                    </span>
-                    <span className="hidden md:inline text-xs text-slate-400">
-                      {mod.range}
-                    </span>
-                  </div>
-                  <span
-                    className={`text-xs font-medium shrink-0 ${
-                      done === total ? "text-emerald-600" : "text-slate-400"
-                    }`}
-                  >
-                    {done}/{total} written
-                  </span>
-                </button>
-                {open && (
-                  <div className="px-5 pb-3 space-y-1.5">
-                    {chapters.map((c) => (
-                      <div key={c.number} className="flex items-center gap-3 py-1.5">
-                        <span className="text-xs font-mono text-slate-300 w-6 shrink-0">
-                          {c.number}
-                        </span>
-                        <span className="text-xs text-slate-400 w-24 shrink-0">
-                          {dayLabel(c.date)}
-                        </span>
-                        {c.slug ? (
-                          <a
-                            href={`/insights/${c.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-slate-700 hover:text-slate-900 hover:underline flex-1 min-w-0 truncate"
-                          >
-                            {c.title}
-                          </a>
-                        ) : (
-                          <span className="text-sm text-slate-500 flex-1 min-w-0 truncate">
-                            {c.title}
-                          </span>
-                        )}
-                        <span
-                          className={`px-2 py-0.5 text-[10px] font-medium rounded-full ring-1 ring-inset shrink-0 ${STATUS_PILL[c.status]}`}
-                        >
-                          {STATUS_LABEL[c.status]}
-                        </span>
                       </div>
                     ))}
                   </div>
@@ -428,8 +224,8 @@ export default function AnalyticsSection() {
             <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
               Page views, visitor counts, and top pages are tracked by Vercel
               Analytics. View the live traffic dashboard in the Vercel project
-              under the Analytics tab. This panel covers content &mdash; what is
-              published, scheduled, and still planned.
+              under the Analytics tab. This panel covers content: the blog articles that
+              have been released.
             </p>
           </div>
         </div>

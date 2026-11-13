@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import GoldDivider from "@/components/ui/GoldDivider";
+import { useBlogReleased } from "@/hooks/useBlogReleased";
 
 const socialLinks = [
   {
@@ -77,7 +78,6 @@ const footerLinks = {
   Company: [
     { label: "Our Story", href: "/story" },
     { label: "Team", href: "/team" },
-    { label: "Insights", href: "/insights" },
     { label: "Contact", href: "/contact" },
   ],
   Legal: [
@@ -88,6 +88,19 @@ const footerLinks = {
 };
 
 export default function Footer() {
+  const blogReleased = useBlogReleased();
+  // The Blog link only exists once at least one post has been released.
+  const columns: Record<string, { label: string; href: string }[]> = {
+    ...footerLinks,
+    Company: blogReleased
+      ? [
+          ...footerLinks.Company.slice(0, 2),
+          { label: "Blog", href: "/blog" },
+          ...footerLinks.Company.slice(2),
+        ]
+      : footerLinks.Company,
+  };
+
   return (
     <footer className="bg-[#1a1a2e] border-t border-[#2d2d44]">
       <div className="max-w-7xl mx-auto px-6 py-16">
@@ -124,7 +137,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {Object.entries(footerLinks).map(([category, links]) => (
+          {Object.entries(columns).map(([category, links]) => (
             <div key={category}>
               <h4 className="font-display font-semibold text-white/80 mb-4 text-sm tracking-wide uppercase">
                 {category}
