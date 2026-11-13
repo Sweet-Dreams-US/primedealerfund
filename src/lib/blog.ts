@@ -15,7 +15,9 @@ import fs from "fs";
 import path from "path";
 import { Marked } from "marked";
 
-export const SITE_URL = "https://primedealerfund.com";
+// The address the site is actually served from (the bare domain redirects here),
+// so canonical links, the sitemap and the feed never point at a redirect.
+export const SITE_URL = "https://www.primedealerfund.com";
 export const BLOG_TIME_ZONE = "America/Indiana/Indianapolis";
 export const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 
